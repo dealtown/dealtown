@@ -1,5 +1,5 @@
 var ADMIN_CODE = "DEALADMIN";
-var VIEWER_CODE = "DEALVIEW";
+var VIEWER_CODE = "DEALHOOPS";
 
 function login() {
     var input = document.getElementById("accessCode");

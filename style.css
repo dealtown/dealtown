@@ -1,0 +1,836 @@
+/* =========================================
+   RESET
+========================================= */
+
+* {
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    margin: 0;
+    min-height: 100vh;
+
+    font-family: Arial, Helvetica, sans-serif;
+
+    color: #ffffff;
+
+    background:
+        linear-gradient(
+            rgba(5, 10, 25, 0.88),
+            rgba(5, 10, 25, 0.94)
+        ),
+        url("background.jpg");
+
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+}
+
+
+/* =========================================
+   MAIN PAGE
+========================================= */
+
+.dashboard {
+    width: 100%;
+    max-width: 1250px;
+
+    margin: 0 auto;
+
+    padding: 40px 30px 110px;
+
+    display: flex;
+    flex-direction: column;
+
+    gap: 30px;
+}
+
+
+/* =========================================
+   HEADINGS
+========================================= */
+
+h1,
+h2,
+h3,
+p {
+    margin-top: 0;
+}
+
+h1 {
+    text-align: center;
+
+    letter-spacing: 2px;
+}
+
+h2 {
+    color: #4da6ff;
+
+    letter-spacing: 1px;
+}
+
+h3 {
+    color: #cfd8e3;
+}
+
+
+/* =========================================
+   TEAM HEADER
+========================================= */
+
+.team-header {
+    width: 100%;
+
+    display: grid;
+
+    grid-template-columns:
+        1fr auto 1fr;
+
+    align-items: center;
+
+    gap: 30px;
+
+    text-align: center;
+}
+
+.team-logo {
+    width: 150px;
+    height: 150px;
+
+    object-fit: contain;
+
+    justify-self: center;
+}
+
+.team-title {
+    display: flex;
+
+    flex-direction: column;
+
+    align-items: center;
+
+    justify-content: center;
+
+    gap: 6px;
+}
+
+.team-title h1,
+.team-title h2,
+.team-title p {
+    margin: 0;
+}
+
+.team-title h1 {
+    font-size: 38px;
+
+    letter-spacing: 3px;
+}
+
+.team-title h2 {
+    font-size: 25px;
+
+    color: #4da6ff;
+
+    letter-spacing: 2px;
+}
+
+.team-title p {
+    font-size: 15px;
+
+    color: #aab4c3;
+
+    letter-spacing: 3px;
+}
+
+
+/* =========================================
+   SEASON SELECTOR
+========================================= */
+
+.season-selector {
+    width: 100%;
+
+    display: flex;
+
+    flex-direction: column;
+
+    align-items: center;
+
+    justify-content: center;
+
+    gap: 10px;
+
+    text-align: center;
+}
+
+.season-selector label {
+    font-weight: bold;
+
+    letter-spacing: 2px;
+}
+
+#seasonSelect {
+    width: 220px;
+}
+
+#seasonTitle {
+    margin: 0;
+
+    text-align: center;
+
+    font-size: 20px;
+
+    font-weight: bold;
+
+    color: #4da6ff;
+
+    letter-spacing: 2px;
+}
+
+
+/* =========================================
+   FORMS
+========================================= */
+
+label {
+    display: block;
+
+    margin-bottom: 7px;
+
+    color: #d8dee8;
+
+    font-weight: bold;
+}
+
+input,
+select,
+textarea {
+    width: 100%;
+
+    min-height: 48px;
+
+    padding: 12px 15px;
+
+    border: 1px solid #334155;
+
+    border-radius: 8px;
+
+    background: rgba(10, 15, 30, 0.92);
+
+    color: #ffffff;
+
+    font-size: 16px;
+
+    outline: none;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+    border-color: #4da6ff;
+}
+
+textarea {
+    min-height: 120px;
+
+    resize: vertical;
+}
+
+
+/* =========================================
+   BUTTON BASE
+========================================= */
+
+button {
+    width: 100%;
+
+    min-height: 48px;
+
+    padding: 12px 20px;
+
+    border: none;
+
+    border-radius: 8px;
+
+    background: #1677ff;
+
+    color: #ffffff;
+
+    font-size: 15px;
+
+    font-weight: bold;
+
+    letter-spacing: 1px;
+
+    cursor: pointer;
+
+    transition:
+        background 0.15s ease,
+        transform 0.15s ease;
+}
+
+button:hover {
+    background: #338cff;
+
+    transform: translateY(-2px);
+}
+
+button:active {
+    transform: translateY(0);
+}
+
+
+/* =========================================
+   BUTTON MENUS
+========================================= */
+
+.menu {
+    width: 100%;
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(3, minmax(0, 1fr));
+
+    gap: 15px;
+
+    align-items: stretch;
+}
+
+.menu button {
+    width: 100%;
+}
+
+
+/* =========================================
+   STATISTICS GRID
+========================================= */
+
+.stats-grid {
+    width: 100%;
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(3, minmax(0, 1fr));
+
+    gap: 20px;
+
+    align-items: stretch;
+}
+
+.stat-card {
+    width: 100%;
+
+    padding: 25px;
+
+    border-radius: 12px;
+
+    background: rgba(15, 22, 40, 0.84);
+
+    border: 1px solid rgba(77, 166, 255, 0.2);
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 15px;
+}
+
+.stat-card h2,
+.stat-card h3,
+.stat-card p {
+    margin: 0;
+}
+
+.stat-card strong {
+    font-size: 32px;
+
+    color: #4da6ff;
+}
+
+
+/* =========================================
+   PLAYER LIST
+========================================= */
+
+#playerList {
+    width: 100%;
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(3, minmax(0, 1fr));
+
+    gap: 20px;
+
+    align-items: stretch;
+}
+
+.player-card {
+    width: 100%;
+
+    min-width: 0;
+
+    padding: 20px;
+
+    border-radius: 12px;
+
+    background: rgba(15, 22, 40, 0.85);
+
+    border: 1px solid rgba(77, 166, 255, 0.2);
+
+    display: flex;
+
+    flex-direction: column;
+
+    align-items: stretch;
+
+    gap: 12px;
+}
+
+.player-card h3,
+.player-card p {
+    margin: 0;
+}
+
+.player-card img {
+    width: 100px;
+    height: 100px;
+
+    object-fit: cover;
+
+    border-radius: 50%;
+
+    align-self: center;
+}
+
+.player-card button {
+    margin-top: auto;
+}
+
+
+/* =========================================
+   PLAYER PROFILE
+========================================= */
+
+.player-profile-header {
+    width: 100%;
+
+    display: flex;
+
+    flex-direction: column;
+
+    align-items: center;
+
+    justify-content: center;
+
+    gap: 15px;
+
+    text-align: center;
+}
+
+.player-profile-header img,
+.player-photo {
+    width: 150px;
+    height: 150px;
+
+    object-fit: cover;
+
+    border-radius: 50%;
+
+    border: 3px solid #4da6ff;
+}
+
+.player-placeholder {
+    width: 150px;
+    height: 150px;
+
+    border-radius: 50%;
+
+    background: #162033;
+
+    border: 3px solid #4da6ff;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    font-size: 40px;
+
+    font-weight: bold;
+
+    color: #4da6ff;
+}
+
+
+/* =========================================
+   PLAYER STAT GRID
+========================================= */
+
+.player-stat-grid {
+    width: 100%;
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(3, minmax(0, 1fr));
+
+    gap: 15px;
+
+    align-items: stretch;
+}
+
+.player-stat-grid > div {
+    min-width: 0;
+
+    padding: 20px;
+
+    border-radius: 10px;
+
+    background: rgba(10, 15, 30, 0.75);
+
+    text-align: center;
+
+    display: flex;
+
+    flex-direction: column;
+
+    align-items: center;
+
+    justify-content: center;
+
+    gap: 8px;
+}
+
+.player-stat-grid strong {
+    font-size: 28px;
+
+    color: #4da6ff;
+}
+
+
+/* =========================================
+   MATCH CARDS
+========================================= */
+
+.match-card {
+    width: 100%;
+
+    padding: 20px;
+
+    border-radius: 12px;
+
+    background: rgba(15, 22, 40, 0.85);
+
+    border: 1px solid rgba(77, 166, 255, 0.2);
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 10px;
+}
+
+.match-card h3,
+.match-card p {
+    margin: 0;
+}
+
+
+/* =========================================
+   TABLES
+========================================= */
+
+.table-container {
+    width: 100%;
+
+    overflow-x: auto;
+}
+
+table {
+    width: 100%;
+
+    border-collapse: collapse;
+}
+
+th,
+td {
+    padding: 14px;
+
+    border-bottom: 1px solid #334155;
+
+    text-align: left;
+}
+
+th {
+    color: #4da6ff;
+}
+
+
+/* =========================================
+   LINKS
+========================================= */
+
+a {
+    color: #4da6ff;
+
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+
+/* =========================================
+   LOGIN
+========================================= */
+
+.login-container {
+    width: min(90%, 450px);
+
+    min-height: 100vh;
+
+    margin: 0 auto;
+
+    display: flex;
+
+    flex-direction: column;
+
+    align-items: center;
+
+    justify-content: center;
+
+    gap: 15px;
+
+    text-align: center;
+}
+
+.login-container h1,
+.login-container h2,
+.login-container p {
+    margin: 0;
+}
+
+.login-container h1 {
+    font-size: 42px;
+
+    letter-spacing: 3px;
+}
+
+.login-container h2 {
+    color: #4da6ff;
+
+    letter-spacing: 2px;
+}
+
+.login-container p {
+    color: #aab4c3;
+}
+
+.login-container input,
+.login-container button {
+    width: 100%;
+}
+
+#errorMessage {
+    color: #ff4444;
+}
+
+
+/* =========================================
+   LOG OUT BUTTON
+========================================= */
+
+.logout-button {
+    position: fixed;
+
+    right: 25px;
+    bottom: 25px;
+
+    width: 120px;
+
+    min-height: 48px;
+
+    padding: 12px 18px;
+
+    background: #d62828;
+
+    color: #ffffff;
+
+    border: none;
+
+    border-radius: 8px;
+
+    font-size: 14px;
+
+    font-weight: bold;
+
+    letter-spacing: 1px;
+
+    cursor: pointer;
+
+    z-index: 9999;
+}
+
+.logout-button:hover {
+    background: #ef3b3b;
+}
+
+
+/* =========================================
+   ADMIN ELEMENTS
+========================================= */
+
+.admin-only {
+    display: block;
+}
+
+
+/* =========================================
+   SCROLLBAR
+========================================= */
+
+::-webkit-scrollbar {
+    width: 10px;
+}
+
+::-webkit-scrollbar-track {
+    background: #080d18;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #24527d;
+
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #347ab5;
+}
+
+
+/* =========================================
+   TABLET
+========================================= */
+
+@media (max-width: 900px) {
+
+    .stats-grid {
+        grid-template-columns:
+            repeat(2, minmax(0, 1fr));
+    }
+
+    #playerList {
+        grid-template-columns:
+            repeat(2, minmax(0, 1fr));
+    }
+
+    .menu {
+        grid-template-columns:
+            repeat(2, minmax(0, 1fr));
+    }
+
+    .player-stat-grid {
+        grid-template-columns:
+            repeat(2, minmax(0, 1fr));
+    }
+}
+
+
+/* =========================================
+   MOBILE
+========================================= */
+
+@media (max-width: 700px) {
+
+    .dashboard {
+        padding:
+            25px
+            15px
+            100px;
+
+        gap: 25px;
+    }
+
+    .team-header {
+        grid-template-columns: 1fr;
+
+        gap: 15px;
+    }
+
+    .team-header .team-logo {
+        display: none;
+    }
+
+    .team-title h1 {
+        font-size: 30px;
+    }
+
+    .team-title h2 {
+        font-size: 21px;
+    }
+
+    .stats-grid {
+        grid-template-columns: 1fr;
+    }
+
+    #playerList {
+        grid-template-columns: 1fr;
+    }
+
+    .player-stat-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .menu {
+        grid-template-columns: 1fr;
+
+        gap: 15px;
+    }
+}
+
+
+/* =========================================
+   SMALL MOBILE
+========================================= */
+
+@media (max-width: 500px) {
+
+    .dashboard {
+        padding:
+            20px
+            12px
+            95px;
+
+        gap: 20px;
+    }
+
+    .team-title h1 {
+        font-size: 25px;
+    }
+
+    .team-title h2 {
+        font-size: 18px;
+    }
+
+    .stat-card {
+        padding: 18px;
+    }
+
+    .logout-button {
+        right: 15px;
+        bottom: 15px;
+
+        width: 110px;
+
+        min-height: 45px;
+    }
+}

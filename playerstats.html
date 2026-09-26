@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        Player Stats - Deal Town U10 Hoops
+    </title>
+
+    <link
+        rel="stylesheet"
+        href="style.css"
+    >
+
+</head>
+
+<body>
+
+    <main class="dashboard">
+
+        <h1>PLAYER STATS</h1>
+
+        <p>
+            DEAL TOWN U10 HOOPS •
+            <span id="currentSeason">
+                2026 / 27
+            </span>
+        </p>
+
+
+        <!-- =========================
+             ADD / EDIT PLAYER
+        ========================== -->
+
+        <section
+            class="stat-card admin-only"
+            id="playerForm"
+        >
+
+            <h2 id="formTitle">
+                ADD PLAYER
+            </h2>
+
+
+            <label for="playerName">
+                PLAYER NAME
+            </label>
+
+            <input
+                type="text"
+                id="playerName"
+                placeholder="Enter player name"
+                autocomplete="off"
+            >
+
+
+            <label for="shirtNumber">
+                SHIRT NUMBER
+            </label>
+
+            <input
+                type="number"
+                id="shirtNumber"
+                placeholder="Enter shirt number"
+                min="0"
+                step="1"
+            >
+
+
+            <label for="position">
+                POSITION
+            </label>
+
+            <select id="position">
+
+                <option value="">
+                    Select position
+                </option>
+
+                <option value="Goalkeeper">
+                    Goalkeeper
+                </option>
+
+                <option value="Defender">
+                    Defender
+                </option>
+
+                <option value="Midfielder">
+                    Midfielder
+                </option>
+
+                <option value="Forward">
+                    Forward
+                </option>
+
+            </select>
+
+
+            <label for="playerPhoto">
+                PLAYER PHOTO
+            </label>
+
+            <input
+                type="file"
+                id="playerPhoto"
+                accept="image/*"
+            >
+
+
+            <div class="menu">
+
+                <button
+                    type="button"
+                    id="savePlayerButton"
+                    onclick="savePlayer()"
+                >
+                    ADD PLAYER
+                </button>
+
+                <button
+                    type="button"
+                    id="cancelEdit"
+                    onclick="cancelEdit()"
+                    style="display: none;"
+                >
+                    CANCEL
+                </button>
+
+            </div>
+
+        </section>
+
+
+        <!-- =========================
+             PLAYER LIST
+        ========================== -->
+
+        <section>
+
+            <h2>
+                PLAYER STATISTICS
+            </h2>
+
+            <div id="playerList">
+
+                <p>
+                    Loading players...
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =========================
+             NAVIGATION
+        ========================== -->
+
+        <div class="menu">
+
+            <button
+                type="button"
+                onclick="
+                    window.location.href =
+                    'dashboard.html'
+                "
+            >
+                BACK TO DASHBOARD
+            </button>
+
+            <button
+                type="button"
+                onclick="logout()"
+            >
+                LOG OUT
+            </button>
+
+        </div>
+
+    </main>
+
+
+    <script src="js/auth.js"></script>
+
+    <script src="js/playerstats.js"></script>
+
+</body>
+
+</html>

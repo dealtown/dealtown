@@ -1,0 +1,273 @@
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        Deal Town U10 Hoops
+    </title>
+
+    <link
+        rel="stylesheet"
+        href="style.css"
+    >
+<button
+    type="button"
+    class="logout-button"
+    onclick="logout()"
+>
+    LOG OUT
+</button>
+
+</head>
+
+<body>
+
+    <main class="dashboard">
+
+        <h1>
+            
+        </h1>
+
+
+        <!-- SEASON SELECTOR -->
+
+        <main class="dashboard">
+
+    <div class="team-header">
+
+        <img
+            src="team-logo.png"
+            alt="Deal Town U10 Hoops"
+            class="team-logo team-logo-left">
+
+        <div class="team-title">
+
+            <h1>DEAL TOWN</h1>
+
+            <h2>U10 HOOPS</h2>
+
+            <p>TEAM TRACKER</p>
+
+        </div>
+
+        <img
+            src="team-logo.png"
+            alt="Deal Town U10 Hoops"
+            class="team-logo team-logo-right">
+
+    </div>
+
+    <div class="season-selector">
+
+        <label for="seasonSelect">
+            SEASON
+        </label>
+
+        <select id="seasonSelect">
+
+            <option value="2024/25">2024 / 25</option>
+            <option value="2025/26">2025 / 26</option>
+            <option value="2026/27">2026 / 27</option>
+            <option value="2027/28">2027 / 28</option>
+            <option value="2028/29">2028 / 29</option>
+            <option value="2029/30">2029 / 30</option>
+
+        </select>
+
+    </div>
+
+    
+
+        <p id="seasonTitle">
+            2026 / 27 SEASON
+        </p>
+
+
+        <!-- DASHBOARD STATS -->
+
+        <section class="stats-grid">
+
+            <div class="stat-card">
+
+                <h3>
+                    MATCHES
+                </h3>
+
+                <strong id="matches">
+                    0
+                </strong>
+
+            </div>
+
+
+            <div class="stat-card">
+
+                <h3>
+                    WINS
+                </h3>
+
+                <strong id="wins">
+                    0
+                </strong>
+
+            </div>
+
+
+            <div class="stat-card">
+
+                <h3>
+                    DRAWS
+                </h3>
+
+                <strong id="draws">
+                    0
+                </strong>
+
+            </div>
+
+
+            <div class="stat-card">
+
+                <h3>
+                    LOSSES
+                </h3>
+
+                <strong id="losses">
+                    0
+                </strong>
+
+            </div>
+
+
+            <div class="stat-card">
+
+                <h3>
+                    WIN RATE
+                </h3>
+
+                <strong id="winRate">
+                    0%
+                </strong>
+
+            </div>
+
+
+            <div class="stat-card">
+
+                <h3>
+                    GOALS
+                </h3>
+
+                <strong id="goals">
+                    0 - 0
+                </strong>
+
+            </div>
+
+
+            <div class="stat-card">
+
+                <h3>
+                    GOAL DIFFERENCE
+                </h3>
+
+                <strong id="goalDifference">
+                    0
+                </strong>
+
+            </div>
+
+
+            <div class="stat-card">
+
+                <h3>
+                    CURRENT WINNING RUN
+                </h3>
+
+                <strong id="winningRun">
+                    0
+                </strong>
+
+            </div>
+
+
+            <div class="stat-card">
+
+                <h3>
+                    CURRENT UNBEATEN RUN
+                </h3>
+
+                <strong id="unbeatenRun">
+                    0
+                </strong>
+
+            </div>
+
+        </section>
+
+
+        <!-- MAIN MENU -->
+
+        <div class="menu">
+
+            <button
+    type="button"
+    onclick="window.location.href='playerstats.html'"
+>
+    PLAYERS
+</button>
+            
+            
+            <button
+                type="button"
+                class="admin-only"
+                onclick="window.location.href='add-match.html'"
+            >
+                ADD MATCH
+            </button>
+
+
+            <button
+                type="button"
+                onclick="window.location.href='matches.html'"
+            >
+                MATCH HISTORY
+            </button>
+
+
+
+
+        
+
+
+            <button
+                type="button"
+                onclick="window.location.href='preview.html'"
+            >
+                SEASON PREVIEW
+            </button>
+
+
+        
+
+    
+<script src="js/auth.js"></script>
+<script src="js/dashboard.js"></script>
+
+
+
+
+</body>
+
+</html>
+
+

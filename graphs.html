@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        Graphs - Deal Town U10 Hoops
+    </title>
+
+    <link
+        rel="stylesheet"
+        href="style.css"
+    >
+
+</head>
+
+<body>
+
+    <main class="dashboard">
+
+        <h1>
+            SEASON GRAPHS
+        </h1>
+
+        <p id="seasonTitle">
+            DEAL TOWN U10 HOOPS • 2026 / 27
+        </p>
+
+
+        <!-- GOALS SCORED -->
+
+        <section class="stat-card">
+
+            <h2>
+                GOALS SCORED PER MATCH
+            </h2>
+
+            <p>
+                Goals scored by Deal Town
+                in each match.
+            </p>
+
+            <div class="graph-container">
+
+                <canvas
+                    id="goalsScoredChart"
+                    aria-label="Goals scored per match graph"
+                ></canvas>
+
+            </div>
+
+        </section>
+
+
+        <!-- WDL -->
+
+        <section class="stat-card">
+
+            <h2>
+                WINS / DRAWS / LOSSES
+            </h2>
+
+            <p>
+                Season match results.
+            </p>
+
+            <div class="graph-container">
+
+                <canvas
+                    id="resultsChart"
+                    aria-label="Wins draws and losses graph"
+                ></canvas>
+
+            </div>
+
+        </section>
+
+
+        <!-- GOALS CONCEDED -->
+
+        <section class="stat-card">
+
+            <h2>
+                GOALS CONCEDED OVER TIME
+            </h2>
+
+            <p>
+                Goals conceded in each match.
+            </p>
+
+            <div class="graph-container">
+
+                <canvas
+                    id="goalsConcededChart"
+                    aria-label="Goals conceded over time graph"
+                ></canvas>
+
+            </div>
+
+        </section>
+
+
+        <!-- NAVIGATION -->
+
+        <button
+            onclick="location.href='dashboard.html'"
+        >
+            BACK TO DASHBOARD
+        </button>
+
+
+
+
+
+        <button
+            onclick="location.href='preview.html'"
+        >
+            SEASON PREVIEW
+        </button>
+
+
+        <button
+            onclick="location.href='matches.html'"
+        >
+            MATCH HISTORY
+        </button>
+
+
+        <button
+            onclick="logout()"
+        >
+            LOG OUT
+        </button>
+
+    </main>
+
+
+    <script src="js/auth.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <script src="js/graphs.js"></script>
+
+</body>
+
+</html>

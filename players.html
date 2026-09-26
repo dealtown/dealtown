@@ -1,0 +1,185 @@
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        Players - Deal Town U10 Hoops
+    </title>
+
+    <link
+        rel="stylesheet"
+        href="style.css"
+    >
+
+</head>
+
+
+<body>
+
+    <main class="dashboard">
+
+        <!-- PAGE TITLE -->
+
+        <h1>
+            PLAYERS
+        </h1>
+
+
+        <p>
+            DEAL TOWN U10 HOOPS
+            •
+            <span id="currentSeason">
+                2026 / 27
+            </span>
+        </p>
+
+
+        <!-- =================================================
+             ADMIN PLAYER FORM
+             ================================================= -->
+
+        <section
+            class="stat-card admin-only"
+            id="playerForm"
+        >
+
+            <h2 id="formTitle">
+                ADD PLAYER
+            </h2>
+
+
+            <label for="playerName">
+                Player Name
+            </label>
+
+            <input
+                type="text"
+                id="playerName"
+                placeholder="Player Name"
+            >
+
+
+            <label for="shirtNumber">
+                Shirt Number
+            </label>
+
+            <input
+                type="number"
+                id="shirtNumber"
+                placeholder="Shirt Number"
+                min="0"
+            >
+
+
+            <label for="position">
+                Position
+            </label>
+
+            <select id="position">
+
+                <option value="">
+                    Select Position
+                </option>
+
+                <option value="Goalkeeper">
+                    Goalkeeper
+                </option>
+
+                <option value="Defender">
+                    Defender
+                </option>
+
+                <option value="Midfielder">
+                    Midfielder
+                </option>
+
+                <option value="Forward">
+                    Forward
+                </option>
+
+            </select>
+
+
+            
+
+
+            <button
+                type="button"
+                id="savePlayerButton"
+                onclick="savePlayer()"
+            >
+                ADD PLAYER
+            </button>
+
+
+            <button
+                type="button"
+                id="cancelEdit"
+                onclick="cancelEdit()"
+                style="display: none;"
+            >
+                CANCEL
+            </button>
+
+        </section>
+
+
+        <!-- =================================================
+             PLAYER LIST
+             ================================================= -->
+
+        <section>
+
+            <h2>
+                TEAM PLAYERS
+            </h2>
+
+
+            <div id="playerList"></div>
+
+        </section>
+
+
+        <!-- =================================================
+             NAVIGATION
+             ================================================= -->
+
+        <button
+            type="button"
+            onclick="window.location.href='dashboard.html'"
+        >
+            BACK TO DASHBOARD
+        </button>
+
+
+        <button
+            type="button"
+            onclick="logout()"
+        >
+            LOG OUT
+        </button>
+
+    </main>
+
+
+    <!-- AUTHENTICATION -->
+
+    <script src="js/auth.js"></script>
+
+
+    <!-- PLAYER SYSTEM -->
+
+    <script src="js/players.js"></script>
+
+</body>
+
+</html>

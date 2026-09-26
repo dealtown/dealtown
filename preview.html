@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        Season Preview - Deal Town U10 Hoops
+    </title>
+
+    <link
+        rel="stylesheet"
+        href="style.css"
+    >
+
+</head>
+
+<body>
+
+    <main class="dashboard">
+
+        <h1>
+            SEASON PREVIEW
+        </h1>
+
+        <p id="seasonTitle">
+            DEAL TOWN U10 HOOPS • 2026 / 27
+        </p>
+
+
+        <!-- SEASON OVERVIEW -->
+
+        <section>
+
+            <h2>
+                SEASON OVERVIEW
+            </h2>
+
+            <div class="stats-grid">
+
+                <div class="stat-card">
+
+                    <h3>
+                        MATCHES
+                    </h3>
+
+                    <strong id="matches">
+                        0
+                    </strong>
+
+                </div>
+
+
+                <div class="stat-card">
+
+                    <h3>
+                        WINS
+                    </h3>
+
+                    <strong id="wins">
+                        0
+                    </strong>
+
+                </div>
+
+
+                <div class="stat-card">
+
+                    <h3>
+                        DRAWS
+                    </h3>
+
+                    <strong id="draws">
+                        0
+                    </strong>
+
+                </div>
+
+
+                <div class="stat-card">
+
+                    <h3>
+                        LOSSES
+                    </h3>
+
+                    <strong id="losses">
+                        0
+                    </strong>
+
+                </div>
+
+
+                <div class="stat-card">
+
+                    <h3>
+                        WIN RATE
+                    </h3>
+
+                    <strong id="winRate">
+                        0%
+                    </strong>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- GOALS -->
+
+        <section>
+
+            <h2>
+                GOAL SUMMARY
+            </h2>
+
+            <div class="stats-grid">
+
+                <div class="stat-card">
+
+                    <h3>
+                        GOALS SCORED
+                    </h3>
+
+                    <strong id="goalsScored">
+                        0
+                    </strong>
+
+                </div>
+
+
+                <div class="stat-card">
+
+                    <h3>
+                        GOALS CONCEDED
+                    </h3>
+
+                    <strong id="goalsConceded">
+                        0
+                    </strong>
+
+                </div>
+
+
+                <div class="stat-card">
+
+                    <h3>
+                        GOALS PER GAME
+                    </h3>
+
+                    <strong id="goalsPerGame">
+                        0.00
+                    </strong>
+
+                </div>
+
+
+                <div class="stat-card">
+
+                    <h3>
+                        CLEAN SHEETS
+                    </h3>
+
+                    <strong id="cleanSheets">
+                        0
+                    </strong>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- CURRENT FORM -->
+
+        <section>
+
+            <h2>
+                CURRENT FORM
+            </h2>
+
+            <div class="stats-grid">
+
+                <div class="stat-card">
+
+                    <h3>
+                        WINNING RUN
+                    </h3>
+
+                    <strong id="winningRun">
+                        0
+                    </strong>
+
+                </div>
+
+
+                <div class="stat-card">
+
+                    <h3>
+                        UNBEATEN RUN
+                    </h3>
+
+                    <strong id="unbeatenRun">
+                        0
+                    </strong>
+
+                </div>
+
+
+                <div class="stat-card">
+
+                    <h3>
+                        GOAL DIFFERENCE
+                    </h3>
+
+                    <strong id="goalDifference">
+                        0
+                    </strong>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- PLAYER HIGHLIGHTS -->
+
+        <section>
+
+            <h2>
+                PLAYER HIGHLIGHTS
+            </h2>
+
+            <div
+                id="playerHighlights"
+                class="preview-grid"
+            >
+                Loading player statistics...
+            </div>
+
+        </section>
+
+
+        <!-- MATCH HIGHLIGHTS -->
+
+        <section>
+
+            <h2>
+                MATCH HIGHLIGHTS
+            </h2>
+
+            <div
+                id="matchHighlights"
+                class="preview-grid"
+            >
+                Loading match statistics...
+            </div>
+
+        </section>
+
+
+        <!-- PRINT / SHARE -->
+
+        <section>
+
+            <h2>
+                REPORT
+            </h2>
+
+            <p>
+                This report updates automatically
+                using the selected season's data.
+            </p>
+
+            <button
+                onclick="window.print()"
+            >
+                PRINT / SAVE REPORT
+            </button>
+
+        </section>
+
+
+        <!-- NAVIGATION -->
+
+        <button
+            onclick="location.href='dashboard.html'"
+        >
+            BACK TO DASHBOARD
+        </button>
+
+
+        <button
+            onclick="location.href='stats.html'"
+        >
+            SEASON STATS
+        </button>
+
+
+        <button
+            onclick="location.href='matches.html'"
+        >
+            MATCH HISTORY
+        </button>
+
+
+        <button
+            onclick="logout()"
+        >
+            LOG OUT
+        </button>
+
+    </main>
+
+
+    <script src="js/auth.js"></script>
+
+    <script src="js/preview.js"></script>
+
+</body>
+
+</html>

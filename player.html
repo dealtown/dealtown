@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Player Profile - Deal Town U10 Hoops</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <main class="dashboard">
+
+        <h1>PLAYER PROFILE</h1>
+
+        <p>
+            DEAL TOWN U10 HOOPS
+        </p>
+
+        <section
+            id="playerProfile"
+            class="stat-card"
+        >
+
+            <p>Loading player...</p>
+
+        </section>
+
+        <section
+            id="playerMatches"
+            class="stat-card"
+        >
+
+            <h2>MATCHES</h2>
+
+            <div id="matchList">
+                Loading matches...
+            </div>
+
+        </section>
+
+        <button
+            onclick="location.href='players.html'"
+        >
+            BACK TO PLAYERS
+        </button>
+
+        <button
+            onclick="location.href='dashboard.html'"
+        >
+            DASHBOARD
+        </button>
+
+        <button onclick="logout()">
+            LOG OUT
+        </button>
+
+    </main>
+
+    <script src="js/auth.js"></script>
+    <script src="js/player.js"></script>
+
+</body>
+
+</html>

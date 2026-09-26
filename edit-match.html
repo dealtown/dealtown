@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Edit Match - Deal Town U10 Hoops</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <main class="dashboard">
+
+        <h1>EDIT MATCH</h1>
+        <p>DEAL TOWN U10 HOOPS • 2026 / 27</p>
+
+        <section class="stat-card">
+
+            <h2>Match Details</h2>
+
+            <input
+                type="text"
+                id="opponent"
+                placeholder="Opponent"
+            >
+
+            <input
+                type="date"
+                id="date"
+            >
+
+            <select id="venue">
+                <option value="Home">Home</option>
+                <option value="Away">Away</option>
+            </select>
+
+            <div class="score-inputs">
+
+                <input
+                    type="number"
+                    id="goalsFor"
+                    placeholder="Goals For"
+                    min="0"
+                >
+
+                <input
+                    type="number"
+                    id="goalsAgainst"
+                    placeholder="Goals Against"
+                    min="0"
+                >
+
+            </div>
+
+            <h2>Players Who Played</h2>
+
+            <select id="playedPlayerSelect">
+                <option value="">Select Player</option>
+            </select>
+
+            <div
+                id="playedPlayers"
+                class="selected-players"
+            ></div>
+
+            <h2>Goalscorers</h2>
+
+            <select id="goalscorerSelect">
+                <option value="">Select Player</option>
+            </select>
+
+            <div
+                id="goalscorers"
+                class="selected-players"
+            ></div>
+
+            <h2>Assists</h2>
+
+            <select id="assistSelect">
+                <option value="">Select Player</option>
+            </select>
+
+            <div
+                id="assists"
+                class="selected-players"
+            ></div>
+
+            <h2>Player of the Match</h2>
+
+            <select id="potmSelect">
+                <option value="">Select Player</option>
+            </select>
+
+            <div
+                id="potmPlayers"
+                class="selected-players"
+            ></div>
+
+            <h2>Yellow Cards</h2>
+
+            <select id="yellowCardSelect">
+                <option value="">Select Player</option>
+            </select>
+
+            <div
+                id="yellowCards"
+                class="selected-players"
+            ></div>
+
+            <h2>Red Cards</h2>
+
+            <select id="redCardSelect">
+                <option value="">Select Player</option>
+            </select>
+
+            <div
+                id="redCards"
+                class="selected-players"
+            ></div>
+
+            <h2>Match Notes</h2>
+
+            <input
+                type="text"
+                id="notes"
+                placeholder="Match Notes"
+            >
+
+            <button onclick="saveEditedMatch()">
+                SAVE CHANGES
+            </button>
+
+            <button onclick="location.href='matches.html'">
+                CANCEL
+            </button>
+
+            <p id="message"></p>
+
+        </section>
+
+    </main>
+
+    <script src="js/auth.js"></script>
+    <script src="js/edit-match.js"></script>
+
+</body>
+
+</html>

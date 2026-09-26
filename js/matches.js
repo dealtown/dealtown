@@ -1,25 +1,16 @@
 requireLogin();
 
-
 const matchList =
-    document.getElementById(
-        "matchList"
-    );
-
+    document.getElementById("matchList");
 
 let matches =
     JSON.parse(
         localStorage.getItem("matches")
     ) || [];
 
-
 const isAdminUser =
     isAdmin();
 
-
-/*
- * GET CURRENT SEASON
- */
 
 function getCurrentSeason() {
 
@@ -30,10 +21,6 @@ function getCurrentSeason() {
 }
 
 
-/*
- * GET PLAYERS
- */
-
 function getPlayers() {
 
     return JSON.parse(
@@ -43,20 +30,16 @@ function getPlayers() {
 }
 
 
-/*
- * GET PLAYER
- */
-
 function getPlayer(id) {
 
     const players =
         getPlayers();
 
-
     return players.find(
         function(player) {
 
-            return player.id === Number(id);
+            return String(player.id) ===
+                String(id);
 
         }
     );
@@ -66,10 +49,6 @@ function getPlayer(id) {
 
 /*
  * GET PLAYER NAME
- *
- * If a player has been deleted,
- * use the historical name saved
- * inside the match when available.
  */
 
 function getPlayerName(
@@ -80,40 +59,42 @@ function getPlayerName(
     const player =
         getPlayer(id);
 
-
     if (player) {
 
-        return `#${player.shirtNumber} ${player.name}`;
+        return "#" +
+            player.shirtNumber +
+            " " +
+            player.name;
 
     }
 
 
     /*
-     * Old matches may not yet have
-     * historical player information.
+     * Check historical snapshot
+     * if one exists.
      */
 
     if (
         match &&
-        match.playerSnapshots
+        Array.isArray(match.playerSnapshots)
     ) {
 
         const snapshot =
             match.playerSnapshots.find(
                 function(savedPlayer) {
 
-                    return (
-                        Number(savedPlayer.id) ===
-                        Number(id)
-                    );
+                    return String(savedPlayer.id) ===
+                        String(id);
 
                 }
             );
 
-
         if (snapshot) {
 
-            return `#${snapshot.shirtNumber} ${snapshot.name}`;
+            return "#" +
+                snapshot.shirtNumber +
+                " " +
+                snapshot.name;
 
         }
 
@@ -124,10 +105,6 @@ function getPlayerName(
 
 }
 
-
-/*
- * TURN PLAYER IDS INTO NAMES
- */
 
 function playerNames(
     ids,
@@ -142,7 +119,6 @@ function playerNames(
         return "None";
 
     }
-
 
     return ids
         .map(
@@ -160,19 +136,13 @@ function playerNames(
 }
 
 
-/*
- * GET MATCH RESULT
- */
-
 function getResult(match) {
 
     const goalsFor =
         Number(match.goalsFor) || 0;
 
-
     const goalsAgainst =
         Number(match.goalsAgainst) || 0;
-
 
     if (
         goalsFor > goalsAgainst
@@ -182,7 +152,6 @@ function getResult(match) {
 
     }
 
-
     if (
         goalsFor < goalsAgainst
     ) {
@@ -191,28 +160,18 @@ function getResult(match) {
 
     }
 
-
     return "DRAW";
 
 }
 
 
-/*
- * DISPLAY MATCHES
- */
-
 function displayMatches() {
 
     matchList.innerHTML = "";
 
-
     const currentSeason =
         getCurrentSeason();
 
-
-    /*
-     * ONLY SHOW CURRENT SEASON
-     */
 
     const seasonMatches =
         matches
@@ -237,10 +196,6 @@ function displayMatches() {
                 }
             );
 
-
-    /*
-     * NO MATCHES
-     */
 
     if (
         seasonMatches.length === 0
@@ -267,10 +222,6 @@ function displayMatches() {
     }
 
 
-    /*
-     * CREATE MATCH CARDS
-     */
-
     seasonMatches.forEach(
         function(match) {
 
@@ -278,7 +229,6 @@ function displayMatches() {
                 document.createElement(
                     "div"
                 );
-
 
             card.className =
                 "stat-card match-card";
@@ -295,34 +245,24 @@ function displayMatches() {
             const goalscorers =
                 match.goalscorers || [];
 
-
             const assists =
                 match.assists || [];
-
 
             const potm =
                 match.playerOfMatch || [];
 
-
             const yellowCards =
                 match.yellowCards || [];
-
 
             const redCards =
                 match.redCards || [];
 
-
             const played =
                 match.playersWhoPlayed || [];
-
 
             const result =
                 getResult(match);
 
-
-            /*
-             * ADMIN BUTTONS
-             */
 
             const adminButtons =
                 isAdminUser
@@ -330,23 +270,16 @@ function displayMatches() {
                     ? `
 
                         <button
-                            onclick="
-                                editMatch(
-                                    ${match.id}
-                                )
-                            "
+                            type="button"
+                            onclick="editMatch(${match.id})"
                         >
                             EDIT MATCH
                         </button>
 
-
                         <button
+                            type="button"
                             class="delete-match"
-                            onclick="
-                                deleteMatch(
-                                    ${match.id}
-                                )
-                            "
+                            onclick="deleteMatch(${match.id})"
                         >
                             DELETE MATCH
                         </button>
@@ -362,7 +295,6 @@ function displayMatches() {
                     ${teamNames}
                 </h2>
 
-
                 <p>
                     ${match.date}
                     •
@@ -371,19 +303,16 @@ function displayMatches() {
                     ${currentSeason}
                 </p>
 
-
                 <strong>
                     ${match.goalsFor}
                     -
                     ${match.goalsAgainst}
                 </strong>
 
-
                 <p>
                     <b>Result:</b>
                     ${result}
                 </p>
-
 
                 <p>
                     <b>Players Who Played:</b>
@@ -394,7 +323,6 @@ function displayMatches() {
                     )}
                 </p>
 
-
                 <p>
                     <b>Goalscorers:</b>
                     <br>
@@ -403,7 +331,6 @@ function displayMatches() {
                         match
                     )}
                 </p>
-
 
                 <p>
                     <b>Assists:</b>
@@ -414,7 +341,6 @@ function displayMatches() {
                     )}
                 </p>
 
-
                 <p>
                     <b>Player of the Match:</b>
                     <br>
@@ -423,7 +349,6 @@ function displayMatches() {
                         match
                     )}
                 </p>
-
 
                 <p>
                     <b>Yellow Cards:</b>
@@ -434,7 +359,6 @@ function displayMatches() {
                     )}
                 </p>
 
-
                 <p>
                     <b>Red Cards:</b>
                     <br>
@@ -444,10 +368,8 @@ function displayMatches() {
                     )}
                 </p>
 
-
                 ${
                     match.notes
-
                         ? `
 
                             <p>
@@ -457,10 +379,8 @@ function displayMatches() {
                             </p>
 
                         `
-
                         : ""
                 }
-
 
                 ${adminButtons}
 
@@ -477,24 +397,18 @@ function displayMatches() {
 }
 
 
-/*
- * EDIT MATCH
- */
-
 function editMatch(id) {
 
     if (!isAdmin()) {
         return;
     }
 
-
     const match =
         matches.find(
             function(match) {
 
-                return (
-                    match.id === id
-                );
+                return String(match.id) ===
+                    String(id);
 
             }
         );
@@ -516,10 +430,6 @@ function editMatch(id) {
 
 }
 
-
-/*
- * DELETE MATCH
- */
 
 function deleteMatch(id) {
 
@@ -543,9 +453,8 @@ function deleteMatch(id) {
         matches.filter(
             function(match) {
 
-                return (
-                    match.id !== id
-                );
+                return String(match.id) !==
+                    String(id);
 
             }
         );
@@ -562,11 +471,6 @@ function deleteMatch(id) {
 }
 
 
-/*
- * DISPLAY
- */
-
 displayMatches();
-
 
 applyViewerRestrictions();

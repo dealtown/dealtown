@@ -15,18 +15,24 @@ import {
 requireLogin();
 
 
-var players = JSON.parse(
-    localStorage.getItem("players")
-) || [];
+var players =
+    JSON.parse(
+        localStorage.getItem("players")
+    ) || [];
 
 
-var matches = JSON.parse(
-    localStorage.getItem("matches")
-) || [];
+var matches =
+    JSON.parse(
+        localStorage.getItem("matches")
+    ) || [];
 
 
 var editingPlayerId = null;
 
+
+/* =========================================================
+   ELEMENTS
+   ========================================================= */
 
 var playerNameInput =
     document.getElementById("playerName");
@@ -53,9 +59,9 @@ var currentSeasonText =
     document.getElementById("currentSeason");
 
 
-/* =========================
+/* =========================================================
    SEASON
-========================= */
+   ========================================================= */
 
 function getCurrentSeason() {
 
@@ -72,6 +78,7 @@ function updateSeasonText() {
         return;
     }
 
+
     currentSeasonText.textContent =
         getCurrentSeason()
             .replace("/", " / ");
@@ -79,9 +86,9 @@ function updateSeasonText() {
 }
 
 
-/* =========================
-   LOCAL SAVE
-========================= */
+/* =========================================================
+   LOCAL CACHE
+   ========================================================= */
 
 function savePlayers() {
 
@@ -93,13 +100,37 @@ function savePlayers() {
 }
 
 
-/* =========================
-   FIREBASE
-========================= */
+function saveMatches() {
+
+    localStorage.setItem(
+        "matches",
+        JSON.stringify(matches)
+    );
+
+}
+
+
+/* =========================================================
+   FIREBASE COLLECTIONS
+   ========================================================= */
 
 var playersCollection =
-    collection(db, "players");
+    collection(
+        db,
+        "players"
+    );
 
+
+var matchesCollection =
+    collection(
+        db,
+        "matches"
+    );
+
+
+/* =========================================================
+   SAVE PLAYER TO FIREBASE
+   ========================================================= */
 
 async function savePlayerToFirebase(player) {
 
@@ -115,6 +146,10 @@ async function savePlayerToFirebase(player) {
 }
 
 
+/* =========================================================
+   DELETE PLAYER FROM FIREBASE
+   ========================================================= */
+
 async function deletePlayerFromFirebase(id) {
 
     await deleteDoc(
@@ -128,9 +163,9 @@ async function deletePlayerFromFirebase(id) {
 }
 
 
-/* =========================
-   LOAD FIREBASE PLAYERS
-========================= */
+/* =========================================================
+   LOAD PLAYERS FROM FIREBASE
+   ========================================================= */
 
 async function loadPlayersFromFirebase() {
 
@@ -143,10 +178,9 @@ async function loadPlayersFromFirebase() {
 
 
         /*
-           If Firebase is empty and this is
-           an admin, upload the existing
-           local players once.
-        */
+         * If Firebase is empty,
+         * upload existing local players.
+         */
 
         if (
             snapshot.empty &&
@@ -171,18 +205,18 @@ async function loadPlayersFromFirebase() {
         }
 
 
-        /*
-           If Firebase already contains
-           players, use the shared database.
-        */
-
         if (!snapshot.empty) {
 
             players =
                 snapshot.docs.map(
                     function(item) {
 
-                        return item.data();
+                        return {
+
+                            id: item.id,
+                            ...item.data()
+
+                        };
 
                     }
                 );
@@ -201,30 +235,32 @@ async function loadPlayersFromFirebase() {
             error
         );
 
-        alert(
-            "Could not connect to the shared player database."
-        );
-
     }
 
 }
 
 
-/* =========================
-   REAL-TIME FIREBASE LISTENER
-========================= */
+/* =========================================================
+   REAL-TIME PLAYER LISTENER
+   ========================================================= */
 
 function startPlayerListener() {
 
     onSnapshot(
         playersCollection,
+
         function(snapshot) {
 
             players =
                 snapshot.docs.map(
                     function(item) {
 
-                        return item.data();
+                        return {
+
+                            id: item.id,
+                            ...item.data()
+
+                        };
 
                     }
                 );
@@ -235,10 +271,11 @@ function startPlayerListener() {
             renderPlayers();
 
         },
+
         function(error) {
 
             console.error(
-                "Firebase listener error:",
+                "Firebase player listener error:",
                 error
             );
 
@@ -248,24 +285,74 @@ function startPlayerListener() {
 }
 
 
-/* =========================
+/* =========================================================
+   REAL-TIME MATCH LISTENER
+   ========================================================= */
+
+function startMatchListener() {
+
+    onSnapshot(
+        matchesCollection,
+
+        function(snapshot) {
+
+            matches =
+                snapshot.docs.map(
+                    function(item) {
+
+                        return {
+
+                            id: item.id,
+                            ...item.data()
+
+                        };
+
+                    }
+                );
+
+
+            /*
+             * Keep localStorage as a cache.
+             */
+
+            saveMatches();
+
+
+            /*
+             * Player automatic statistics
+             * now update immediately.
+             */
+
+            renderPlayers();
+
+        },
+
+        function(error) {
+
+            console.error(
+                "Firebase match listener error:",
+                error
+            );
+
+        }
+    );
+
+}
+
+
+/* =========================================================
    EMPTY MANUAL STATS
-========================= */
+   ========================================================= */
 
 function createEmptyManualStats() {
 
     return {
 
         appearances: 0,
-
         goals: 0,
-
         assists: 0,
-
         playerOfMatch: 0,
-
         yellowCards: 0,
-
         redCards: 0
 
     };
@@ -273,9 +360,9 @@ function createEmptyManualStats() {
 }
 
 
-/* =========================
+/* =========================================================
    GET MANUAL STATS
-========================= */
+   ========================================================= */
 
 function getManualStats(player) {
 
@@ -298,9 +385,9 @@ function getManualStats(player) {
 }
 
 
-/* =========================
+/* =========================================================
    AUTOMATIC STATS
-========================= */
+   ========================================================= */
 
 function getAutomaticStats(player) {
 
@@ -316,7 +403,8 @@ function getAutomaticStats(player) {
         function(match) {
 
             if (
-                match.season !== season
+                String(match.season) !==
+                String(season)
             ) {
 
                 return;
@@ -331,28 +419,23 @@ function getAutomaticStats(player) {
             var played =
                 match.playersWhoPlayed || [];
 
-
             var goals =
                 match.goalscorers || [];
-
 
             var assists =
                 match.assists || [];
 
-
             var potm =
                 match.playerOfMatch || [];
 
-
             var yellows =
                 match.yellowCards || [];
-
 
             var reds =
                 match.redCards || [];
 
 
-            var appeared =
+            if (
                 played.some(
                     function(id) {
 
@@ -360,10 +443,8 @@ function getAutomaticStats(player) {
                             playerId;
 
                     }
-                );
-
-
-            if (appeared) {
+                )
+            ) {
 
                 stats.appearances++;
 
@@ -458,9 +539,9 @@ function getAutomaticStats(player) {
 }
 
 
-/* =========================
+/* =========================================================
    TOTAL STATS
-========================= */
+   ========================================================= */
 
 function getTotalStats(player) {
 
@@ -515,9 +596,9 @@ function getTotalStats(player) {
 }
 
 
-/* =========================
+/* =========================================================
    SAVE PLAYER
-========================= */
+   ========================================================= */
 
 async function savePlayer() {
 
@@ -602,7 +683,9 @@ async function savePlayer() {
     }
 
 
-    if (editingPlayerId !== null) {
+    if (
+        editingPlayerId !== null
+    ) {
 
         await editExistingPlayer(
             name,
@@ -623,9 +706,9 @@ async function savePlayer() {
 }
 
 
-/* =========================
+/* =========================================================
    CREATE PLAYER
-========================= */
+   ========================================================= */
 
 async function createNewPlayer(
     name,
@@ -663,9 +746,7 @@ async function createNewPlayer(
     if (file) {
 
         if (
-            !file.type.startsWith(
-                "image/"
-            )
+            !file.type.startsWith("image/")
         ) {
 
             alert(
@@ -698,6 +779,7 @@ async function createNewPlayer(
                     await savePlayerToFirebase(
                         player
                     );
+
 
                     finishPlayerSave();
 
@@ -732,6 +814,7 @@ async function createNewPlayer(
             player
         );
 
+
         finishPlayerSave();
 
     } catch (error) {
@@ -747,9 +830,9 @@ async function createNewPlayer(
 }
 
 
-/* =========================
+/* =========================================================
    EDIT PLAYER
-========================= */
+   ========================================================= */
 
 async function editExistingPlayer(
     name,
@@ -800,9 +883,7 @@ async function editExistingPlayer(
     if (file) {
 
         if (
-            !file.type.startsWith(
-                "image/"
-            )
+            !file.type.startsWith("image/")
         ) {
 
             alert(
@@ -833,6 +914,7 @@ async function editExistingPlayer(
                     await savePlayerToFirebase(
                         player
                     );
+
 
                     finishPlayerSave();
 
@@ -865,6 +947,7 @@ async function editExistingPlayer(
             player
         );
 
+
         finishPlayerSave();
 
     } catch (error) {
@@ -880,22 +963,27 @@ async function editExistingPlayer(
 }
 
 
-/* =========================
+/* =========================================================
    FINISH SAVE
-========================= */
+   ========================================================= */
 
 function finishPlayerSave() {
 
-    editingPlayerId = null;
+    editingPlayerId =
+        null;
 
 
-    playerNameInput.value = "";
+    playerNameInput.value =
+        "";
 
-    shirtNumberInput.value = "";
+    shirtNumberInput.value =
+        "";
 
-    positionInput.value = "";
+    positionInput.value =
+        "";
 
-    playerPhotoInput.value = "";
+    playerPhotoInput.value =
+        "";
 
 
     savePlayerButton.textContent =
@@ -917,9 +1005,9 @@ function finishPlayerSave() {
 }
 
 
-/* =========================
-   EDIT PLAYER BUTTON
-========================= */
+/* =========================================================
+   EDIT PLAYER
+   ========================================================= */
 
 function editPlayer(id) {
 
@@ -983,22 +1071,27 @@ function editPlayer(id) {
 }
 
 
-/* =========================
+/* =========================================================
    CANCEL EDIT
-========================= */
+   ========================================================= */
 
 function cancelEdit() {
 
-    editingPlayerId = null;
+    editingPlayerId =
+        null;
 
 
-    playerNameInput.value = "";
+    playerNameInput.value =
+        "";
 
-    shirtNumberInput.value = "";
+    shirtNumberInput.value =
+        "";
 
-    positionInput.value = "";
+    positionInput.value =
+        "";
 
-    playerPhotoInput.value = "";
+    playerPhotoInput.value =
+        "";
 
 
     savePlayerButton.textContent =
@@ -1017,9 +1110,9 @@ function cancelEdit() {
 }
 
 
-/* =========================
+/* =========================================================
    DELETE PLAYER
-========================= */
+   ========================================================= */
 
 async function deletePlayer(id) {
 
@@ -1091,9 +1184,9 @@ async function deletePlayer(id) {
 }
 
 
-/* =========================
+/* =========================================================
    MANUAL STATS
-========================= */
+   ========================================================= */
 
 async function editManualStats(id) {
 
@@ -1146,9 +1239,7 @@ async function editManualStats(id) {
 
 
     if (appearances === null) {
-
         return;
-
     }
 
 
@@ -1160,9 +1251,7 @@ async function editManualStats(id) {
 
 
     if (goals === null) {
-
         return;
-
     }
 
 
@@ -1174,9 +1263,7 @@ async function editManualStats(id) {
 
 
     if (assists === null) {
-
         return;
-
     }
 
 
@@ -1188,9 +1275,7 @@ async function editManualStats(id) {
 
 
     if (potm === null) {
-
         return;
-
     }
 
 
@@ -1202,9 +1287,7 @@ async function editManualStats(id) {
 
 
     if (yellow === null) {
-
         return;
-
     }
 
 
@@ -1216,9 +1299,7 @@ async function editManualStats(id) {
 
 
     if (red === null) {
-
         return;
-
     }
 
 
@@ -1270,9 +1351,9 @@ async function editManualStats(id) {
 }
 
 
-/* =========================
+/* =========================================================
    NUMBER CHECK
-========================= */
+   ========================================================= */
 
 function safeNumber(value) {
 
@@ -1295,9 +1376,9 @@ function safeNumber(value) {
 }
 
 
-/* =========================
+/* =========================================================
    PLAYER CARD
-========================= */
+   ========================================================= */
 
 function createPlayerCard(player) {
 
@@ -1359,9 +1440,7 @@ function createPlayerCard(player) {
             "2px solid #3d82ee";
 
 
-        header.appendChild(
-            image
-        );
+        header.appendChild(image);
 
     } else {
 
@@ -1443,14 +1522,9 @@ function createPlayerCard(player) {
         player.position;
 
 
-    information.appendChild(
-        name
-    );
+    information.appendChild(name);
 
-
-    information.appendChild(
-        details
-    );
+    information.appendChild(details);
 
 
     header.appendChild(
@@ -1654,9 +1728,9 @@ function createPlayerCard(player) {
 }
 
 
-/* =========================
+/* =========================================================
    RENDER PLAYERS
-========================= */
+   ========================================================= */
 
 function renderPlayers() {
 
@@ -1667,7 +1741,8 @@ function renderPlayers() {
     }
 
 
-    playerList.innerHTML = "";
+    playerList.innerHTML =
+        "";
 
 
     if (players.length === 0) {
@@ -1717,9 +1792,9 @@ function renderPlayers() {
 }
 
 
-/* =========================
+/* =========================================================
    SEASON CHANGE
-========================= */
+   ========================================================= */
 
 window.addEventListener(
     "storage",
@@ -1740,9 +1815,9 @@ window.addEventListener(
 );
 
 
-/* =========================
-   MAKE HTML BUTTONS WORK
-========================= */
+/* =========================================================
+   HTML BUTTONS
+   ========================================================= */
 
 window.savePlayer =
     savePlayer;
@@ -1764,14 +1839,24 @@ window.editManualStats =
     editManualStats;
 
 
-/* =========================
+/* =========================================================
    START
-========================= */
+   ========================================================= */
 
 updateSeasonText();
 
 renderPlayers();
 
+
+/*
+ * Start both Firebase listeners.
+ */
+
 loadPlayersFromFirebase();
 
 startPlayerListener();
+
+startMatchListener();
+
+
+applyViewerRestrictions();

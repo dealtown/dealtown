@@ -1,3 +1,7 @@
+/* =========================================================
+   GRAPHS SYSTEM
+   ========================================================= */
+
 import {
     db
 } from "./firebase.js";
@@ -15,33 +19,126 @@ requireLogin();
    ========================================================= */
 
 let matches = [];
-
 let players = [];
 
 let goalsScoredChart = null;
-
 let resultsChart = null;
-
 let goalsConcededChart = null;
 
 let appearancesChart = null;
-
 let goalsChart = null;
-
 let assistsChart = null;
-
 let potmChart = null;
 
 
 /* =========================================================
-   CURRENT SEASON
+   LOAD CHART.JS IF NEEDED
+   ========================================================= */
+
+function loadChartJS() {
+
+    return new Promise(function(resolve, reject) {
+
+        if (typeof Chart !== "undefined") {
+            resolve();
+            return;
+        }
+
+        const existing =
+            document.querySelector(
+                'script[data-chartjs="true"]'
+            );
+
+        if (existing) {
+
+            existing.addEventListener(
+                "load",
+                function() {
+                    resolve();
+                }
+            );
+
+            existing.addEventListener(
+                "error",
+                function() {
+                    reject(
+                        new Error(
+                            "Chart.js failed to load."
+                        )
+                    );
+                }
+            );
+
+            return;
+        }
+
+
+        const script =
+            document.createElement("script");
+
+        script.src =
+            "https://cdn.jsdelivr.net/npm/chart.js@4.5.0/dist/chart.umd.min.js";
+
+        script.dataset.chartjs =
+            "true";
+
+        script.onload =
+            function() {
+                resolve();
+            };
+
+        script.onerror =
+            function() {
+                reject(
+                    new Error(
+                        "Chart.js failed to load."
+                    )
+                );
+            };
+
+        document.head.appendChild(
+            script
+        );
+
+    });
+
+}
+
+
+/* =========================================================
+   SEASON
    ========================================================= */
 
 function getCurrentSeason() {
 
-    return localStorage.getItem(
-        "selectedSeason"
-    ) || "2026/27";
+    return (
+        localStorage.getItem(
+            "selectedSeason"
+        ) ||
+        "2026/27"
+    );
+
+}
+
+
+/* =========================================================
+   SEASON TITLE
+   ========================================================= */
+
+function updateSeasonTitle() {
+
+    const title =
+        document.getElementById(
+            "seasonTitle"
+        );
+
+    if (title) {
+
+        title.textContent =
+            "DEAL TOWN U10 HOOPS • " +
+            getCurrentSeason();
+
+    }
 
 }
 
@@ -53,46 +150,37 @@ function getCurrentSeason() {
 function getSeasonMatches() {
 
     return matches
-        .filter(
-            function(match) {
+        .filter(function(match) {
 
-                return (
-                    String(match.season) ===
-                    String(getCurrentSeason())
-                );
+            return (
+                String(match.season) ===
+                String(getCurrentSeason())
+            );
 
-            }
-        )
-        .sort(
-            function(a, b) {
+        })
+        .sort(function(a, b) {
 
-                return (
-                    new Date(a.date) -
-                    new Date(b.date)
-                );
+            return (
+                new Date(a.date) -
+                new Date(b.date)
+            );
 
-            }
-        );
+        });
 
 }
 
 
 /* =========================================================
-   GET RESULT
+   RESULT
    ========================================================= */
 
 function getResult(match) {
 
     const goalsFor =
-        Number(
-            match.goalsFor
-        ) || 0;
-
+        Number(match.goalsFor) || 0;
 
     const goalsAgainst =
-        Number(
-            match.goalsAgainst
-        ) || 0;
+        Number(match.goalsAgainst) || 0;
 
 
     if (
@@ -121,33 +209,6 @@ function getResult(match) {
 
 
 /* =========================================================
-   UPDATE SEASON TITLE
-   ========================================================= */
-
-function updateSeasonTitle() {
-
-    const season =
-        getCurrentSeason();
-
-
-    const title =
-        document.getElementById(
-            "seasonTitle"
-        );
-
-
-    if (title) {
-
-        title.textContent =
-            "DEAL TOWN U10 HOOPS • " +
-            season;
-
-    }
-
-}
-
-
-/* =========================================================
    DESTROY OLD CHARTS
    ========================================================= */
 
@@ -156,57 +217,167 @@ function destroyCharts() {
     const charts = [
 
         goalsScoredChart,
-
         resultsChart,
-
         goalsConcededChart,
 
         appearancesChart,
-
         goalsChart,
-
         assistsChart,
-
         potmChart
 
     ];
 
 
-    charts.forEach(
-        function(chart) {
+    charts.forEach(function(chart) {
 
-            if (chart) {
-
-                chart.destroy();
-
-            }
-
+        if (chart) {
+            chart.destroy();
         }
-    );
+
+    });
 
 
     goalsScoredChart = null;
-
     resultsChart = null;
-
     goalsConcededChart = null;
 
     appearancesChart = null;
-
     goalsChart = null;
-
     assistsChart = null;
-
     potmChart = null;
 
 }
 
 
 /* =========================================================
-   CREATE PLAYER GRAPH SECTION
+   ENSURE TEAM GRAPH HTML EXISTS
    ========================================================= */
 
-function createPlayerGraphSection() {
+function ensureTeamGraphSection() {
+
+    const dashboard =
+        document.querySelector(
+            ".dashboard"
+        );
+
+    if (!dashboard) {
+        return;
+    }
+
+
+    let section =
+        document.getElementById(
+            "teamGraphsSection"
+        );
+
+
+    if (section) {
+        return;
+    }
+
+
+    section =
+        document.createElement("section");
+
+    section.id =
+        "teamGraphsSection";
+
+    section.className =
+        "stats-grid";
+
+
+    section.innerHTML = `
+
+        <div class="stat-card">
+
+            <h2>
+                GOALS SCORED
+            </h2>
+
+            <div
+                style="
+                    position:relative;
+                    height:300px;
+                "
+            >
+
+                <canvas
+                    id="goalsScoredChart"
+                ></canvas>
+
+            </div>
+
+        </div>
+
+
+        <div class="stat-card">
+
+            <h2>
+                MATCH RESULTS
+            </h2>
+
+            <div
+                style="
+                    position:relative;
+                    height:300px;
+                "
+            >
+
+                <canvas
+                    id="resultsChart"
+                ></canvas>
+
+            </div>
+
+        </div>
+
+
+        <div class="stat-card">
+
+            <h2>
+                GOALS CONCEDED
+            </h2>
+
+            <div
+                style="
+                    position:relative;
+                    height:300px;
+                "
+            >
+
+                <canvas
+                    id="goalsConcededChart"
+                ></canvas>
+
+            </div>
+
+        </div>
+
+    `;
+
+
+    dashboard.appendChild(
+        section
+    );
+
+}
+
+
+/* =========================================================
+   PLAYER GRAPH SECTION
+   ========================================================= */
+
+function ensurePlayerGraphSection() {
+
+    const dashboard =
+        document.querySelector(
+            ".dashboard"
+        );
+
+    if (!dashboard) {
+        return;
+    }
+
 
     let section =
         document.getElementById(
@@ -215,19 +386,15 @@ function createPlayerGraphSection() {
 
 
     if (section) {
-
-        section.remove();
-
+        return;
     }
 
 
     section =
         document.createElement("section");
 
-
     section.id =
         "playerGraphsSection";
-
 
     section.className =
         "stats-grid";
@@ -246,9 +413,10 @@ function createPlayerGraphSection() {
             </h2>
 
             <div
+                id="appearancesChartBox"
                 style="
-                    position: relative;
-                    height: 350px;
+                    position:relative;
+                    min-height:300px;
                 "
             >
 
@@ -268,9 +436,10 @@ function createPlayerGraphSection() {
             </h2>
 
             <div
+                id="goalsChartBox"
                 style="
-                    position: relative;
-                    height: 350px;
+                    position:relative;
+                    min-height:300px;
                 "
             >
 
@@ -290,9 +459,10 @@ function createPlayerGraphSection() {
             </h2>
 
             <div
+                id="assistsChartBox"
                 style="
-                    position: relative;
-                    height: 350px;
+                    position:relative;
+                    min-height:300px;
                 "
             >
 
@@ -312,9 +482,10 @@ function createPlayerGraphSection() {
             </h2>
 
             <div
+                id="potmChartBox"
                 style="
-                    position: relative;
-                    height: 350px;
+                    position:relative;
+                    min-height:300px;
                 "
             >
 
@@ -329,25 +500,15 @@ function createPlayerGraphSection() {
     `;
 
 
-    const dashboard =
-        document.querySelector(
-            ".dashboard"
-        );
-
-
-    if (dashboard) {
-
-        dashboard.appendChild(
-            section
-        );
-
-    }
+    dashboard.appendChild(
+        section
+    );
 
 }
 
 
 /* =========================================================
-   GET PLAYER STATISTICS
+   PLAYER STATISTICS
    ========================================================= */
 
 function getPlayerStatistics() {
@@ -357,200 +518,180 @@ function getPlayerStatistics() {
 
 
     const seasonMatches =
-        matches.filter(
+        matches.filter(function(match) {
+
+            return (
+                String(match.season) ===
+                String(season)
+            );
+
+        });
+
+
+    return players.map(function(player) {
+
+        const playerId =
+            String(player.id);
+
+
+        let appearances = 0;
+        let goals = 0;
+        let assists = 0;
+        let potm = 0;
+
+
+        seasonMatches.forEach(
             function(match) {
 
-                return (
-                    String(match.season) ===
-                    String(season)
+                const played =
+                    match.playersWhoPlayed ||
+                    [];
+
+                const goalscorers =
+                    match.goalscorers ||
+                    [];
+
+                const matchAssists =
+                    match.assists ||
+                    [];
+
+                const playerOfMatch =
+                    match.playerOfMatch ||
+                    [];
+
+
+                if (
+                    played.some(function(id) {
+
+                        return (
+                            String(id) ===
+                            playerId
+                        );
+
+                    })
+                ) {
+
+                    appearances++;
+
+                }
+
+
+                goalscorers.forEach(
+                    function(id) {
+
+                        if (
+                            String(id) ===
+                            playerId
+                        ) {
+
+                            goals++;
+
+                        }
+
+                    }
+                );
+
+
+                matchAssists.forEach(
+                    function(id) {
+
+                        if (
+                            String(id) ===
+                            playerId
+                        ) {
+
+                            assists++;
+
+                        }
+
+                    }
+                );
+
+
+                playerOfMatch.forEach(
+                    function(id) {
+
+                        if (
+                            String(id) ===
+                            playerId
+                        ) {
+
+                            potm++;
+
+                        }
+
+                    }
                 );
 
             }
         );
 
 
-    return players.map(
-        function(player) {
+        /* =================================================
+           MANUAL STATS
+           ================================================= */
 
-            const playerId =
-                String(player.id);
+        if (
+            player.manualStats &&
+            player.manualStats[season]
+        ) {
 
+            const manual =
+                player.manualStats[season];
 
-            let appearances = 0;
 
-            let goals = 0;
+            appearances +=
+                Number(
+                    manual.appearances
+                ) || 0;
 
-            let assists = 0;
 
-            let potm = 0;
+            goals +=
+                Number(
+                    manual.goals
+                ) || 0;
 
 
-            seasonMatches.forEach(
-                function(match) {
+            assists +=
+                Number(
+                    manual.assists
+                ) || 0;
 
-                    const played =
-                        match.playersWhoPlayed ||
-                        [];
 
-
-                    const goalscorers =
-                        match.goalscorers ||
-                        [];
-
-
-                    const matchAssists =
-                        match.assists ||
-                        [];
-
-
-                    const playerOfMatch =
-                        match.playerOfMatch ||
-                        [];
-
-
-                    if (
-                        played.some(
-                            function(id) {
-
-                                return (
-                                    String(id) ===
-                                    playerId
-                                );
-
-                            }
-                        )
-                    ) {
-
-                        appearances++;
-
-                    }
-
-
-                    goalscorers.forEach(
-                        function(id) {
-
-                            if (
-                                String(id) ===
-                                playerId
-                            ) {
-
-                                goals++;
-
-                            }
-
-                        }
-                    );
-
-
-                    matchAssists.forEach(
-                        function(id) {
-
-                            if (
-                                String(id) ===
-                                playerId
-                            ) {
-
-                                assists++;
-
-                            }
-
-                        }
-                    );
-
-
-                    playerOfMatch.forEach(
-                        function(id) {
-
-                            if (
-                                String(id) ===
-                                playerId
-                            ) {
-
-                                potm++;
-
-                            }
-
-                        }
-                    );
-
-                }
-            );
-
-
-            /*
-             * MANUAL STATS
-             */
-
-            let manual =
-                null;
-
-
-            if (
-                player.manualStats &&
-                player.manualStats[season]
-            ) {
-
-                manual =
-                    player.manualStats[season];
-
-            }
-
-
-            if (manual) {
-
-                appearances +=
-                    Number(
-                        manual.appearances
-                    ) || 0;
-
-
-                goals +=
-                    Number(
-                        manual.goals
-                    ) || 0;
-
-
-                assists +=
-                    Number(
-                        manual.assists
-                    ) || 0;
-
-
-                potm +=
-                    Number(
-                        manual.playerOfMatch
-                    ) || 0;
-
-            }
-
-
-            return {
-
-                name:
-                    player.name,
-
-                appearances:
-                    appearances,
-
-                goals:
-                    goals,
-
-                assists:
-                    assists,
-
-                potm:
-                    potm
-
-            };
+            potm +=
+                Number(
+                    manual.playerOfMatch
+                ) || 0;
 
         }
-    );
+
+
+        return {
+
+            name:
+                player.name,
+
+            appearances:
+                appearances,
+
+            goals:
+                goals,
+
+            assists:
+                assists,
+
+            potm:
+                potm
+
+        };
+
+    });
 
 }
 
 
 /* =========================================================
-   SORT PLAYER DATA
+   SORT PLAYERS
    ========================================================= */
 
 function sortPlayers(
@@ -560,16 +701,27 @@ function sortPlayers(
 
     return data
         .slice()
-        .sort(
-            function(a, b) {
+        .sort(function(a, b) {
 
-                return (
-                    b[statistic] -
-                    a[statistic]
-                );
+            const difference =
+                b[statistic] -
+                a[statistic];
+
+
+            if (
+                difference !== 0
+            ) {
+
+                return difference;
 
             }
-        );
+
+
+            return a.name.localeCompare(
+                b.name
+            );
+
+        });
 
 }
 
@@ -592,9 +744,7 @@ function createPlayerChart(
 
 
     if (!canvas) {
-
         return null;
-
     }
 
 
@@ -605,12 +755,33 @@ function createPlayerChart(
         );
 
 
+    const parent =
+        canvas.parentElement;
+
+
+    /*
+       Give the graph enough height
+       for every player.
+    */
+
+    const height =
+        Math.max(
+            300,
+            sorted.length * 42
+        );
+
+
+    parent.style.height =
+        height + "px";
+
+
     return new Chart(
         canvas,
         {
 
             type:
                 "bar",
+
 
             data: {
 
@@ -622,6 +793,7 @@ function createPlayerChart(
 
                         }
                     ),
+
 
                 datasets: [
 
@@ -650,6 +822,7 @@ function createPlayerChart(
 
             },
 
+
             options: {
 
                 responsive:
@@ -661,6 +834,11 @@ function createPlayerChart(
                 indexAxis:
                     "y",
 
+
+                animation:
+                    false,
+
+
                 plugins: {
 
                     legend: {
@@ -671,6 +849,7 @@ function createPlayerChart(
                     }
 
                 },
+
 
                 scales: {
 
@@ -686,6 +865,17 @@ function createPlayerChart(
 
                         }
 
+                    },
+
+                    y: {
+
+                        ticks: {
+
+                            autoSkip:
+                                false
+
+                        }
+
                     }
 
                 }
@@ -693,7 +883,6 @@ function createPlayerChart(
             }
 
         }
-
     );
 
 }
@@ -749,9 +938,7 @@ function createTeamGraphs(
 
 
     let wins = 0;
-
     let draws = 0;
-
     let losses = 0;
 
 
@@ -784,13 +971,19 @@ function createTeamGraphs(
     );
 
 
+    /* =====================================================
+       GOALS SCORED LINE
+       ===================================================== */
+
     const goalsScoredCanvas =
         document.getElementById(
             "goalsScoredChart"
         );
 
 
-    if (goalsScoredCanvas) {
+    if (
+        goalsScoredCanvas
+    ) {
 
         goalsScoredChart =
             new Chart(
@@ -799,6 +992,7 @@ function createTeamGraphs(
 
                     type:
                         "line",
+
 
                     data: {
 
@@ -833,6 +1027,7 @@ function createTeamGraphs(
 
                     },
 
+
                     options: {
 
                         responsive:
@@ -840,6 +1035,7 @@ function createTeamGraphs(
 
                         maintainAspectRatio:
                             false,
+
 
                         scales: {
 
@@ -862,11 +1058,14 @@ function createTeamGraphs(
                     }
 
                 }
-
             );
 
     }
 
+
+    /* =====================================================
+       RESULTS DOUGHNUT
+       ===================================================== */
 
     const resultsCanvas =
         document.getElementById(
@@ -874,7 +1073,9 @@ function createTeamGraphs(
         );
 
 
-    if (resultsCanvas) {
+    if (
+        resultsCanvas
+    ) {
 
         resultsChart =
             new Chart(
@@ -884,17 +1085,17 @@ function createTeamGraphs(
                     type:
                         "doughnut",
 
+
                     data: {
 
                         labels: [
 
                             "Wins",
-
                             "Draws",
-
                             "Losses"
 
                         ],
+
 
                         datasets: [
 
@@ -903,9 +1104,7 @@ function createTeamGraphs(
                                 data: [
 
                                     wins,
-
                                     draws,
-
                                     losses
 
                                 ],
@@ -919,6 +1118,7 @@ function createTeamGraphs(
 
                     },
 
+
                     options: {
 
                         responsive:
@@ -926,6 +1126,7 @@ function createTeamGraphs(
 
                         maintainAspectRatio:
                             false,
+
 
                         plugins: {
 
@@ -941,11 +1142,14 @@ function createTeamGraphs(
                     }
 
                 }
-
             );
 
     }
 
+
+    /* =====================================================
+       GOALS CONCEDED LINE
+       ===================================================== */
 
     const goalsConcededCanvas =
         document.getElementById(
@@ -953,7 +1157,9 @@ function createTeamGraphs(
         );
 
 
-    if (goalsConcededCanvas) {
+    if (
+        goalsConcededCanvas
+    ) {
 
         goalsConcededChart =
             new Chart(
@@ -963,10 +1169,12 @@ function createTeamGraphs(
                     type:
                         "line",
 
+
                     data: {
 
                         labels:
                             labels,
+
 
                         datasets: [
 
@@ -996,6 +1204,7 @@ function createTeamGraphs(
 
                     },
 
+
                     options: {
 
                         responsive:
@@ -1003,6 +1212,7 @@ function createTeamGraphs(
 
                         maintainAspectRatio:
                             false,
+
 
                         scales: {
 
@@ -1025,7 +1235,6 @@ function createTeamGraphs(
                     }
 
                 }
-
             );
 
     }
@@ -1034,10 +1243,97 @@ function createTeamGraphs(
 
 
 /* =========================================================
+   NO MATCH MESSAGE
+   ========================================================= */
+
+function showNoMatches() {
+
+    const ids = [
+
+        "goalsScoredChart",
+        "resultsChart",
+        "goalsConcededChart"
+
+    ];
+
+
+    ids.forEach(function(id) {
+
+        const canvas =
+            document.getElementById(id);
+
+
+        if (!canvas) {
+            return;
+        }
+
+
+        const parent =
+            canvas.parentElement;
+
+
+        parent.innerHTML = `
+
+            <p>
+                No matches recorded
+                for ${getCurrentSeason()}.
+            </p>
+
+        `;
+
+    });
+
+}
+
+
+/* =========================================================
    CREATE ALL GRAPHS
    ========================================================= */
 
-function createGraphs() {
+async function createGraphs() {
+
+    try {
+
+        await loadChartJS();
+
+    } catch (error) {
+
+        console.error(
+            "Chart.js error:",
+            error
+        );
+
+        const dashboard =
+            document.querySelector(
+                ".dashboard"
+            );
+
+        if (dashboard) {
+
+            const message =
+                document.createElement("p");
+
+            message.textContent =
+                "Graphs could not load because Chart.js could not be loaded.";
+
+            message.style.color =
+                "#ff7070";
+
+            dashboard.prepend(
+                message
+            );
+
+        }
+
+        return;
+
+    }
+
+
+    ensureTeamGraphSection();
+
+    ensurePlayerGraphSection();
+
 
     destroyCharts();
 
@@ -1045,13 +1341,6 @@ function createGraphs() {
     const seasonMatches =
         getSeasonMatches();
 
-
-    createPlayerGraphSection();
-
-
-    /*
-     * TEAM GRAPHS
-     */
 
     if (
         seasonMatches.length > 0
@@ -1063,14 +1352,14 @@ function createGraphs() {
 
     } else {
 
-        displayNoMatches();
+        showNoMatches();
 
     }
 
 
-    /*
-     * PLAYER GRAPHS
-     */
+    /* =====================================================
+       PLAYER CHARTS
+       ===================================================== */
 
     const playerData =
         getPlayerStatistics();
@@ -1115,53 +1404,52 @@ function createGraphs() {
 
 
 /* =========================================================
-   NO MATCHES
+   LOAD LOCAL CACHE FIRST
    ========================================================= */
 
-function displayNoMatches() {
+function loadLocalData() {
 
-    const canvases = [
+    try {
 
-        "goalsScoredChart",
-
-        "resultsChart",
-
-        "goalsConcededChart"
-
-    ];
+        const savedMatches =
+            localStorage.getItem(
+                "matches"
+            );
 
 
-    canvases.forEach(
-        function(id) {
+        if (savedMatches) {
 
-            const canvas =
-                document.getElementById(
-                    id
-                );
-
-
-            if (!canvas) {
-
-                return;
-
-            }
-
-
-            const parent =
-                canvas.parentElement;
-
-
-            parent.innerHTML = `
-
-                <p>
-                    No matches recorded
-                    for ${getCurrentSeason()}.
-                </p>
-
-            `;
+            matches =
+                JSON.parse(
+                    savedMatches
+                ) || [];
 
         }
-    );
+
+
+        const savedPlayers =
+            localStorage.getItem(
+                "players"
+            );
+
+
+        if (savedPlayers) {
+
+            players =
+                JSON.parse(
+                    savedPlayers
+                ) || [];
+
+        }
+
+    } catch (error) {
+
+        console.error(
+            "Could not load graph data:",
+            error
+        );
+
+    }
 
 }
 
@@ -1209,6 +1497,7 @@ function startPlayerListener() {
 
         },
 
+
         function(error) {
 
             console.error(
@@ -1217,7 +1506,6 @@ function startPlayerListener() {
             );
 
         }
-
     );
 
 }
@@ -1266,6 +1554,7 @@ function startMatchListener() {
 
         },
 
+
         function(error) {
 
             console.error(
@@ -1274,77 +1563,6 @@ function startMatchListener() {
             );
 
         }
-
-    );
-
-}
-
-
-/* =========================================================
-   SEASON CHANGES
-   ========================================================= */
-
-window.addEventListener(
-    "storage",
-    function(event) {
-
-        if (
-            event.key ===
-            "selectedSeason"
-        ) {
-
-            updateSeasonTitle();
-
-            createGraphs();
-
-        }
-
-    }
-);
-
-
-/* =========================================================
-   LOAD LOCAL CACHE FIRST
-   ========================================================= */
-
-try {
-
-    const savedMatches =
-        localStorage.getItem(
-            "matches"
-        );
-
-
-    if (savedMatches) {
-
-        matches =
-            JSON.parse(
-                savedMatches
-            ) || [];
-
-    }
-
-
-    const savedPlayers =
-        localStorage.getItem(
-            "players"
-        );
-
-
-    if (savedPlayers) {
-
-        players =
-            JSON.parse(
-                savedPlayers
-            ) || [];
-
-    }
-
-} catch (error) {
-
-    console.error(
-        "Could not load local graph data:",
-        error
     );
 
 }
@@ -1353,6 +1571,8 @@ try {
 /* =========================================================
    START
    ========================================================= */
+
+loadLocalData();
 
 updateSeasonTitle();
 

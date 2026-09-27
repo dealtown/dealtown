@@ -1,4 +1,15 @@
+import {
+    db
+} from "./firebase.js";
+
+import {
+    collection,
+    onSnapshot
+} from "https://www.gstatic.com/firebasejs/12.3.0/firebase-firestore.js";
+
+
 requireLogin();
+
 
 const seasonSelect =
     document.getElementById("seasonSelect");
@@ -7,14 +18,50 @@ const seasonTitle =
     document.getElementById("seasonTitle");
 
 
-function getMatches() {
+let matches = [];
 
-    return JSON.parse(
-        localStorage.getItem("matches")
-    ) || [];
+
+/* =========================================================
+   LOAD LOCAL CACHE IMMEDIATELY
+   ========================================================= */
+
+function loadLocalMatches() {
+
+    try {
+
+        const savedMatches =
+            localStorage.getItem("matches");
+
+        if (savedMatches) {
+
+            const parsed =
+                JSON.parse(savedMatches);
+
+            if (Array.isArray(parsed)) {
+
+                matches = parsed;
+
+            }
+
+        }
+
+    } catch (error) {
+
+        console.error(
+            "Could not load local matches:",
+            error
+        );
+
+        matches = [];
+
+    }
 
 }
 
+
+/* =========================================================
+   SEASON
+   ========================================================= */
 
 function getSelectedSeason() {
 
@@ -35,33 +82,33 @@ function setSelectedSeason(season) {
 }
 
 
+/* =========================================================
+   CALCULATE STATS
+   ========================================================= */
+
 function calculateStats() {
 
     const selectedSeason =
         getSelectedSeason();
 
 
-    const matches =
-        getMatches()
-            .filter(function(match) {
+    const seasonMatches =
+        matches.filter(function(match) {
 
-                return match.season === selectedSeason;
+            return String(match.season) ===
+                String(selectedSeason);
 
-            });
+        });
 
 
     let wins = 0;
-
     let draws = 0;
-
     let losses = 0;
-
     let goalsFor = 0;
-
     let goalsAgainst = 0;
 
 
-    matches.forEach(function(match) {
+    seasonMatches.forEach(function(match) {
 
         const scored =
             Number(match.goalsFor) || 0;
@@ -71,7 +118,6 @@ function calculateStats() {
 
 
         goalsFor += scored;
-
         goalsAgainst += conceded;
 
 
@@ -93,16 +139,14 @@ function calculateStats() {
 
 
     const totalMatches =
-        matches.length;
+        seasonMatches.length;
 
 
     const winRate =
         totalMatches > 0
-
             ? Math.round(
                 (wins / totalMatches) * 100
             )
-
             : 0;
 
 
@@ -110,13 +154,12 @@ function calculateStats() {
         goalsFor - goalsAgainst;
 
 
-    /*
-     * Sort matches chronologically
-     * for streak calculations.
-     */
+    /* =====================================================
+       SORT FOR STREAKS
+       ===================================================== */
 
     const sortedMatches =
-        matches
+        seasonMatches
             .slice()
             .sort(function(a, b) {
 
@@ -128,12 +171,9 @@ function calculateStats() {
             });
 
 
-    /*
-     * CURRENT WINNING RUN
-     *
-     * Starts from the most recent match
-     * and stops at the first non-win.
-     */
+    /* =====================================================
+       WINNING RUN
+       ===================================================== */
 
     let winningRun = 0;
 
@@ -144,15 +184,15 @@ function calculateStats() {
         i--
     ) {
 
-        const match =
-            sortedMatches[i];
-
-
         const scored =
-            Number(match.goalsFor) || 0;
+            Number(
+                sortedMatches[i].goalsFor
+            ) || 0;
 
         const conceded =
-            Number(match.goalsAgainst) || 0;
+            Number(
+                sortedMatches[i].goalsAgainst
+            ) || 0;
 
 
         if (scored > conceded) {
@@ -168,12 +208,9 @@ function calculateStats() {
     }
 
 
-    /*
-     * CURRENT UNBEATEN RUN
-     *
-     * Counts consecutive wins or draws
-     * from the latest match backwards.
-     */
+    /* =====================================================
+       UNBEATEN RUN
+       ===================================================== */
 
     let unbeatenRun = 0;
 
@@ -184,15 +221,15 @@ function calculateStats() {
         i--
     ) {
 
-        const match =
-            sortedMatches[i];
-
-
         const scored =
-            Number(match.goalsFor) || 0;
+            Number(
+                sortedMatches[i].goalsFor
+            ) || 0;
 
         const conceded =
-            Number(match.goalsAgainst) || 0;
+            Number(
+                sortedMatches[i].goalsAgainst
+            ) || 0;
 
 
         if (scored >= conceded) {
@@ -208,108 +245,184 @@ function calculateStats() {
     }
 
 
-    /*
-     * UPDATE DASHBOARD
-     */
+    /* =====================================================
+       UPDATE SCREEN
+       ===================================================== */
 
-    document.getElementById(
-        "matches"
-    ).textContent =
-        totalMatches;
+    const matchesElement =
+        document.getElementById("matches");
 
+    const winsElement =
+        document.getElementById("wins");
 
-    document.getElementById(
-        "wins"
-    ).textContent =
-        wins;
+    const drawsElement =
+        document.getElementById("draws");
 
+    const lossesElement =
+        document.getElementById("losses");
 
-    document.getElementById(
-        "draws"
-    ).textContent =
-        draws;
+    const winRateElement =
+        document.getElementById("winRate");
 
+    const goalsElement =
+        document.getElementById("goals");
 
-    document.getElementById(
-        "losses"
-    ).textContent =
-        losses;
+    const goalDifferenceElement =
+        document.getElementById("goalDifference");
 
+    const winningRunElement =
+        document.getElementById("winningRun");
 
-    document.getElementById(
-        "winRate"
-    ).textContent =
-        winRate + "%";
+    const unbeatenRunElement =
+        document.getElementById("unbeatenRun");
 
 
-    document.getElementById(
-        "goals"
-    ).textContent =
-        goalsFor + " - " + goalsAgainst;
+    if (matchesElement)
+        matchesElement.textContent =
+            totalMatches;
 
+    if (winsElement)
+        winsElement.textContent =
+            wins;
 
-    document.getElementById(
-        "goalDifference"
-    ).textContent =
-        goalDifference;
+    if (drawsElement)
+        drawsElement.textContent =
+            draws;
 
+    if (lossesElement)
+        lossesElement.textContent =
+            losses;
 
-    document.getElementById(
-        "winningRun"
-    ).textContent =
-        winningRun;
+    if (winRateElement)
+        winRateElement.textContent =
+            winRate + "%";
 
+    if (goalsElement)
+        goalsElement.textContent =
+            goalsFor + " - " + goalsAgainst;
 
-    document.getElementById(
-        "unbeatenRun"
-    ).textContent =
-        unbeatenRun;
+    if (goalDifferenceElement)
+        goalDifferenceElement.textContent =
+            goalDifference;
 
+    if (winningRunElement)
+        winningRunElement.textContent =
+            winningRun;
 
-    seasonTitle.textContent =
-        selectedSeason + " SEASON";
+    if (unbeatenRunElement)
+        unbeatenRunElement.textContent =
+            unbeatenRun;
+
+    if (seasonTitle)
+        seasonTitle.textContent =
+            selectedSeason + " SEASON";
 
 }
 
 
-/*
- * LOAD SAVED SEASON
- */
+/* =========================================================
+   START WITH LOCAL DATA
+   ========================================================= */
 
-const savedSeason =
-    getSelectedSeason();
+loadLocalMatches();
 
-
-seasonSelect.value =
-    savedSeason;
+calculateStats();
 
 
-/*
- * CHANGE SEASON
- */
+/* =========================================================
+   LOAD SAVED SEASON
+   ========================================================= */
 
-seasonSelect.addEventListener(
-    "change",
-    function() {
+if (seasonSelect) {
 
-        setSelectedSeason(
-            seasonSelect.value
+    seasonSelect.value =
+        getSelectedSeason();
+
+
+    seasonSelect.addEventListener(
+        "change",
+        function() {
+
+            setSelectedSeason(
+                seasonSelect.value
+            );
+
+            calculateStats();
+
+        }
+    );
+
+}
+
+
+/* =========================================================
+   FIREBASE REAL-TIME LISTENER
+   ========================================================= */
+
+const matchesCollection =
+    collection(
+        db,
+        "matches"
+    );
+
+
+onSnapshot(
+    matchesCollection,
+
+    function(snapshot) {
+
+        const firebaseMatches =
+            snapshot.docs.map(
+                function(item) {
+
+                    return {
+                        id: item.id,
+                        ...item.data()
+                    };
+
+                }
+            );
+
+
+        /*
+         * Firebase is now the main source.
+         */
+
+        matches =
+            firebaseMatches;
+
+
+        /*
+         * Update local cache so the dashboard
+         * can display immediately next time.
+         */
+
+        localStorage.setItem(
+            "matches",
+            JSON.stringify(matches)
         );
+
 
         calculateStats();
 
+    },
+
+    function(error) {
+
+        console.error(
+            "Dashboard Firebase error:",
+            error
+        );
+
         /*
-         * Refresh the page so every
-         * page using the selected season
-         * stays synchronised.
+         * Keep using local data if Firebase
+         * temporarily cannot be reached.
          */
 
-        window.location.reload();
+        calculateStats();
 
     }
 );
 
-
-calculateStats();
 
 applyViewerRestrictions();

@@ -1,14 +1,32 @@
+import {
+    db
+} from "./firebase.js";
+
+import {
+    collection,
+    doc,
+    getDocs,
+    setDoc,
+    deleteDoc,
+    onSnapshot
+} from "https://www.gstatic.com/firebasejs/12.3.0/firebase-firestore.js";
+
+
 requireLogin();
+
 
 var players = JSON.parse(
     localStorage.getItem("players")
 ) || [];
 
+
 var matches = JSON.parse(
     localStorage.getItem("matches")
 ) || [];
 
+
 var editingPlayerId = null;
+
 
 var playerNameInput =
     document.getElementById("playerName");
@@ -62,7 +80,7 @@ function updateSeasonText() {
 
 
 /* =========================
-   SAVE PLAYERS
+   LOCAL SAVE
 ========================= */
 
 function savePlayers() {
@@ -76,18 +94,180 @@ function savePlayers() {
 
 
 /* =========================
+   FIREBASE
+========================= */
+
+var playersCollection =
+    collection(db, "players");
+
+
+async function savePlayerToFirebase(player) {
+
+    await setDoc(
+        doc(
+            db,
+            "players",
+            String(player.id)
+        ),
+        player
+    );
+
+}
+
+
+async function deletePlayerFromFirebase(id) {
+
+    await deleteDoc(
+        doc(
+            db,
+            "players",
+            String(id)
+        )
+    );
+
+}
+
+
+/* =========================
+   LOAD FIREBASE PLAYERS
+========================= */
+
+async function loadPlayersFromFirebase() {
+
+    try {
+
+        var snapshot =
+            await getDocs(
+                playersCollection
+            );
+
+
+        /*
+           If Firebase is empty and this is
+           an admin, upload the existing
+           local players once.
+        */
+
+        if (
+            snapshot.empty &&
+            isAdmin() &&
+            players.length > 0
+        ) {
+
+            for (
+                var i = 0;
+                i < players.length;
+                i++
+            ) {
+
+                await savePlayerToFirebase(
+                    players[i]
+                );
+
+            }
+
+            return;
+
+        }
+
+
+        /*
+           If Firebase already contains
+           players, use the shared database.
+        */
+
+        if (!snapshot.empty) {
+
+            players =
+                snapshot.docs.map(
+                    function(item) {
+
+                        return item.data();
+
+                    }
+                );
+
+
+            savePlayers();
+
+            renderPlayers();
+
+        }
+
+    } catch (error) {
+
+        console.error(
+            "Firebase player loading error:",
+            error
+        );
+
+        alert(
+            "Could not connect to the shared player database."
+        );
+
+    }
+
+}
+
+
+/* =========================
+   REAL-TIME FIREBASE LISTENER
+========================= */
+
+function startPlayerListener() {
+
+    onSnapshot(
+        playersCollection,
+        function(snapshot) {
+
+            players =
+                snapshot.docs.map(
+                    function(item) {
+
+                        return item.data();
+
+                    }
+                );
+
+
+            savePlayers();
+
+            renderPlayers();
+
+        },
+        function(error) {
+
+            console.error(
+                "Firebase listener error:",
+                error
+            );
+
+        }
+    );
+
+}
+
+
+/* =========================
    EMPTY MANUAL STATS
 ========================= */
 
 function createEmptyManualStats() {
 
     return {
+
         appearances: 0,
+
         goals: 0,
+
         assists: 0,
+
         playerOfMatch: 0,
+
         yellowCards: 0,
+
         redCards: 0
+
     };
 
 }
@@ -102,6 +282,7 @@ function getManualStats(player) {
     var season =
         getCurrentSeason();
 
+
     if (
         player.manualStats &&
         player.manualStats[season]
@@ -110,6 +291,7 @@ function getManualStats(player) {
         return player.manualStats[season];
 
     }
+
 
     return createEmptyManualStats();
 
@@ -125,6 +307,7 @@ function getAutomaticStats(player) {
     var stats =
         createEmptyManualStats();
 
+
     var season =
         getCurrentSeason();
 
@@ -135,7 +318,9 @@ function getAutomaticStats(player) {
             if (
                 match.season !== season
             ) {
+
                 return;
+
             }
 
 
@@ -179,7 +364,9 @@ function getAutomaticStats(player) {
 
 
             if (appeared) {
+
                 stats.appearances++;
+
             }
 
 
@@ -190,7 +377,9 @@ function getAutomaticStats(player) {
                         String(id) ===
                         playerId
                     ) {
+
                         stats.goals++;
+
                     }
 
                 }
@@ -204,7 +393,9 @@ function getAutomaticStats(player) {
                         String(id) ===
                         playerId
                     ) {
+
                         stats.assists++;
+
                     }
 
                 }
@@ -218,7 +409,9 @@ function getAutomaticStats(player) {
                         String(id) ===
                         playerId
                     ) {
+
                         stats.playerOfMatch++;
+
                     }
 
                 }
@@ -232,7 +425,9 @@ function getAutomaticStats(player) {
                         String(id) ===
                         playerId
                     ) {
+
                         stats.yellowCards++;
+
                     }
 
                 }
@@ -246,7 +441,9 @@ function getAutomaticStats(player) {
                         String(id) ===
                         playerId
                     ) {
+
                         stats.redCards++;
+
                     }
 
                 }
@@ -270,6 +467,7 @@ function getTotalStats(player) {
     var automatic =
         getAutomaticStats(player);
 
+
     var manual =
         getManualStats(player);
 
@@ -278,27 +476,39 @@ function getTotalStats(player) {
 
         appearances:
             automatic.appearances +
-            Number(manual.appearances || 0),
+            Number(
+                manual.appearances || 0
+            ),
 
         goals:
             automatic.goals +
-            Number(manual.goals || 0),
+            Number(
+                manual.goals || 0
+            ),
 
         assists:
             automatic.assists +
-            Number(manual.assists || 0),
+            Number(
+                manual.assists || 0
+            ),
 
         playerOfMatch:
             automatic.playerOfMatch +
-            Number(manual.playerOfMatch || 0),
+            Number(
+                manual.playerOfMatch || 0
+            ),
 
         yellowCards:
             automatic.yellowCards +
-            Number(manual.yellowCards || 0),
+            Number(
+                manual.yellowCards || 0
+            ),
 
         redCards:
             automatic.redCards +
-            Number(manual.redCards || 0)
+            Number(
+                manual.redCards || 0
+            )
 
     };
 
@@ -309,13 +519,15 @@ function getTotalStats(player) {
    SAVE PLAYER
 ========================= */
 
-function savePlayer() {
+async function savePlayer() {
 
     var name =
         playerNameInput.value.trim();
 
+
     var shirtNumber =
         shirtNumberInput.value.trim();
+
 
     var position =
         positionInput.value;
@@ -365,11 +577,13 @@ function savePlayer() {
             function(player) {
 
                 return (
-                    String(player.shirtNumber) ===
+                    String(
+                        player.shirtNumber
+                    ) ===
                     String(shirtNumber)
                 ) &&
                 String(player.id) !==
-                String(editingPlayerId);
+                    String(editingPlayerId);
 
             }
         );
@@ -390,7 +604,7 @@ function savePlayer() {
 
     if (editingPlayerId !== null) {
 
-        editExistingPlayer(
+        await editExistingPlayer(
             name,
             shirtNumber,
             position
@@ -398,7 +612,7 @@ function savePlayer() {
 
     } else {
 
-        createNewPlayer(
+        await createNewPlayer(
             name,
             shirtNumber,
             position
@@ -413,7 +627,7 @@ function savePlayer() {
    CREATE PLAYER
 ========================= */
 
-function createNewPlayer(
+async function createNewPlayer(
     name,
     shirtNumber,
     position
@@ -468,16 +682,34 @@ function createNewPlayer(
 
 
         reader.onload =
-            function(event) {
+            async function(event) {
 
                 player.photo =
                     event.target.result;
+
 
                 players.push(player);
 
                 savePlayers();
 
-                finishPlayerSave();
+
+                try {
+
+                    await savePlayerToFirebase(
+                        player
+                    );
+
+                    finishPlayerSave();
+
+                } catch (error) {
+
+                    console.error(error);
+
+                    alert(
+                        "Player was saved locally but could not be uploaded to Firebase."
+                    );
+
+                }
 
             };
 
@@ -493,7 +725,24 @@ function createNewPlayer(
 
     savePlayers();
 
-    finishPlayerSave();
+
+    try {
+
+        await savePlayerToFirebase(
+            player
+        );
+
+        finishPlayerSave();
+
+    } catch (error) {
+
+        console.error(error);
+
+        alert(
+            "Player was saved locally but could not be uploaded to Firebase."
+        );
+
+    }
 
 }
 
@@ -502,7 +751,7 @@ function createNewPlayer(
    EDIT PLAYER
 ========================= */
 
-function editExistingPlayer(
+async function editExistingPlayer(
     name,
     shirtNumber,
     position
@@ -535,8 +784,10 @@ function editExistingPlayer(
     player.name =
         name;
 
+
     player.shirtNumber =
         shirtNumber;
+
 
     player.position =
         position;
@@ -568,14 +819,32 @@ function editExistingPlayer(
 
 
         reader.onload =
-            function(event) {
+            async function(event) {
 
                 player.photo =
                     event.target.result;
 
+
                 savePlayers();
 
-                finishPlayerSave();
+
+                try {
+
+                    await savePlayerToFirebase(
+                        player
+                    );
+
+                    finishPlayerSave();
+
+                } catch (error) {
+
+                    console.error(error);
+
+                    alert(
+                        "Player was changed locally but could not be uploaded to Firebase."
+                    );
+
+                }
 
             };
 
@@ -589,7 +858,24 @@ function editExistingPlayer(
 
     savePlayers();
 
-    finishPlayerSave();
+
+    try {
+
+        await savePlayerToFirebase(
+            player
+        );
+
+        finishPlayerSave();
+
+    } catch (error) {
+
+        console.error(error);
+
+        alert(
+            "Player was changed locally but could not be uploaded to Firebase."
+        );
+
+    }
 
 }
 
@@ -602,6 +888,7 @@ function finishPlayerSave() {
 
     editingPlayerId = null;
 
+
     playerNameInput.value = "";
 
     shirtNumberInput.value = "";
@@ -610,11 +897,14 @@ function finishPlayerSave() {
 
     playerPhotoInput.value = "";
 
+
     savePlayerButton.textContent =
         "ADD PLAYER";
 
+
     cancelEditButton.style.display =
         "none";
+
 
     document.getElementById(
         "formTitle"
@@ -645,7 +935,9 @@ function editPlayer(id) {
 
 
     if (!player) {
+
         return;
+
     }
 
 
@@ -699,6 +991,7 @@ function cancelEdit() {
 
     editingPlayerId = null;
 
+
     playerNameInput.value = "";
 
     shirtNumberInput.value = "";
@@ -707,8 +1000,10 @@ function cancelEdit() {
 
     playerPhotoInput.value = "";
 
+
     savePlayerButton.textContent =
         "ADD PLAYER";
+
 
     cancelEditButton.style.display =
         "none";
@@ -726,7 +1021,7 @@ function cancelEdit() {
    DELETE PLAYER
 ========================= */
 
-function deletePlayer(id) {
+async function deletePlayer(id) {
 
     var player =
         players.find(
@@ -740,7 +1035,9 @@ function deletePlayer(id) {
 
 
     if (!player) {
+
         return;
+
     }
 
 
@@ -753,7 +1050,9 @@ function deletePlayer(id) {
 
 
     if (!confirmed) {
+
         return;
+
     }
 
 
@@ -772,6 +1071,23 @@ function deletePlayer(id) {
 
     renderPlayers();
 
+
+    try {
+
+        await deletePlayerFromFirebase(
+            id
+        );
+
+    } catch (error) {
+
+        console.error(error);
+
+        alert(
+            "The player was removed locally but could not be removed from Firebase."
+        );
+
+    }
+
 }
 
 
@@ -779,7 +1095,7 @@ function deletePlayer(id) {
    MANUAL STATS
 ========================= */
 
-function editManualStats(id) {
+async function editManualStats(id) {
 
     var player =
         players.find(
@@ -793,7 +1109,9 @@ function editManualStats(id) {
 
 
     if (!player) {
+
         return;
+
     }
 
 
@@ -802,7 +1120,9 @@ function editManualStats(id) {
 
 
     if (!player.manualStats) {
+
         player.manualStats = {};
+
     }
 
 
@@ -826,7 +1146,9 @@ function editManualStats(id) {
 
 
     if (appearances === null) {
+
         return;
+
     }
 
 
@@ -838,7 +1160,9 @@ function editManualStats(id) {
 
 
     if (goals === null) {
+
         return;
+
     }
 
 
@@ -850,7 +1174,9 @@ function editManualStats(id) {
 
 
     if (assists === null) {
+
         return;
+
     }
 
 
@@ -862,7 +1188,9 @@ function editManualStats(id) {
 
 
     if (potm === null) {
+
         return;
+
     }
 
 
@@ -874,7 +1202,9 @@ function editManualStats(id) {
 
 
     if (yellow === null) {
+
         return;
+
     }
 
 
@@ -886,24 +1216,31 @@ function editManualStats(id) {
 
 
     if (red === null) {
+
         return;
+
     }
 
 
     stats.appearances =
         safeNumber(appearances);
 
+
     stats.goals =
         safeNumber(goals);
+
 
     stats.assists =
         safeNumber(assists);
 
+
     stats.playerOfMatch =
         safeNumber(potm);
 
+
     stats.yellowCards =
         safeNumber(yellow);
+
 
     stats.redCards =
         safeNumber(red);
@@ -912,6 +1249,23 @@ function editManualStats(id) {
     savePlayers();
 
     renderPlayers();
+
+
+    try {
+
+        await savePlayerToFirebase(
+            player
+        );
+
+    } catch (error) {
+
+        console.error(error);
+
+        alert(
+            "Stats were changed locally but could not be uploaded to Firebase."
+        );
+
+    }
 
 }
 
@@ -930,7 +1284,9 @@ function safeNumber(value) {
         !Number.isFinite(number) ||
         number < 0
     ) {
+
         return 0;
+
     }
 
 
@@ -948,6 +1304,7 @@ function createPlayerCard(player) {
     var card =
         document.createElement("div");
 
+
     card.className =
         "player-card";
 
@@ -955,11 +1312,14 @@ function createPlayerCard(player) {
     var header =
         document.createElement("div");
 
+
     header.style.display =
         "flex";
 
+
     header.style.alignItems =
         "center";
+
 
     header.style.gap =
         "15px";
@@ -970,66 +1330,88 @@ function createPlayerCard(player) {
         var image =
             document.createElement("img");
 
+
         image.src =
             player.photo;
+
 
         image.alt =
             player.name;
 
+
         image.style.width =
             "65px";
+
 
         image.style.height =
             "65px";
 
+
         image.style.borderRadius =
             "50%";
+
 
         image.style.objectFit =
             "cover";
 
+
         image.style.border =
             "2px solid #3d82ee";
 
-        header.appendChild(image);
+
+        header.appendChild(
+            image
+        );
 
     } else {
 
         var placeholder =
             document.createElement("div");
 
+
         placeholder.textContent =
             player.shirtNumber;
+
 
         placeholder.style.width =
             "65px";
 
+
         placeholder.style.height =
             "65px";
+
 
         placeholder.style.borderRadius =
             "50%";
 
+
         placeholder.style.display =
             "flex";
+
 
         placeholder.style.alignItems =
             "center";
 
+
         placeholder.style.justifyContent =
             "center";
+
 
         placeholder.style.background =
             "#172b4d";
 
+
         placeholder.style.border =
             "2px solid #3d82ee";
+
 
         placeholder.style.fontWeight =
             "bold";
 
+
         placeholder.style.fontSize =
             "22px";
+
 
         header.appendChild(
             placeholder
@@ -1045,12 +1427,14 @@ function createPlayerCard(player) {
     var name =
         document.createElement("h3");
 
+
     name.textContent =
         player.name;
 
 
     var details =
         document.createElement("p");
+
 
     details.textContent =
         "#" +
@@ -1059,13 +1443,24 @@ function createPlayerCard(player) {
         player.position;
 
 
-    information.appendChild(name);
+    information.appendChild(
+        name
+    );
 
-    information.appendChild(details);
 
-    header.appendChild(information);
+    information.appendChild(
+        details
+    );
 
-    card.appendChild(header);
+
+    header.appendChild(
+        information
+    );
+
+
+    card.appendChild(
+        header
+    );
 
 
     var stats =
@@ -1074,6 +1469,7 @@ function createPlayerCard(player) {
 
     var statsText =
         document.createElement("p");
+
 
     statsText.textContent =
         "Apps: " +
@@ -1084,14 +1480,18 @@ function createPlayerCard(player) {
         stats.assists;
 
 
-    card.appendChild(statsText);
+    card.appendChild(
+        statsText
+    );
 
 
     var viewButton =
         document.createElement("button");
 
+
     viewButton.type =
         "button";
+
 
     viewButton.textContent =
         "VIEW PROFILE";
@@ -1103,6 +1503,7 @@ function createPlayerCard(player) {
 
             event.stopPropagation();
 
+
             window.location.href =
                 "stats.html?id=" +
                 encodeURIComponent(
@@ -1113,7 +1514,9 @@ function createPlayerCard(player) {
     );
 
 
-    card.appendChild(viewButton);
+    card.appendChild(
+        viewButton
+    );
 
 
     if (isAdmin()) {
@@ -1121,11 +1524,14 @@ function createPlayerCard(player) {
         var editButton =
             document.createElement("button");
 
+
         editButton.type =
             "button";
 
+
         editButton.textContent =
             "EDIT PLAYER";
+
 
         editButton.style.marginLeft =
             "8px";
@@ -1136,6 +1542,7 @@ function createPlayerCard(player) {
             function(event) {
 
                 event.stopPropagation();
+
 
                 editPlayer(
                     player.id
@@ -1153,11 +1560,14 @@ function createPlayerCard(player) {
         var manualButton =
             document.createElement("button");
 
+
         manualButton.type =
             "button";
 
+
         manualButton.textContent =
             "MANUAL STATS";
+
 
         manualButton.style.marginLeft =
             "8px";
@@ -1168,6 +1578,7 @@ function createPlayerCard(player) {
             function(event) {
 
                 event.stopPropagation();
+
 
                 editManualStats(
                     player.id
@@ -1185,14 +1596,18 @@ function createPlayerCard(player) {
         var deleteButton =
             document.createElement("button");
 
+
         deleteButton.type =
             "button";
+
 
         deleteButton.textContent =
             "DELETE";
 
+
         deleteButton.style.marginLeft =
             "8px";
+
 
         deleteButton.style.background =
             "#dc2626";
@@ -1203,6 +1618,7 @@ function createPlayerCard(player) {
             function(event) {
 
                 event.stopPropagation();
+
 
                 deletePlayer(
                     player.id
@@ -1244,6 +1660,13 @@ function createPlayerCard(player) {
 
 function renderPlayers() {
 
+    if (!playerList) {
+
+        return;
+
+    }
+
+
     playerList.innerHTML = "";
 
 
@@ -1252,12 +1675,15 @@ function renderPlayers() {
         var empty =
             document.createElement("p");
 
+
         empty.textContent =
             "No players have been added yet.";
+
 
         playerList.appendChild(
             empty
         );
+
 
         return;
 
@@ -1315,9 +1741,37 @@ window.addEventListener(
 
 
 /* =========================
+   MAKE HTML BUTTONS WORK
+========================= */
+
+window.savePlayer =
+    savePlayer;
+
+
+window.cancelEdit =
+    cancelEdit;
+
+
+window.editPlayer =
+    editPlayer;
+
+
+window.deletePlayer =
+    deletePlayer;
+
+
+window.editManualStats =
+    editManualStats;
+
+
+/* =========================
    START
 ========================= */
 
 updateSeasonText();
 
 renderPlayers();
+
+loadPlayersFromFirebase();
+
+startPlayerListener();

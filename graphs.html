@@ -25,9 +25,7 @@
 
     <main class="dashboard">
 
-        <!-- =================================================
-             PAGE TITLE
-             ================================================= -->
+        <!-- PAGE TITLE -->
 
         <h1>
             SEASON GRAPHS
@@ -116,11 +114,113 @@
         </section>
 
 
+        <!-- =================================================
+             PLAYER GRAPHS
+             ================================================= -->
 
+
+        <!-- APPEARANCES -->
+
+        <section class="stat-card">
+
+            <h2>
+                PLAYER APPEARANCES
+            </h2>
+
+            <p>
+                Players ranked by appearances,
+                highest first.
+            </p>
+
+            <div class="graph-container player-graph-container">
+
+                <canvas
+                    id="appearancesChart"
+                    aria-label="Player appearances bar chart"
+                ></canvas>
+
+            </div>
+
+        </section>
+
+
+        <!-- GOALS -->
+
+        <section class="stat-card">
+
+            <h2>
+                TOP GOAL SCORERS
+            </h2>
+
+            <p>
+                Players ranked by goals,
+                highest first.
+            </p>
+
+            <div class="graph-container player-graph-container">
+
+                <canvas
+                    id="goalsChart"
+                    aria-label="Top goal scorers bar chart"
+                ></canvas>
+
+            </div>
+
+        </section>
+
+
+        <!-- ASSISTS -->
+
+        <section class="stat-card">
+
+            <h2>
+                TOP ASSIST PROVIDERS
+            </h2>
+
+            <p>
+                Players ranked by assists,
+                highest first.
+            </p>
+
+            <div class="graph-container player-graph-container">
+
+                <canvas
+                    id="assistsChart"
+                    aria-label="Top assist providers bar chart"
+                ></canvas>
+
+            </div>
+
+        </section>
+
+
+        <!-- PLAYER OF THE MATCH -->
+
+        <section class="stat-card">
+
+            <h2>
+                PLAYER OF THE MATCH
+            </h2>
+
+            <p>
+                Players ranked by Player of
+                the Match awards, highest first.
+            </p>
+
+            <div class="graph-container player-graph-container">
+
+                <canvas
+                    id="potmChart"
+                    aria-label="Player of the Match bar chart"
+                ></canvas>
+
+            </div>
+
+        </section>
 
 
         <!-- =================================================
-             BOTTOM NAVIGATION PANEL
+             BOTTOM NAVIGATION
              ================================================= -->
 
         <div class="menu">
@@ -149,9 +249,7 @@
         </div>
 
 
-        <!-- =================================================
-             LOG OUT
-             ================================================= -->
+        <!-- LOG OUT -->
 
         <button
             type="button"
@@ -164,25 +262,25 @@
     </main>
 
 
-    <!-- =====================================================
+    <!-- =================================================
          AUTH
-         ===================================================== -->
+         ================================================= -->
 
     <script src="js/auth.js"></script>
 
 
-    <!-- =====================================================
+    <!-- =================================================
          CHART.JS
-         ===================================================== -->
+         ================================================= -->
 
     <script
-        src="https://cdn.jsdelivr.net/npm/chart.js"
+        src="https://cdn.jsdelivr.net/npm/chart.js@4.5.0/dist/chart.umd.min.js"
     ></script>
 
 
-    <!-- =====================================================
+    <!-- =================================================
          GRAPHS JAVASCRIPT
-         ===================================================== -->
+         ================================================= -->
 
     <script
         type="module"

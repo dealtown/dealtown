@@ -1,6 +1,21 @@
+import {
+    db
+} from "./firebase.js";
+
+import {
+    collection,
+    getDocs,
+    setDoc,
+    doc
+} from "https://www.gstatic.com/firebasejs/12.3.0/firebase-firestore.js";
+
+
 requireAdmin();
 
+
 var players = [];
+
+
 var selectedPlayers = {
     played: [],
     goalscorers: [],
@@ -12,32 +27,108 @@ var selectedPlayers = {
 
 
 /*
- * LOAD PLAYERS
+ * LOAD PLAYERS FROM FIRESTORE
  */
 
-function loadPlayers() {
-
-    var savedPlayers =
-        localStorage.getItem("players");
-
-    if (!savedPlayers) {
-        players = [];
-        return;
-    }
+async function loadPlayers() {
 
     try {
 
-        players = JSON.parse(savedPlayers);
+        var snapshot =
+            await getDocs(
+                collection(
+                    db,
+                    "players"
+                )
+            );
 
-        if (!Array.isArray(players)) {
-            players = [];
+
+        players =
+            snapshot.docs.map(
+                function(item) {
+
+                    return item.data();
+
+                }
+            );
+
+
+        /*
+         * If Firebase has no players,
+         * fall back to localStorage.
+         */
+
+        if (players.length === 0) {
+
+            var savedPlayers =
+                localStorage.getItem(
+                    "players"
+                );
+
+
+            if (savedPlayers) {
+
+                try {
+
+                    players =
+                        JSON.parse(
+                            savedPlayers
+                        );
+
+                } catch (error) {
+
+                    players = [];
+
+                }
+
+            }
+
         }
+
+
+        fillAllPlayerDropdowns();
 
     } catch (error) {
 
-        players = [];
+        console.error(
+            "Could not load players:",
+            error
+        );
+
+
+        /*
+         * Keep the old localStorage
+         * system as a fallback.
+         */
+
+        var savedPlayers =
+            localStorage.getItem(
+                "players"
+            );
+
+
+        if (savedPlayers) {
+
+            try {
+
+                players =
+                    JSON.parse(
+                        savedPlayers
+                    );
+
+            } catch (error) {
+
+                players = [];
+
+            }
+
+        }
+
+
+        fillAllPlayerDropdowns();
 
     }
+
 }
 
 
@@ -79,20 +170,45 @@ function getPlayer(id) {
 function fillPlayerDropdown(selectId) {
 
     var select =
-        document.getElementById(selectId);
+        document.getElementById(
+            selectId
+        );
+
 
     if (!select) {
+
         return;
+
     }
+
+
+    /*
+     * Clear old options first.
+     */
+
+    while (
+        select.options.length > 1
+    ) {
+
+        select.remove(
+            1
+        );
+
+    }
+
 
     players.forEach(
         function(player) {
 
             var option =
-                document.createElement("option");
+                document.createElement(
+                    "option"
+                );
+
 
             option.value =
-                player.id;
+                String(player.id);
+
 
             option.textContent =
                 "#" +
@@ -100,7 +216,10 @@ function fillPlayerDropdown(selectId) {
                 " " +
                 player.name;
 
-            select.appendChild(option);
+
+            select.appendChild(
+                option
+            );
 
         }
     );
@@ -109,39 +228,41 @@ function fillPlayerDropdown(selectId) {
 
 
 /*
- * LOAD PLAYERS FIRST
+ * FILL ALL DROPDOWNS
  */
 
-loadPlayers();
+function fillAllPlayerDropdowns() {
+
+    fillPlayerDropdown(
+        "playedPlayerSelect"
+    );
 
 
-/*
- * FILL ALL PLAYER DROPDOWNS
- */
+    fillPlayerDropdown(
+        "goalscorerSelect"
+    );
 
-fillPlayerDropdown(
-    "playedPlayerSelect"
-);
 
-fillPlayerDropdown(
-    "goalscorerSelect"
-);
+    fillPlayerDropdown(
+        "assistSelect"
+    );
 
-fillPlayerDropdown(
-    "assistSelect"
-);
 
-fillPlayerDropdown(
-    "potmSelect"
-);
+    fillPlayerDropdown(
+        "potmSelect"
+    );
 
-fillPlayerDropdown(
-    "yellowCardSelect"
-);
 
-fillPlayerDropdown(
-    "redCardSelect"
-);
+    fillPlayerDropdown(
+        "yellowCardSelect"
+    );
+
+
+    fillPlayerDropdown(
+        "redCardSelect"
+    );
+
+}
 
 
 /*
@@ -155,24 +276,37 @@ function addPlayer(
 ) {
 
     var select =
-        document.getElementById(selectId);
+        document.getElementById(
+            selectId
+        );
+
 
     if (!select) {
+
         return;
+
     }
+
 
     var playerId =
         select.value;
 
+
     if (!playerId) {
+
         return;
+
     }
+
 
     var player =
         getPlayer(playerId);
 
+
     if (!player) {
+
         return;
+
     }
 
 
@@ -195,7 +329,7 @@ function addPlayer(
         ) {
 
             selectedPlayers.played.push(
-                playerId
+                String(playerId)
             );
 
         }
@@ -208,13 +342,14 @@ function addPlayer(
          */
 
         selectedPlayers[type].push(
-            playerId
+            String(playerId)
         );
 
     }
 
 
     select.value = "";
+
 
     displaySelectedPlayers(
         type,
@@ -238,9 +373,13 @@ function displaySelectedPlayers(
             containerId
         );
 
+
     if (!container) {
+
         return;
+
     }
+
 
     container.innerHTML = "";
 
@@ -251,20 +390,29 @@ function displaySelectedPlayers(
             var player =
                 getPlayer(playerId);
 
+
             if (!player) {
+
                 return;
+
             }
 
 
             var item =
-                document.createElement("div");
+                document.createElement(
+                    "div"
+                );
+
 
             item.className =
                 "selected-player";
 
 
             var name =
-                document.createElement("span");
+                document.createElement(
+                    "span"
+                );
+
 
             name.textContent =
                 "#" +
@@ -274,10 +422,14 @@ function displaySelectedPlayers(
 
 
             var removeButton =
-                document.createElement("button");
+                document.createElement(
+                    "button"
+                );
+
 
             removeButton.type =
                 "button";
+
 
             removeButton.textContent =
                 "X";
@@ -295,10 +447,19 @@ function displaySelectedPlayers(
                 };
 
 
-            item.appendChild(name);
-            item.appendChild(removeButton);
+            item.appendChild(
+                name
+            );
 
-            container.appendChild(item);
+
+            item.appendChild(
+                removeButton
+            );
+
+
+            container.appendChild(
+                item
+            );
 
         }
     );
@@ -321,6 +482,7 @@ function removePlayer(
         1
     );
 
+
     displaySelectedPlayers(
         type,
         containerId
@@ -340,11 +502,17 @@ function connectDropdown(
 ) {
 
     var select =
-        document.getElementById(selectId);
+        document.getElementById(
+            selectId
+        );
+
 
     if (!select) {
+
         return;
+
     }
+
 
     select.addEventListener(
         "change",
@@ -368,11 +536,13 @@ connectDropdown(
     "playedPlayers"
 );
 
+
 connectDropdown(
     "goalscorerSelect",
     "goalscorers",
     "goalscorers"
 );
+
 
 connectDropdown(
     "assistSelect",
@@ -380,17 +550,20 @@ connectDropdown(
     "assists"
 );
 
+
 connectDropdown(
     "potmSelect",
     "potm",
     "potmPlayers"
 );
 
+
 connectDropdown(
     "yellowCardSelect",
     "yellowCards",
     "yellowCards"
 );
+
 
 connectDropdown(
     "redCardSelect",
@@ -406,10 +579,12 @@ connectDropdown(
 var currentSeason =
     getCurrentSeason();
 
+
 var seasonText =
     document.querySelector(
         "main.dashboard > p"
     );
+
 
 if (seasonText) {
 
@@ -421,10 +596,10 @@ if (seasonText) {
 
 
 /*
- * SAVE MATCH
+ * SAVE MATCH TO FIRESTORE
  */
 
-function saveMatch() {
+async function saveMatch() {
 
     var opponent =
         document.getElementById(
@@ -481,8 +656,10 @@ function saveMatch() {
         message.style.color =
             "#ff7070";
 
+
         message.textContent =
             "Please enter the opponent and date.";
+
 
         return;
 
@@ -501,8 +678,10 @@ function saveMatch() {
         message.style.color =
             "#ff7070";
 
+
         message.textContent =
             "Please select at least one player who played.";
+
 
         return;
 
@@ -515,29 +694,41 @@ function saveMatch() {
 
     var match = {
 
-        id: Date.now(),
+        id:
+            Date.now().toString(),
+
 
         season:
             getCurrentSeason(),
 
+
         opponent:
             opponent,
+
 
         date:
             date,
 
+
         venue:
             venue,
 
+
         goalsFor:
-            Number.isFinite(goalsFor)
+            Number.isFinite(
+                goalsFor
+            )
                 ? goalsFor
                 : 0,
 
+
         goalsAgainst:
-            Number.isFinite(goalsAgainst)
+            Number.isFinite(
+                goalsAgainst
+            )
                 ? goalsAgainst
                 : 0,
+
 
         playersWhoPlayed:
             Array.from(
@@ -546,20 +737,26 @@ function saveMatch() {
                 )
             ),
 
+
         goalscorers:
             selectedPlayers.goalscorers.slice(),
+
 
         assists:
             selectedPlayers.assists.slice(),
 
+
         playerOfMatch:
             selectedPlayers.potm.slice(),
+
 
         yellowCards:
             selectedPlayers.yellowCards.slice(),
 
+
         redCards:
             selectedPlayers.redCards.slice(),
+
 
         notes:
             notes
@@ -568,23 +765,32 @@ function saveMatch() {
 
 
     /*
-     * LOAD EXISTING MATCHES
+     * SAVE LOCALLY TOO
      */
 
     var savedMatches =
-        localStorage.getItem("matches");
+        localStorage.getItem(
+            "matches"
+        );
+
 
     var matches = [];
+
 
     if (savedMatches) {
 
         try {
 
             matches =
-                JSON.parse(savedMatches);
+                JSON.parse(
+                    savedMatches
+                );
+
 
             if (!Array.isArray(matches)) {
+
                 matches = [];
+
             }
 
         } catch (error) {
@@ -596,16 +802,10 @@ function saveMatch() {
     }
 
 
-    /*
-     * ADD MATCH
-     */
+    matches.push(
+        match
+    );
 
-    matches.push(match);
-
-
-    /*
-     * SAVE MATCHES
-     */
 
     localStorage.setItem(
         "matches",
@@ -614,30 +814,75 @@ function saveMatch() {
 
 
     /*
-     * SUCCESS MESSAGE
+     * SAVE TO FIRESTORE
      */
 
-    message.style.color =
-        "#8ee28e";
+    try {
 
-    message.textContent =
-        "Match saved to " +
-        getCurrentSeason() +
-        "!";
+        await setDoc(
+            doc(
+                db,
+                "matches",
+                String(match.id)
+            ),
+            match
+        );
 
 
-    /*
-     * RETURN TO DASHBOARD
-     */
+        message.style.color =
+            "#8ee28e";
 
-    setTimeout(
-        function() {
 
-            window.location.href =
-                "dashboard.html";
+        message.textContent =
+            "Match saved to " +
+            getCurrentSeason() +
+            "!";
 
-        },
-        700
-    );
+
+        /*
+         * RETURN TO DASHBOARD
+         */
+
+        setTimeout(
+            function() {
+
+                window.location.href =
+                    "dashboard.html";
+
+            },
+            700
+        );
+
+    } catch (error) {
+
+        console.error(
+            "Firebase match error:",
+            error
+        );
+
+
+        message.style.color =
+            "#ff7070";
+
+
+        message.textContent =
+            "Match was saved locally, but could not be uploaded to Firebase.";
+
+    }
 
 }
+
+
+/*
+ * MAKE SAVE BUTTON WORK
+ */
+
+window.saveMatch =
+    saveMatch;
+
+
+/*
+ * START
+ */
+
+loadPlayers();

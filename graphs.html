@@ -25,6 +25,10 @@
 
     <main class="dashboard">
 
+        <!-- =================================================
+             PAGE TITLE
+             ================================================= -->
+
         <h1>
             SEASON GRAPHS
         </h1>
@@ -34,35 +38,234 @@
         </p>
 
 
+        <!-- =================================================
+             TEAM GRAPHS
+             ================================================= -->
 
 
-        <!-- NAVIGATION -->
+        <!-- GOALS SCORED -->
+
+        <section class="stat-card">
+
+            <h2>
+                GOALS SCORED PER MATCH
+            </h2>
+
+            <p>
+                Goals scored by Deal Town
+                in each match.
+            </p>
+
+            <div class="graph-container">
+
+                <canvas
+                    id="goalsScoredChart"
+                    aria-label="Goals scored per match graph"
+                ></canvas>
+
+            </div>
+
+        </section>
+
+
+        <!-- WINS / DRAWS / LOSSES -->
+
+        <section class="stat-card">
+
+            <h2>
+                WINS / DRAWS / LOSSES
+            </h2>
+
+            <p>
+                Season match results.
+            </p>
+
+            <div class="graph-container">
+
+                <canvas
+                    id="resultsChart"
+                    aria-label="Wins draws and losses graph"
+                ></canvas>
+
+            </div>
+
+        </section>
+
+
+        <!-- GOALS CONCEDED -->
+
+        <section class="stat-card">
+
+            <h2>
+                GOALS CONCEDED OVER TIME
+            </h2>
+
+            <p>
+                Goals conceded in each match.
+            </p>
+
+            <div class="graph-container">
+
+                <canvas
+                    id="goalsConcededChart"
+                    aria-label="Goals conceded over time graph"
+                ></canvas>
+
+            </div>
+
+        </section>
+
+
+        <!-- =================================================
+             PLAYER GRAPHS
+             ================================================= -->
+
+
+        <!-- PLAYER APPEARANCES -->
+
+        <section class="stat-card">
+
+            <h2>
+                PLAYER APPEARANCES
+            </h2>
+
+            <p>
+                Players ranked by appearances,
+                highest first.
+            </p>
+
+            <div
+                class="graph-container player-graph-container"
+            >
+
+                <canvas
+                    id="appearancesChart"
+                    aria-label="Player appearances bar chart"
+                ></canvas>
+
+            </div>
+
+        </section>
+
+
+        <!-- TOP GOAL SCORERS -->
+
+        <section class="stat-card">
+
+            <h2>
+                TOP GOAL SCORERS
+            </h2>
+
+            <p>
+                Players ranked by goals,
+                highest first.
+            </p>
+
+            <div
+                class="graph-container player-graph-container"
+            >
+
+                <canvas
+                    id="goalsChart"
+                    aria-label="Top goal scorers bar chart"
+                ></canvas>
+
+            </div>
+
+        </section>
+
+
+        <!-- TOP ASSIST PROVIDERS -->
+
+        <section class="stat-card">
+
+            <h2>
+                TOP ASSIST PROVIDERS
+            </h2>
+
+            <p>
+                Players ranked by assists,
+                highest first.
+            </p>
+
+            <div
+                class="graph-container player-graph-container"
+            >
+
+                <canvas
+                    id="assistsChart"
+                    aria-label="Top assist providers bar chart"
+                ></canvas>
+
+            </div>
+
+        </section>
+
+
+        <!-- PLAYER OF THE MATCH -->
+
+        <section class="stat-card">
+
+            <h2>
+                PLAYER OF THE MATCH
+            </h2>
+
+            <p>
+                Players ranked by Player of
+                the Match awards, highest first.
+            </p>
+
+            <div
+                class="graph-container player-graph-container"
+            >
+
+                <canvas
+                    id="potmChart"
+                    aria-label="Player of the Match bar chart"
+                ></canvas>
+
+            </div>
+
+        </section>
+
+
+        <!-- =================================================
+             BOTTOM NAVIGATION PANEL
+             ================================================= -->
+
+        <div class="menu">
+
+            <button
+                type="button"
+                onclick="location.href='dashboard.html'"
+            >
+                BACK TO DASHBOARD
+            </button>
+
+            <button
+                type="button"
+                onclick="location.href='preview.html'"
+            >
+                SEASON PREVIEW
+            </button>
+
+            <button
+                type="button"
+                onclick="location.href='matches.html'"
+            >
+                MATCH HISTORY
+            </button>
+
+        </div>
+
+
+        <!-- =================================================
+             LOG OUT
+             ================================================= -->
 
         <button
-            onclick="location.href='dashboard.html'"
-        >
-            BACK TO DASHBOARD
-        </button>
-
-
-
-
-
-        <button
-            onclick="location.href='preview.html'"
-        >
-            SEASON PREVIEW
-        </button>
-
-
-        <button
-            onclick="location.href='matches.html'"
-        >
-            MATCH HISTORY
-        </button>
-
-
-        <button
+            type="button"
+            class="logout-button"
             onclick="logout()"
         >
             LOG OUT
@@ -70,11 +273,31 @@
 
     </main>
 
- <script src="js/auth.js"></script>
 
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- =====================================================
+         AUTH
+         ===================================================== -->
 
-<script type="module" src="js/graphs.js"></script>
+    <script src="js/auth.js"></script>
+
+
+    <!-- =====================================================
+         CHART.JS
+         ===================================================== -->
+
+    <script
+        src="https://cdn.jsdelivr.net/npm/chart.js"
+    ></script>
+
+
+    <!-- =====================================================
+         GRAPHS JAVASCRIPT
+         ===================================================== -->
+
+    <script
+        type="module"
+        src="js/graphs.js"
+    ></script>
 
 </body>
 

@@ -1,11 +1,22 @@
+import {
+    db
+} from "./firebase.js";
+
+import {
+    collection,
+    onSnapshot
+} from "https://www.gstatic.com/firebasejs/12.3.0/firebase-firestore.js";
+
 requireLogin();
 
 
-const matches =
-    JSON.parse(
-        localStorage.getItem("matches")
-    ) || [];
+/* =========================================================
+   DATA
+   ========================================================= */
 
+let matches = [];
+
+let players = [];
 
 let goalsScoredChart = null;
 
@@ -13,10 +24,18 @@ let resultsChart = null;
 
 let goalsConcededChart = null;
 
+let appearancesChart = null;
 
-/*
- * CURRENT SEASON
- */
+let goalsChart = null;
+
+let assistsChart = null;
+
+let potmChart = null;
+
+
+/* =========================================================
+   CURRENT SEASON
+   ========================================================= */
 
 function getCurrentSeason() {
 
@@ -27,9 +46,9 @@ function getCurrentSeason() {
 }
 
 
-/*
- * GET SEASON MATCHES
- */
+/* =========================================================
+   GET SEASON MATCHES
+   ========================================================= */
 
 function getSeasonMatches() {
 
@@ -38,8 +57,8 @@ function getSeasonMatches() {
             function(match) {
 
                 return (
-                    match.season ===
-                    getCurrentSeason()
+                    String(match.season) ===
+                    String(getCurrentSeason())
                 );
 
             }
@@ -58,9 +77,9 @@ function getSeasonMatches() {
 }
 
 
-/*
- * GET RESULT
- */
+/* =========================================================
+   GET RESULT
+   ========================================================= */
 
 function getResult(match) {
 
@@ -101,9 +120,9 @@ function getResult(match) {
 }
 
 
-/*
- * UPDATE SEASON TITLE
- */
+/* =========================================================
+   UPDATE SEASON TITLE
+   ========================================================= */
 
 function updateSeasonTitle() {
 
@@ -120,86 +139,586 @@ function updateSeasonTitle() {
     if (title) {
 
         title.textContent =
-            `DEAL TOWN U10 HOOPS • ${season}`;
+            "DEAL TOWN U10 HOOPS • " +
+            season;
 
     }
 
 }
 
 
-/*
- * DESTROY OLD CHARTS
- */
+/* =========================================================
+   DESTROY OLD CHARTS
+   ========================================================= */
 
 function destroyCharts() {
 
-    if (
-        goalsScoredChart
-    ) {
+    const charts = [
 
-        goalsScoredChart.destroy();
+        goalsScoredChart,
 
-        goalsScoredChart = null;
+        resultsChart,
+
+        goalsConcededChart,
+
+        appearancesChart,
+
+        goalsChart,
+
+        assistsChart,
+
+        potmChart
+
+    ];
+
+
+    charts.forEach(
+        function(chart) {
+
+            if (chart) {
+
+                chart.destroy();
+
+            }
+
+        }
+    );
+
+
+    goalsScoredChart = null;
+
+    resultsChart = null;
+
+    goalsConcededChart = null;
+
+    appearancesChart = null;
+
+    goalsChart = null;
+
+    assistsChart = null;
+
+    potmChart = null;
+
+}
+
+
+/* =========================================================
+   CREATE PLAYER GRAPH SECTION
+   ========================================================= */
+
+function createPlayerGraphSection() {
+
+    let section =
+        document.getElementById(
+            "playerGraphsSection"
+        );
+
+
+    if (section) {
+
+        section.remove();
 
     }
 
 
-    if (
-        resultsChart
-    ) {
-
-        resultsChart.destroy();
-
-        resultsChart = null;
-
-    }
+    section =
+        document.createElement("section");
 
 
-    if (
-        goalsConcededChart
-    ) {
+    section.id =
+        "playerGraphsSection";
 
-        goalsConcededChart.destroy();
 
-        goalsConcededChart = null;
+    section.className =
+        "stats-grid";
+
+
+    section.style.marginTop =
+        "30px";
+
+
+    section.innerHTML = `
+
+        <div class="stat-card">
+
+            <h2>
+                PLAYER APPEARANCES
+            </h2>
+
+            <div
+                style="
+                    position: relative;
+                    height: 350px;
+                "
+            >
+
+                <canvas
+                    id="appearancesChart"
+                ></canvas>
+
+            </div>
+
+        </div>
+
+
+        <div class="stat-card">
+
+            <h2>
+                TOP GOAL SCORERS
+            </h2>
+
+            <div
+                style="
+                    position: relative;
+                    height: 350px;
+                "
+            >
+
+                <canvas
+                    id="goalsChart"
+                ></canvas>
+
+            </div>
+
+        </div>
+
+
+        <div class="stat-card">
+
+            <h2>
+                TOP ASSIST PROVIDERS
+            </h2>
+
+            <div
+                style="
+                    position: relative;
+                    height: 350px;
+                "
+            >
+
+                <canvas
+                    id="assistsChart"
+                ></canvas>
+
+            </div>
+
+        </div>
+
+
+        <div class="stat-card">
+
+            <h2>
+                PLAYER OF THE MATCH
+            </h2>
+
+            <div
+                style="
+                    position: relative;
+                    height: 350px;
+                "
+            >
+
+                <canvas
+                    id="potmChart"
+                ></canvas>
+
+            </div>
+
+        </div>
+
+    `;
+
+
+    const dashboard =
+        document.querySelector(
+            ".dashboard"
+        );
+
+
+    if (dashboard) {
+
+        dashboard.appendChild(
+            section
+        );
 
     }
 
 }
 
 
-/*
- * CREATE GRAPHS
- */
+/* =========================================================
+   GET PLAYER STATISTICS
+   ========================================================= */
 
-function createGraphs() {
+function getPlayerStatistics() {
+
+    const season =
+        getCurrentSeason();
+
 
     const seasonMatches =
-        getSeasonMatches();
-
-
-    destroyCharts();
-
-
-    /*
-     * MATCH LABELS
-     */
-
-    const labels =
-        seasonMatches.map(
-            function(match, index) {
+        matches.filter(
+            function(match) {
 
                 return (
-                    `Match ${index + 1}`
+                    String(match.season) ===
+                    String(season)
                 );
 
             }
         );
 
 
-    /*
-     * GOALS SCORED DATA
-     */
+    return players.map(
+        function(player) {
+
+            const playerId =
+                String(player.id);
+
+
+            let appearances = 0;
+
+            let goals = 0;
+
+            let assists = 0;
+
+            let potm = 0;
+
+
+            seasonMatches.forEach(
+                function(match) {
+
+                    const played =
+                        match.playersWhoPlayed ||
+                        [];
+
+
+                    const goalscorers =
+                        match.goalscorers ||
+                        [];
+
+
+                    const matchAssists =
+                        match.assists ||
+                        [];
+
+
+                    const playerOfMatch =
+                        match.playerOfMatch ||
+                        [];
+
+
+                    if (
+                        played.some(
+                            function(id) {
+
+                                return (
+                                    String(id) ===
+                                    playerId
+                                );
+
+                            }
+                        )
+                    ) {
+
+                        appearances++;
+
+                    }
+
+
+                    goalscorers.forEach(
+                        function(id) {
+
+                            if (
+                                String(id) ===
+                                playerId
+                            ) {
+
+                                goals++;
+
+                            }
+
+                        }
+                    );
+
+
+                    matchAssists.forEach(
+                        function(id) {
+
+                            if (
+                                String(id) ===
+                                playerId
+                            ) {
+
+                                assists++;
+
+                            }
+
+                        }
+                    );
+
+
+                    playerOfMatch.forEach(
+                        function(id) {
+
+                            if (
+                                String(id) ===
+                                playerId
+                            ) {
+
+                                potm++;
+
+                            }
+
+                        }
+                    );
+
+                }
+            );
+
+
+            /*
+             * MANUAL STATS
+             */
+
+            let manual =
+                null;
+
+
+            if (
+                player.manualStats &&
+                player.manualStats[season]
+            ) {
+
+                manual =
+                    player.manualStats[season];
+
+            }
+
+
+            if (manual) {
+
+                appearances +=
+                    Number(
+                        manual.appearances
+                    ) || 0;
+
+
+                goals +=
+                    Number(
+                        manual.goals
+                    ) || 0;
+
+
+                assists +=
+                    Number(
+                        manual.assists
+                    ) || 0;
+
+
+                potm +=
+                    Number(
+                        manual.playerOfMatch
+                    ) || 0;
+
+            }
+
+
+            return {
+
+                name:
+                    player.name,
+
+                appearances:
+                    appearances,
+
+                goals:
+                    goals,
+
+                assists:
+                    assists,
+
+                potm:
+                    potm
+
+            };
+
+        }
+    );
+
+}
+
+
+/* =========================================================
+   SORT PLAYER DATA
+   ========================================================= */
+
+function sortPlayers(
+    data,
+    statistic
+) {
+
+    return data
+        .slice()
+        .sort(
+            function(a, b) {
+
+                return (
+                    b[statistic] -
+                    a[statistic]
+                );
+
+            }
+        );
+
+}
+
+
+/* =========================================================
+   CREATE PLAYER BAR CHART
+   ========================================================= */
+
+function createPlayerChart(
+    canvasId,
+    data,
+    statistic,
+    label
+) {
+
+    const canvas =
+        document.getElementById(
+            canvasId
+        );
+
+
+    if (!canvas) {
+
+        return null;
+
+    }
+
+
+    const sorted =
+        sortPlayers(
+            data,
+            statistic
+        );
+
+
+    return new Chart(
+        canvas,
+        {
+
+            type:
+                "bar",
+
+            data: {
+
+                labels:
+                    sorted.map(
+                        function(player) {
+
+                            return player.name;
+
+                        }
+                    ),
+
+                datasets: [
+
+                    {
+
+                        label:
+                            label,
+
+                        data:
+                            sorted.map(
+                                function(player) {
+
+                                    return player[
+                                        statistic
+                                    ];
+
+                                }
+                            ),
+
+                        borderWidth:
+                            1
+
+                    }
+
+                ]
+
+            },
+
+            options: {
+
+                responsive:
+                    true,
+
+                maintainAspectRatio:
+                    false,
+
+                indexAxis:
+                    "y",
+
+                plugins: {
+
+                    legend: {
+
+                        display:
+                            false
+
+                    }
+
+                },
+
+                scales: {
+
+                    x: {
+
+                        beginAtZero:
+                            true,
+
+                        ticks: {
+
+                            stepSize:
+                                1
+
+                        }
+
+                    }
+
+                }
+
+            }
+
+        }
+
+    );
+
+}
+
+
+/* =========================================================
+   CREATE TEAM GRAPHS
+   ========================================================= */
+
+function createTeamGraphs(
+    seasonMatches
+) {
+
+    const labels =
+        seasonMatches.map(
+            function(match, index) {
+
+                return (
+                    "Match " +
+                    (index + 1)
+                );
+
+            }
+        );
+
 
     const goalsScored =
         seasonMatches.map(
@@ -215,10 +734,6 @@ function createGraphs() {
         );
 
 
-    /*
-     * GOALS CONCEDED DATA
-     */
-
     const goalsConceded =
         seasonMatches.map(
             function(match) {
@@ -232,10 +747,6 @@ function createGraphs() {
             }
         );
 
-
-    /*
-     * RESULT COUNTS
-     */
 
     let wins = 0;
 
@@ -273,102 +784,76 @@ function createGraphs() {
     );
 
 
-    /*
-     * NO MATCHES
-     */
-
-    if (
-        seasonMatches.length === 0
-    ) {
-
-        displayNoMatches();
-
-        return;
-
-    }
-
-
-    /*
-     * GOALS SCORED GRAPH
-     */
-
     const goalsScoredCanvas =
         document.getElementById(
             "goalsScoredChart"
         );
 
 
-    goalsScoredChart =
-        new Chart(
-            goalsScoredCanvas,
-            {
+    if (goalsScoredCanvas) {
 
-                type:
-                    "line",
+        goalsScoredChart =
+            new Chart(
+                goalsScoredCanvas,
+                {
 
-                data: {
+                    type:
+                        "line",
 
-                    labels:
-                        labels,
+                    data: {
 
-                    datasets: [
+                        labels:
+                            labels,
 
-                        {
+                        datasets: [
 
-                            label:
-                                "Goals Scored",
+                            {
 
-                            data:
-                                goalsScored,
+                                label:
+                                    "Goals Scored",
 
-                            borderWidth:
-                                3,
+                                data:
+                                    goalsScored,
 
-                            tension:
-                                0.25,
+                                borderWidth:
+                                    3,
 
-                            fill:
-                                false,
+                                tension:
+                                    0.25,
 
-                            pointRadius:
-                                5
+                                fill:
+                                    false,
 
-                        }
+                                pointRadius:
+                                    5
 
-                    ]
+                            }
 
-                },
-
-                options: {
-
-                    responsive:
-                        true,
-
-                    maintainAspectRatio:
-                        false,
-
-                    plugins: {
-
-                        legend: {
-
-                            display:
-                                true
-
-                        }
+                        ]
 
                     },
 
-                    scales: {
+                    options: {
 
-                        y: {
+                        responsive:
+                            true,
 
-                            beginAtZero:
-                                true,
+                        maintainAspectRatio:
+                            false,
 
-                            ticks: {
+                        scales: {
 
-                                stepSize:
-                                    1
+                            y: {
+
+                                beginAtZero:
+                                    true,
+
+                                ticks: {
+
+                                    stepSize:
+                                        1
+
+                                }
 
                             }
 
@@ -378,14 +863,10 @@ function createGraphs() {
 
                 }
 
-            }
+            );
 
-        );
+    }
 
-
-    /*
-     * WINS / DRAWS / LOSSES
-     */
 
     const resultsCanvas =
         document.getElementById(
@@ -393,156 +874,65 @@ function createGraphs() {
         );
 
 
-    resultsChart =
-        new Chart(
-            resultsCanvas,
-            {
+    if (resultsCanvas) {
 
-                type:
-                    "doughnut",
+        resultsChart =
+            new Chart(
+                resultsCanvas,
+                {
 
-                data: {
+                    type:
+                        "doughnut",
 
-                    labels: [
+                    data: {
 
-                        "Wins",
+                        labels: [
 
-                        "Draws",
+                            "Wins",
 
-                        "Losses"
+                            "Draws",
 
-                    ],
+                            "Losses"
 
-                    datasets: [
+                        ],
 
-                        {
+                        datasets: [
 
-                            data: [
+                            {
 
-                                wins,
+                                data: [
 
-                                draws,
+                                    wins,
 
-                                losses
+                                    draws,
 
-                            ],
+                                    losses
 
-                            borderWidth:
-                                2
+                                ],
 
-                        }
+                                borderWidth:
+                                    2
 
-                    ]
+                            }
 
-                },
-
-                options: {
-
-                    responsive:
-                        true,
-
-                    maintainAspectRatio:
-                        false,
-
-                    plugins: {
-
-                        legend: {
-
-                            position:
-                                "bottom"
-
-                        }
-
-                    }
-
-                }
-
-            }
-
-        );
-
-
-    /*
-     * GOALS CONCEDED
-     */
-
-    const goalsConcededCanvas =
-        document.getElementById(
-            "goalsConcededChart"
-        );
-
-
-    goalsConcededChart =
-        new Chart(
-            goalsConcededCanvas,
-            {
-
-                type:
-                    "line",
-
-                data: {
-
-                    labels:
-                        labels,
-
-                    datasets: [
-
-                        {
-
-                            label:
-                                "Goals Conceded",
-
-                            data:
-                                goalsConceded,
-
-                            borderWidth:
-                                3,
-
-                            tension:
-                                0.25,
-
-                            fill:
-                                false,
-
-                            pointRadius:
-                                5
-
-                        }
-
-                    ]
-
-                },
-
-                options: {
-
-                    responsive:
-                        true,
-
-                    maintainAspectRatio:
-                        false,
-
-                    plugins: {
-
-                        legend: {
-
-                            display:
-                                true
-
-                        }
+                        ]
 
                     },
 
-                    scales: {
+                    options: {
 
-                        y: {
+                        responsive:
+                            true,
 
-                            beginAtZero:
-                                true,
+                        maintainAspectRatio:
+                            false,
 
-                            ticks: {
+                        plugins: {
 
-                                stepSize:
-                                    1
+                            legend: {
+
+                                position:
+                                    "bottom"
 
                             }
 
@@ -552,16 +942,181 @@ function createGraphs() {
 
                 }
 
-            }
+            );
 
+    }
+
+
+    const goalsConcededCanvas =
+        document.getElementById(
+            "goalsConcededChart"
+        );
+
+
+    if (goalsConcededCanvas) {
+
+        goalsConcededChart =
+            new Chart(
+                goalsConcededCanvas,
+                {
+
+                    type:
+                        "line",
+
+                    data: {
+
+                        labels:
+                            labels,
+
+                        datasets: [
+
+                            {
+
+                                label:
+                                    "Goals Conceded",
+
+                                data:
+                                    goalsConceded,
+
+                                borderWidth:
+                                    3,
+
+                                tension:
+                                    0.25,
+
+                                fill:
+                                    false,
+
+                                pointRadius:
+                                    5
+
+                            }
+
+                        ]
+
+                    },
+
+                    options: {
+
+                        responsive:
+                            true,
+
+                        maintainAspectRatio:
+                            false,
+
+                        scales: {
+
+                            y: {
+
+                                beginAtZero:
+                                    true,
+
+                                ticks: {
+
+                                    stepSize:
+                                        1
+
+                                }
+
+                            }
+
+                        }
+
+                    }
+
+                }
+
+            );
+
+    }
+
+}
+
+
+/* =========================================================
+   CREATE ALL GRAPHS
+   ========================================================= */
+
+function createGraphs() {
+
+    destroyCharts();
+
+
+    const seasonMatches =
+        getSeasonMatches();
+
+
+    createPlayerGraphSection();
+
+
+    /*
+     * TEAM GRAPHS
+     */
+
+    if (
+        seasonMatches.length > 0
+    ) {
+
+        createTeamGraphs(
+            seasonMatches
+        );
+
+    } else {
+
+        displayNoMatches();
+
+    }
+
+
+    /*
+     * PLAYER GRAPHS
+     */
+
+    const playerData =
+        getPlayerStatistics();
+
+
+    appearancesChart =
+        createPlayerChart(
+            "appearancesChart",
+            playerData,
+            "appearances",
+            "Appearances"
+        );
+
+
+    goalsChart =
+        createPlayerChart(
+            "goalsChart",
+            playerData,
+            "goals",
+            "Goals"
+        );
+
+
+    assistsChart =
+        createPlayerChart(
+            "assistsChart",
+            playerData,
+            "assists",
+            "Assists"
+        );
+
+
+    potmChart =
+        createPlayerChart(
+            "potmChart",
+            playerData,
+            "potm",
+            "Player of the Match"
         );
 
 }
 
 
-/*
- * SHOW NO MATCHES MESSAGE
- */
+/* =========================================================
+   NO MATCHES
+   ========================================================= */
 
 function displayNoMatches() {
 
@@ -586,7 +1141,9 @@ function displayNoMatches() {
 
 
             if (!canvas) {
+
                 return;
+
             }
 
 
@@ -609,12 +1166,200 @@ function displayNoMatches() {
 }
 
 
-/*
- * START
- */
+/* =========================================================
+   FIREBASE PLAYERS
+   ========================================================= */
+
+function startPlayerListener() {
+
+    onSnapshot(
+        collection(
+            db,
+            "players"
+        ),
+
+        function(snapshot) {
+
+            players =
+                snapshot.docs.map(
+                    function(item) {
+
+                        return {
+
+                            id:
+                                item.id,
+
+                            ...item.data()
+
+                        };
+
+                    }
+                );
+
+
+            localStorage.setItem(
+                "players",
+                JSON.stringify(players)
+            );
+
+
+            updateSeasonTitle();
+
+            createGraphs();
+
+        },
+
+        function(error) {
+
+            console.error(
+                "Firebase players error:",
+                error
+            );
+
+        }
+
+    );
+
+}
+
+
+/* =========================================================
+   FIREBASE MATCHES
+   ========================================================= */
+
+function startMatchListener() {
+
+    onSnapshot(
+        collection(
+            db,
+            "matches"
+        ),
+
+        function(snapshot) {
+
+            matches =
+                snapshot.docs.map(
+                    function(item) {
+
+                        return {
+
+                            id:
+                                item.id,
+
+                            ...item.data()
+
+                        };
+
+                    }
+                );
+
+
+            localStorage.setItem(
+                "matches",
+                JSON.stringify(matches)
+            );
+
+
+            updateSeasonTitle();
+
+            createGraphs();
+
+        },
+
+        function(error) {
+
+            console.error(
+                "Firebase matches error:",
+                error
+            );
+
+        }
+
+    );
+
+}
+
+
+/* =========================================================
+   SEASON CHANGES
+   ========================================================= */
+
+window.addEventListener(
+    "storage",
+    function(event) {
+
+        if (
+            event.key ===
+            "selectedSeason"
+        ) {
+
+            updateSeasonTitle();
+
+            createGraphs();
+
+        }
+
+    }
+);
+
+
+/* =========================================================
+   LOAD LOCAL CACHE FIRST
+   ========================================================= */
+
+try {
+
+    const savedMatches =
+        localStorage.getItem(
+            "matches"
+        );
+
+
+    if (savedMatches) {
+
+        matches =
+            JSON.parse(
+                savedMatches
+            ) || [];
+
+    }
+
+
+    const savedPlayers =
+        localStorage.getItem(
+            "players"
+        );
+
+
+    if (savedPlayers) {
+
+        players =
+            JSON.parse(
+                savedPlayers
+            ) || [];
+
+    }
+
+} catch (error) {
+
+    console.error(
+        "Could not load local graph data:",
+        error
+    );
+
+}
+
+
+/* =========================================================
+   START
+   ========================================================= */
 
 updateSeasonTitle();
 
 createGraphs();
+
+startPlayerListener();
+
+startMatchListener();
 
 applyViewerRestrictions();

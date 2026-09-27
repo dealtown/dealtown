@@ -1,134 +1,145 @@
 <!DOCTYPE html>
+
 <html lang="en">
 
 <head>
 
-    <meta charset="UTF-8">
+```
+<meta charset="UTF-8">
 
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    >
+<meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+>
 
-    <title>
-        Player Profile - Deal Town U10 Hoops
-    </title>
+<title>
+    Player Profile - Deal Town U10 Hoops
+</title>
 
-    <link
-        rel="stylesheet"
-        href="style.css"
-    >
+<link
+    rel="stylesheet"
+    href="style.css"
+>
+```
 
 </head>
 
 <body>
 
-    <main class="dashboard">
+```
+<main class="dashboard">
 
-        <!-- PAGE TITLE -->
+    <!-- PAGE HEADER -->
 
-        <div class="team-header">
+    <div class="team-header">
 
-            <img
-                src="team-logo.png"
-                alt="Deal Town U10 Hoops"
-                class="team-logo"
-            >
+        <img
+            src="team-logo.png"
+            alt="Deal Town U10 Hoops"
+            class="team-logo"
+        >
 
-            <div class="team-title">
+        <div class="team-title">
 
-                <h1>PLAYER PROFILE</h1>
+            <h1>PLAYER PROFILE</h1>
 
-                <h2>DEAL TOWN U10 HOOPS</h2>
+            <h2>DEAL TOWN U10 HOOPS</h2>
 
-                <p>PLAYER STATISTICS</p>
-
-            </div>
-
-            <img
-                src="team-logo.png"
-                alt="Deal Town U10 Hoops"
-                class="team-logo"
-            >
+            <p>PLAYER STATISTICS</p>
 
         </div>
 
-
-        <!-- PLAYER PROFILE -->
-
-        <section
-            id="playerProfile"
-            class="stat-card"
+        <img
+            src="team-logo.png"
+            alt="Deal Town U10 Hoops"
+            class="team-logo"
         >
+
+    </div>
+
+
+    <!-- PLAYER PROFILE -->
+
+    <section
+        id="playerProfile"
+        class="stat-card"
+    >
+
+        <p>
+            Loading player...
+        </p>
+
+    </section>
+
+
+    <!-- PLAYER MATCH HISTORY -->
+
+    <section
+        id="playerMatches"
+        class="stat-card"
+    >
+
+        <h2>
+            MATCH HISTORY
+        </h2>
+
+        <div id="matchList">
 
             <p>
-                Loading player...
-            </p>
-
-        </section>
-
-
-        <!-- PLAYER MATCH HISTORY -->
-
-        <section
-            id="playerMatches"
-            class="stat-card"
-        >
-
-            <h2>MATCH HISTORY</h2>
-
-            <div id="matchList">
-
                 Loading matches...
-
-            </div>
-
-        </section>
-
-
-        <!-- NAVIGATION -->
-
-        <div class="menu">
-
-            <button
-                type="button"
-                onclick="
-                    window.location.href =
-                    'playerstats.html'
-                "
-            >
-                BACK TO PLAYERS
-            </button>
-
-
-            <button
-                type="button"
-                onclick="
-                    window.location.href =
-                    'dashboard.html'
-                "
-            >
-                DASHBOARD
-            </button>
-
-
-            <button
-                type="button"
-                onclick="logout()"
-            >
-                LOG OUT
-            </button>
+            </p>
 
         </div>
 
-    </main>
+    </section>
 
 
-    <!-- SCRIPTS -->
+    <!-- NAVIGATION -->
 
-    <script src="js/auth.js"></script>
+    <div class="menu">
 
-    <script src="js/stats.js"></script>
+        <button
+            type="button"
+            onclick="window.location.href='playerstats.html'"
+        >
+            BACK TO PLAYERS
+        </button>
+
+        <button
+            type="button"
+            onclick="window.location.href='dashboard.html'"
+        >
+            DASHBOARD
+        </button>
+
+    </div>
+
+
+    <!-- LOG OUT -->
+
+    <button
+        type="button"
+        class="logout-button"
+        onclick="logout()"
+    >
+        LOG OUT
+    </button>
+
+</main>
+
+
+<!-- AUTH -->
+
+<script src="js/auth.js"></script>
+
+
+<!-- PLAYER PROFILE -->
+
+<script
+    type="module"
+    src="js/stats.js"
+></script>
+```
 
 </body>
 

@@ -6,6 +6,7 @@ import {
     getFirestore
 } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-firestore.js";
 
+
 const firebaseConfig = {
     apiKey: "AIzaSyA6e4vTUKYx_yokcEXafE1-Nv29Wp4h6hQ",
     authDomain: "dttracker-64db8.firebaseapp.com",
@@ -16,8 +17,15 @@ const firebaseConfig = {
     measurementId: "G-KGHL0K59BW"
 };
 
+
 const app =
     initializeApp(firebaseConfig);
 
+
 const db =
     getFirestore(app);
+
+
+export {
+    db
+};

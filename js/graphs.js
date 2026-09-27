@@ -32,80 +32,6 @@ let potmChart = null;
 
 
 /* =========================================================
-   LOAD CHART.JS IF NEEDED
-   ========================================================= */
-
-function loadChartJS() {
-
-    return new Promise(function(resolve, reject) {
-
-        if (typeof Chart !== "undefined") {
-            resolve();
-            return;
-        }
-
-        const existing =
-            document.querySelector(
-                'script[data-chartjs="true"]'
-            );
-
-        if (existing) {
-
-            existing.addEventListener(
-                "load",
-                function() {
-                    resolve();
-                }
-            );
-
-            existing.addEventListener(
-                "error",
-                function() {
-                    reject(
-                        new Error(
-                            "Chart.js failed to load."
-                        )
-                    );
-                }
-            );
-
-            return;
-        }
-
-
-        const script =
-            document.createElement("script");
-
-        script.src =
-            "https://cdn.jsdelivr.net/npm/chart.js@4.5.0/dist/chart.umd.min.js";
-
-        script.dataset.chartjs =
-            "true";
-
-        script.onload =
-            function() {
-                resolve();
-            };
-
-        script.onerror =
-            function() {
-                reject(
-                    new Error(
-                        "Chart.js failed to load."
-                    )
-                );
-            };
-
-        document.head.appendChild(
-            script
-        );
-
-    });
-
-}
-
-
-/* =========================================================
    SEASON
    ========================================================= */
 
@@ -144,7 +70,7 @@ function updateSeasonTitle() {
 
 
 /* =========================================================
-   GET SEASON MATCHES
+   SEASON MATCHES
    ========================================================= */
 
 function getSeasonMatches() {
@@ -209,7 +135,7 @@ function getResult(match) {
 
 
 /* =========================================================
-   DESTROY OLD CHARTS
+   DESTROY EXISTING CHARTS
    ========================================================= */
 
 function destroyCharts() {
@@ -219,7 +145,6 @@ function destroyCharts() {
         goalsScoredChart,
         resultsChart,
         goalsConcededChart,
-
         appearancesChart,
         goalsChart,
         assistsChart,
@@ -231,7 +156,9 @@ function destroyCharts() {
     charts.forEach(function(chart) {
 
         if (chart) {
+
             chart.destroy();
+
         }
 
     });
@@ -245,264 +172,6 @@ function destroyCharts() {
     goalsChart = null;
     assistsChart = null;
     potmChart = null;
-
-}
-
-
-/* =========================================================
-   ENSURE TEAM GRAPH HTML EXISTS
-   ========================================================= */
-
-function ensureTeamGraphSection() {
-
-    const dashboard =
-        document.querySelector(
-            ".dashboard"
-        );
-
-    if (!dashboard) {
-        return;
-    }
-
-
-    let section =
-        document.getElementById(
-            "teamGraphsSection"
-        );
-
-
-    if (section) {
-        return;
-    }
-
-
-    section =
-        document.createElement("section");
-
-    section.id =
-        "teamGraphsSection";
-
-    section.className =
-        "stats-grid";
-
-
-    section.innerHTML = `
-
-        <div class="stat-card">
-
-            <h2>
-                GOALS SCORED
-            </h2>
-
-            <div
-                style="
-                    position:relative;
-                    height:300px;
-                "
-            >
-
-                <canvas
-                    id="goalsScoredChart"
-                ></canvas>
-
-            </div>
-
-        </div>
-
-
-        <div class="stat-card">
-
-            <h2>
-                MATCH RESULTS
-            </h2>
-
-            <div
-                style="
-                    position:relative;
-                    height:300px;
-                "
-            >
-
-                <canvas
-                    id="resultsChart"
-                ></canvas>
-
-            </div>
-
-        </div>
-
-
-        <div class="stat-card">
-
-            <h2>
-                GOALS CONCEDED
-            </h2>
-
-            <div
-                style="
-                    position:relative;
-                    height:300px;
-                "
-            >
-
-                <canvas
-                    id="goalsConcededChart"
-                ></canvas>
-
-            </div>
-
-        </div>
-
-    `;
-
-
-    dashboard.appendChild(
-        section
-    );
-
-}
-
-
-/* =========================================================
-   PLAYER GRAPH SECTION
-   ========================================================= */
-
-function ensurePlayerGraphSection() {
-
-    const dashboard =
-        document.querySelector(
-            ".dashboard"
-        );
-
-    if (!dashboard) {
-        return;
-    }
-
-
-    let section =
-        document.getElementById(
-            "playerGraphsSection"
-        );
-
-
-    if (section) {
-        return;
-    }
-
-
-    section =
-        document.createElement("section");
-
-    section.id =
-        "playerGraphsSection";
-
-    section.className =
-        "stats-grid";
-
-
-    section.style.marginTop =
-        "30px";
-
-
-    section.innerHTML = `
-
-        <div class="stat-card">
-
-            <h2>
-                PLAYER APPEARANCES
-            </h2>
-
-            <div
-                id="appearancesChartBox"
-                style="
-                    position:relative;
-                    min-height:300px;
-                "
-            >
-
-                <canvas
-                    id="appearancesChart"
-                ></canvas>
-
-            </div>
-
-        </div>
-
-
-        <div class="stat-card">
-
-            <h2>
-                TOP GOAL SCORERS
-            </h2>
-
-            <div
-                id="goalsChartBox"
-                style="
-                    position:relative;
-                    min-height:300px;
-                "
-            >
-
-                <canvas
-                    id="goalsChart"
-                ></canvas>
-
-            </div>
-
-        </div>
-
-
-        <div class="stat-card">
-
-            <h2>
-                TOP ASSIST PROVIDERS
-            </h2>
-
-            <div
-                id="assistsChartBox"
-                style="
-                    position:relative;
-                    min-height:300px;
-                "
-            >
-
-                <canvas
-                    id="assistsChart"
-                ></canvas>
-
-            </div>
-
-        </div>
-
-
-        <div class="stat-card">
-
-            <h2>
-                PLAYER OF THE MATCH
-            </h2>
-
-            <div
-                id="potmChartBox"
-                style="
-                    position:relative;
-                    min-height:300px;
-                "
-            >
-
-                <canvas
-                    id="potmChart"
-                ></canvas>
-
-            </div>
-
-        </div>
-
-    `;
-
-
-    dashboard.appendChild(
-        section
-    );
 
 }
 
@@ -744,7 +413,14 @@ function createPlayerChart(
 
 
     if (!canvas) {
+
+        console.error(
+            "Canvas not found:",
+            canvasId
+        );
+
         return null;
+
     }
 
 
@@ -760,8 +436,9 @@ function createPlayerChart(
 
 
     /*
-       Give the graph enough height
-       for every player.
+       Automatically make the graph
+       taller when there are lots
+       of players.
     */
 
     const height =
@@ -834,7 +511,6 @@ function createPlayerChart(
                 indexAxis:
                     "y",
 
-
                 animation:
                     false,
 
@@ -867,6 +543,7 @@ function createPlayerChart(
 
                     },
 
+
                     y: {
 
                         ticks: {
@@ -889,7 +566,7 @@ function createPlayerChart(
 
 
 /* =========================================================
-   CREATE TEAM GRAPHS
+   TEAM GRAPHS
    ========================================================= */
 
 function createTeamGraphs(
@@ -972,7 +649,7 @@ function createTeamGraphs(
 
 
     /* =====================================================
-       GOALS SCORED LINE
+       GOALS SCORED
        ===================================================== */
 
     const goalsScoredCanvas =
@@ -998,6 +675,7 @@ function createTeamGraphs(
 
                         labels:
                             labels,
+
 
                         datasets: [
 
@@ -1064,7 +742,7 @@ function createTeamGraphs(
 
 
     /* =====================================================
-       RESULTS DOUGHNUT
+       WINS / DRAWS / LOSSES
        ===================================================== */
 
     const resultsCanvas =
@@ -1148,7 +826,7 @@ function createTeamGraphs(
 
 
     /* =====================================================
-       GOALS CONCEDED LINE
+       GOALS CONCEDED
        ===================================================== */
 
     const goalsConcededCanvas =
@@ -1243,7 +921,7 @@ function createTeamGraphs(
 
 
 /* =========================================================
-   NO MATCH MESSAGE
+   NO MATCHES
    ========================================================= */
 
 function showNoMatches() {
@@ -1260,11 +938,15 @@ function showNoMatches() {
     ids.forEach(function(id) {
 
         const canvas =
-            document.getElementById(id);
+            document.getElementById(
+                id
+            );
 
 
         if (!canvas) {
+
             return;
+
         }
 
 
@@ -1290,50 +972,7 @@ function showNoMatches() {
    CREATE ALL GRAPHS
    ========================================================= */
 
-async function createGraphs() {
-
-    try {
-
-        await loadChartJS();
-
-    } catch (error) {
-
-        console.error(
-            "Chart.js error:",
-            error
-        );
-
-        const dashboard =
-            document.querySelector(
-                ".dashboard"
-            );
-
-        if (dashboard) {
-
-            const message =
-                document.createElement("p");
-
-            message.textContent =
-                "Graphs could not load because Chart.js could not be loaded.";
-
-            message.style.color =
-                "#ff7070";
-
-            dashboard.prepend(
-                message
-            );
-
-        }
-
-        return;
-
-    }
-
-
-    ensureTeamGraphSection();
-
-    ensurePlayerGraphSection();
-
+function createGraphs() {
 
     destroyCharts();
 
@@ -1341,6 +980,10 @@ async function createGraphs() {
     const seasonMatches =
         getSeasonMatches();
 
+
+    /* =====================================================
+       TEAM GRAPHS
+       ===================================================== */
 
     if (
         seasonMatches.length > 0
@@ -1358,7 +1001,7 @@ async function createGraphs() {
 
 
     /* =====================================================
-       PLAYER CHARTS
+       PLAYER GRAPHS
        ===================================================== */
 
     const playerData =
@@ -1404,7 +1047,7 @@ async function createGraphs() {
 
 
 /* =========================================================
-   LOAD LOCAL CACHE FIRST
+   LOAD LOCAL DATA FIRST
    ========================================================= */
 
 function loadLocalData() {
@@ -1419,10 +1062,22 @@ function loadLocalData() {
 
         if (savedMatches) {
 
-            matches =
+            const parsedMatches =
                 JSON.parse(
                     savedMatches
-                ) || [];
+                );
+
+
+            if (
+                Array.isArray(
+                    parsedMatches
+                )
+            ) {
+
+                matches =
+                    parsedMatches;
+
+            }
 
         }
 
@@ -1435,17 +1090,29 @@ function loadLocalData() {
 
         if (savedPlayers) {
 
-            players =
+            const parsedPlayers =
                 JSON.parse(
                     savedPlayers
-                ) || [];
+                );
+
+
+            if (
+                Array.isArray(
+                    parsedPlayers
+                )
+            ) {
+
+                players =
+                    parsedPlayers;
+
+            }
 
         }
 
     } catch (error) {
 
         console.error(
-            "Could not load graph data:",
+            "Could not load local graph data:",
             error
         );
 
@@ -1455,7 +1122,7 @@ function loadLocalData() {
 
 
 /* =========================================================
-   FIREBASE PLAYERS
+   FIREBASE PLAYER LISTENER
    ========================================================= */
 
 function startPlayerListener() {
@@ -1487,7 +1154,9 @@ function startPlayerListener() {
 
             localStorage.setItem(
                 "players",
-                JSON.stringify(players)
+                JSON.stringify(
+                    players
+                )
             );
 
 
@@ -1512,7 +1181,7 @@ function startPlayerListener() {
 
 
 /* =========================================================
-   FIREBASE MATCHES
+   FIREBASE MATCH LISTENER
    ========================================================= */
 
 function startMatchListener() {
@@ -1544,7 +1213,9 @@ function startMatchListener() {
 
             localStorage.setItem(
                 "matches",
-                JSON.stringify(matches)
+                JSON.stringify(
+                    matches
+                )
             );
 
 
@@ -1569,7 +1240,30 @@ function startMatchListener() {
 
 
 /* =========================================================
-   START
+   SEASON CHANGE FROM ANOTHER TAB
+   ========================================================= */
+
+window.addEventListener(
+    "storage",
+    function(event) {
+
+        if (
+            event.key ===
+            "selectedSeason"
+        ) {
+
+            updateSeasonTitle();
+
+            createGraphs();
+
+        }
+
+    }
+);
+
+
+/* =========================================================
+   START PAGE
    ========================================================= */
 
 loadLocalData();

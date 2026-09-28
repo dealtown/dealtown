@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        Add Fixture - Deal Town U10 Hoops
+    </title>
+
+    <link
+        rel="stylesheet"
+        href="style.css"
+    >
+
+</head>
+
+<body>
+
+    <main class="dashboard">
+
+        <!-- HEADER -->
+
+        <div class="team-header">
+
+            <img
+                src="team-logo.png"
+                alt="Deal Town U10 Hoops"
+                class="team-logo"
+            >
+
+            <div class="team-title">
+
+                <h1>ADD FIXTURE</h1>
+
+                <h2>DEAL TOWN U10 HOOPS</h2>
+
+                <p>TEAM TRACKER</p>
+
+            </div>
+
+            <img
+                src="team-logo.png"
+                alt="Deal Town U10 Hoops"
+                class="team-logo"
+            >
+
+        </div>
+
+
+        <!-- FIXTURE FORM -->
+
+        <section class="stat-card">
+
+            <h2>
+                FIXTURE DETAILS
+            </h2>
+
+
+            <!-- OPPONENT -->
+
+            <label for="opponent">
+                OPPONENT
+            </label>
+
+            <input
+                type="text"
+                id="opponent"
+                placeholder="Enter opponent"
+                autocomplete="off"
+            >
+
+
+            <!-- DATE -->
+
+            <label for="date">
+                DATE
+            </label>
+
+            <input
+                type="date"
+                id="date"
+            >
+
+
+            <!-- TIME -->
+
+            <label for="time">
+                TIME
+            </label>
+
+            <input
+                type="time"
+                id="time"
+            >
+
+
+            <!-- HOME / AWAY -->
+
+            <label for="homeAway">
+                HOME / AWAY
+            </label>
+
+            <select id="homeAway">
+
+                <option value="">
+                    Select home or away
+                </option>
+
+                <option value="Home">
+                    Home
+                </option>
+
+                <option value="Away">
+                    Away
+                </option>
+
+            </select>
+
+
+            <!-- COMPETITION -->
+
+            <label for="competition">
+                COMPETITION / TYPE
+            </label>
+
+            <select id="competition">
+
+                <option value="">
+                    Select competition
+                </option>
+
+                <option value="League">
+                    League
+                </option>
+
+                <option value="Cup">
+                    Cup
+                </option>
+
+                <option value="Friendly">
+                    Friendly
+                </option>
+
+                <option value="Tournament">
+                    Tournament
+                </option>
+
+                <option value="Other">
+                    Other
+                </option>
+
+            </select>
+
+
+            <!-- STATUS -->
+
+            <label for="status">
+                STATUS
+            </label>
+
+            <select id="status">
+
+                <option value="SCHEDULED">
+                    Scheduled
+                </option>
+
+                <option value="POSTPONED">
+                    Postponed
+                </option>
+
+                <option value="CANCELLED">
+                    Cancelled
+                </option>
+
+                <option value="COMPLETED">
+                    Completed
+                </option>
+
+            </select>
+
+
+            <!-- PRE-MATCH NOTES -->
+
+            <label for="preMatchNotes">
+                PRE-MATCH NOTES
+            </label>
+
+            <textarea
+                id="preMatchNotes"
+                placeholder="Example: Bring away kit, meet at 9:15, bus leaves at 8:30..."
+                rows="5"
+            ></textarea>
+
+
+            <!-- GENERAL NOTES -->
+
+            <label for="generalNotes">
+                GENERAL NOTES
+            </label>
+
+            <textarea
+                id="generalNotes"
+                placeholder="Add any other information about this fixture..."
+                rows="5"
+            ></textarea>
+
+
+            <!-- MESSAGE -->
+
+            <p id="message"></p>
+
+
+            <!-- BUTTONS -->
+
+            <div class="menu">
+
+                <button
+                    type="button"
+                    onclick="saveFixture()"
+                >
+                    SAVE FIXTURE
+                </button>
+
+                <button
+                    type="button"
+                    onclick="window.location.href='fixtures.html'"
+                >
+                    CANCEL
+                </button>
+
+            </div>
+
+        </section>
+
+
+        <!-- NAVIGATION -->
+
+        <div class="menu">
+
+            <button
+                type="button"
+                onclick="window.location.href='dashboard.html'"
+            >
+                BACK TO DASHBOARD
+            </button>
+
+        </div>
+
+
+        <!-- LOG OUT -->
+
+        <button
+            type="button"
+            class="logout-button"
+            onclick="logout()"
+        >
+            LOG OUT
+        </button>
+
+    </main>
+
+
+    <!-- LOGIN -->
+
+    <script src="js/auth.js"></script>
+
+
+    <!-- FIXTURE SYSTEM -->
+
+    <script
+        type="module"
+        src="js/add-fixture.js"
+    ></script>
+
+</body>
+
+</html>

@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        Fixtures - Deal Town U10 Hoops
+    </title>
+
+    <link
+        rel="stylesheet"
+        href="style.css"
+    >
+
+</head>
+
+<body>
+
+    <main class="dashboard">
+
+        <!-- HEADER -->
+
+        <div class="team-header">
+
+            <img
+                src="team-logo.png"
+                alt="Deal Town U10 Hoops"
+                class="team-logo"
+            >
+
+            <div class="team-title">
+
+                <h1>FIXTURES</h1>
+
+                <h2>DEAL TOWN U10 HOOPS</h2>
+
+                <p>TEAM TRACKER</p>
+
+            </div>
+
+            <img
+                src="team-logo.png"
+                alt="Deal Town U10 Hoops"
+                class="team-logo"
+            >
+
+        </div>
+
+
+        <!-- SEASON -->
+
+        <div class="season-selector">
+
+            <label for="seasonSelect">
+                SEASON
+            </label>
+
+            <select id="seasonSelect">
+
+                <option value="2024/25">
+                    2024 / 25
+                </option>
+
+                <option value="2025/26">
+                    2025 / 26
+                </option>
+
+                <option value="2026/27" selected>
+                    2026 / 27
+                </option>
+
+                <option value="2027/28">
+                    2027 / 28
+                </option>
+
+                <option value="2028/29">
+                    2028 / 29
+                </option>
+
+                <option value="2029/30">
+                    2029 / 30
+                </option>
+
+            </select>
+
+        </div>
+
+
+        <!-- MONTH -->
+
+        <div class="season-selector">
+
+            <label for="monthSelect">
+                MONTH
+            </label>
+
+            <select id="monthSelect">
+
+                <option value="0">
+                    JANUARY
+                </option>
+
+                <option value="1">
+                    FEBRUARY
+                </option>
+
+                <option value="2">
+                    MARCH
+                </option>
+
+                <option value="3">
+                    APRIL
+                </option>
+
+                <option value="4">
+                    MAY
+                </option>
+
+                <option value="5">
+                    JUNE
+                </option>
+
+                <option value="6">
+                    JULY
+                </option>
+
+                <option value="7">
+                    AUGUST
+                </option>
+
+                <option value="8">
+                    SEPTEMBER
+                </option>
+
+                <option value="9" selected>
+                    OCTOBER
+                </option>
+
+                <option value="10">
+                    NOVEMBER
+                </option>
+
+                <option value="11">
+                    DECEMBER
+                </option>
+
+            </select>
+
+        </div>
+
+
+        <!-- MONTH COUNT -->
+
+        <p
+            id="fixtureCount"
+            class="season-title"
+        >
+            0 FIXTURES THIS MONTH
+        </p>
+
+
+        <!-- ADMIN ADD BUTTON -->
+
+        <div class="admin-only">
+
+            <button
+                type="button"
+                onclick="window.location.href='add-fixture.html'"
+            >
+                ADD FIXTURE
+            </button>
+
+        </div>
+
+
+        <!-- FIXTURE LIST -->
+
+        <section>
+
+            <div id="fixtureList">
+
+                <div class="stat-card">
+
+                    <h2>
+                        LOADING FIXTURES...
+                    </h2>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- NAVIGATION -->
+
+        <div class="menu">
+
+            <button
+                type="button"
+                onclick="window.location.href='dashboard.html'"
+            >
+                BACK TO DASHBOARD
+            </button>
+
+            <button
+                type="button"
+                onclick="window.location.href='matches.html'"
+            >
+                MATCH HISTORY
+            </button>
+
+        </div>
+
+
+        <!-- LOG OUT -->
+
+        <button
+            type="button"
+            class="logout-button"
+            onclick="logout()"
+        >
+            LOG OUT
+        </button>
+
+    </main>
+
+
+    <!-- LOGIN SYSTEM -->
+
+    <script src="js/auth.js"></script>
+
+
+    <!-- FIXTURES SYSTEM -->
+
+    <script
+        type="module"
+        src="js/fixtures.js"
+    ></script>
+
+</body>
+
+</html>

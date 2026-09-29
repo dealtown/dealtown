@@ -1,19 +1,23 @@
-```css
-/* =========================================
-   RESET
-========================================= */
+
+/* =========================================================
+   GLOBAL RESET
+========================================================= */
 
 * {
     box-sizing: border-box;
 }
 
 html {
-    scroll-behavior: smooth;
+    width: 100%;
+    min-height: 100%;
 }
 
 body {
-    margin: 0;
+    width: 100%;
     min-height: 100vh;
+
+    margin: 0;
+    padding: 0;
 
     font-family: Arial, Helvetica, sans-serif;
 
@@ -34,28 +38,59 @@ body {
 }
 
 
-/* =========================================
-   MAIN PAGE
-========================================= */
+/* =========================================================
+   GENERAL
+========================================================= */
+
+img {
+    max-width: 100%;
+}
+
+button,
+input,
+select,
+textarea {
+    font-family: inherit;
+}
+
+button {
+    cursor: pointer;
+}
+
+button:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+    transform: none !important;
+}
+
+
+/* =========================================================
+   MAIN PAGE CONTAINER
+========================================================= */
 
 .dashboard {
     width: 100%;
     max-width: 1400px;
 
+    min-height: 100vh;
+
     margin: 0 auto;
 
-    padding: 40px 3vw 110px;
+    padding:
+        clamp(20px, 4vw, 45px)
+        clamp(12px, 3vw, 40px)
+        110px;
 
     display: flex;
     flex-direction: column;
 
-    gap: 30px;
+    gap: clamp(20px, 3vw, 30px);
 }
 
 
-/* =========================================
+/* =========================================================
    HEADINGS
-========================================= */
+========================================================= */
 
 h1,
 h2,
@@ -65,25 +100,22 @@ p {
 }
 
 h1 {
-    text-align: center;
-
     letter-spacing: 2px;
 }
 
 h2 {
     color: #4da6ff;
-
     letter-spacing: 1px;
 }
 
 h3 {
-    color: #cfd8e3;
+    color: #d8e1ec;
 }
 
 
-/* =========================================
+/* =========================================================
    TEAM HEADER
-========================================= */
+========================================================= */
 
 .team-header {
     width: 100%;
@@ -91,22 +123,20 @@ h3 {
     display: grid;
 
     grid-template-columns:
-        minmax(0, 1fr)
-        minmax(200px, auto)
-        minmax(0, 1fr);
+        minmax(70px, 1fr)
+        minmax(0, 2fr)
+        minmax(70px, 1fr);
 
     align-items: center;
 
-    gap: clamp(15px, 4vw, 50px);
+    gap: clamp(10px, 3vw, 45px);
 
     text-align: center;
 }
 
 .team-logo {
-    width: clamp(80px, 12vw, 150px);
-    height: clamp(80px, 12vw, 150px);
-
-    max-width: 100%;
+    width: clamp(65px, 11vw, 145px);
+    height: clamp(65px, 11vw, 145px);
 
     object-fit: contain;
 
@@ -117,70 +147,71 @@ h3 {
     min-width: 0;
 
     display: flex;
-
     flex-direction: column;
 
     align-items: center;
 
-    justify-content: center;
-
     gap: 6px;
 }
 
-.team-title h1,
-.team-title h2,
-.team-title p {
+.team-title h1 {
+    width: 100%;
+
     margin: 0;
 
-    max-width: 100%;
+    font-size:
+        clamp(24px, 4vw, 40px);
+
+    line-height: 1.1;
 
     overflow-wrap: anywhere;
 }
 
-.team-title h1 {
-    font-size: clamp(25px, 4vw, 38px);
-
-    letter-spacing: clamp(1px, 0.3vw, 3px);
-}
-
 .team-title h2 {
-    font-size: clamp(18px, 2.5vw, 25px);
+    width: 100%;
 
-    color: #4da6ff;
+    margin: 0;
 
-    letter-spacing: 2px;
+    font-size:
+        clamp(17px, 2.5vw, 25px);
+
+    line-height: 1.2;
+
+    overflow-wrap: anywhere;
 }
 
 .team-title p {
-    font-size: clamp(12px, 1.5vw, 15px);
+    margin: 0;
 
-    color: #aab4c3;
+    color: #9ba8b8;
+
+    font-size:
+        clamp(10px, 1.5vw, 15px);
 
     letter-spacing: 3px;
 }
 
 
-/* =========================================
+/* =========================================================
    SEASON SELECTOR
-========================================= */
+========================================================= */
 
 .season-selector {
     width: 100%;
 
     display: flex;
-
     flex-direction: column;
 
     align-items: center;
 
-    justify-content: center;
-
-    gap: 10px;
+    gap: 8px;
 
     text-align: center;
 }
 
 .season-selector label {
+    margin: 0;
+
     font-weight: bold;
 
     letter-spacing: 2px;
@@ -191,51 +222,40 @@ h3 {
     width: min(100%, 300px);
 }
 
-#seasonTitle {
-    margin: 0;
 
-    text-align: center;
-
-    font-size: clamp(16px, 2vw, 20px);
-
-    font-weight: bold;
-
-    color: #4da6ff;
-
-    letter-spacing: 2px;
-}
-
-
-/* =========================================
+/* =========================================================
    FORMS
-========================================= */
+========================================================= */
 
 label {
     display: block;
 
     margin-bottom: 7px;
 
-    color: #d8dee8;
+    color: #d8e1ec;
 
     font-weight: bold;
+
+    overflow-wrap: anywhere;
 }
 
 input,
 select,
 textarea {
-    width: 100%;
+    display: block;
 
+    width: 100%;
     max-width: 100%;
 
-    min-height: 48px;
+    min-width: 0;
 
-    padding: 12px 15px;
+    padding: 12px 14px;
 
-    border: 1px solid #334155;
+    border: 1px solid #34445b;
 
     border-radius: 8px;
 
-    background: rgba(10, 15, 30, 0.92);
+    background: rgba(8, 14, 28, 0.95);
 
     color: #ffffff;
 
@@ -248,6 +268,10 @@ input:focus,
 select:focus,
 textarea:focus {
     border-color: #4da6ff;
+
+    box-shadow:
+        0 0 0 2px
+        rgba(77, 166, 255, 0.12);
 }
 
 textarea {
@@ -257,20 +281,19 @@ textarea {
 }
 
 
-/* =========================================
-   BUTTON BASE
-========================================= */
+/* =========================================================
+   BUTTONS
+========================================================= */
 
 button {
     width: 100%;
-
     max-width: 100%;
 
     min-height: 48px;
 
-    padding: 12px 20px;
+    padding: 12px 18px;
 
-    border: none;
+    border: 0;
 
     border-radius: 8px;
 
@@ -278,19 +301,15 @@ button {
 
     color: #ffffff;
 
-    font-size: 15px;
+    font-size: 14px;
 
     font-weight: bold;
 
     letter-spacing: 1px;
 
-    cursor: pointer;
-
     transition:
         background 0.15s ease,
         transform 0.15s ease;
-
-    overflow-wrap: anywhere;
 }
 
 button:hover {
@@ -303,18 +322,10 @@ button:active {
     transform: translateY(0);
 }
 
-button:disabled {
-    opacity: 0.6;
 
-    cursor: not-allowed;
-
-    transform: none;
-}
-
-
-/* =========================================
-   BUTTON MENUS
-========================================= */
+/* =========================================================
+   MENU BUTTON GRID
+========================================================= */
 
 .menu {
     width: 100%;
@@ -335,14 +346,14 @@ button:disabled {
     align-items: stretch;
 }
 
-.menu button {
-    width: 100%;
+.menu > * {
+    min-width: 0;
 }
 
 
-/* =========================================
+/* =========================================================
    STATISTICS GRID
-========================================= */
+========================================================= */
 
 .stats-grid {
     width: 100%;
@@ -363,52 +374,55 @@ button:disabled {
     align-items: stretch;
 }
 
+.stats-grid > * {
+    min-width: 0;
+}
 
-/* =========================================
-   STAT CARDS
-========================================= */
+
+/* =========================================================
+   STAT CARD
+========================================================= */
 
 .stat-card {
     width: 100%;
-
     min-width: 0;
 
-    padding: clamp(18px, 2.5vw, 25px);
+    padding:
+        clamp(16px, 2.5vw, 25px);
+
+    border:
+        1px solid
+        rgba(77, 166, 255, 0.20);
 
     border-radius: 12px;
 
-    background: rgba(15, 22, 40, 0.84);
-
-    border: 1px solid rgba(77, 166, 255, 0.2);
-
-    display: flex;
-
-    flex-direction: column;
-
-    gap: 15px;
+    background:
+        rgba(15, 22, 40, 0.86);
 
     overflow-wrap: anywhere;
+
+    word-break: normal;
 }
 
+.stat-card h1,
 .stat-card h2,
 .stat-card h3,
 .stat-card p {
-    margin: 0;
+    margin-bottom: 10px;
 }
 
-.stat-card strong {
-    font-size: clamp(25px, 3vw, 32px);
-
-    color: #4da6ff;
+.stat-card > :last-child {
+    margin-bottom: 0;
 }
 
 
-/* =========================================
+/* =========================================================
    PLAYER LIST
-========================================= */
+========================================================= */
 
 #playerList {
     width: 100%;
+    min-width: 0;
 
     display: grid;
 
@@ -416,7 +430,7 @@ button:disabled {
         repeat(
             auto-fit,
             minmax(
-                min(250px, 100%),
+                min(260px, 100%),
                 1fr
             )
         );
@@ -426,118 +440,104 @@ button:disabled {
     align-items: stretch;
 }
 
+#playerList > * {
+    min-width: 0;
+}
+
+
+/* =========================================================
+   PLAYER CARD
+========================================================= */
+
 .player-card {
     width: 100%;
-
     min-width: 0;
 
-    padding: 20px;
+    padding: clamp(16px, 2.5vw, 22px);
+
+    border:
+        1px solid
+        rgba(77, 166, 255, 0.20);
 
     border-radius: 12px;
 
-    background: rgba(15, 22, 40, 0.85);
-
-    border: 1px solid rgba(77, 166, 255, 0.2);
+    background:
+        rgba(15, 22, 40, 0.86);
 
     display: flex;
-
     flex-direction: column;
 
-    align-items: stretch;
-
     gap: 12px;
+
+    overflow: hidden;
+}
+
+.player-card h2,
+.player-card h3,
+.player-card p {
+    margin: 0;
 
     overflow-wrap: anywhere;
 }
 
-.player-card h3,
-.player-card p {
-    margin: 0;
-}
-
-.player-card img {
-    width: 100px;
-    height: 100px;
-
-    max-width: 100%;
-
-    object-fit: cover;
-
-    border-radius: 50%;
-
-    align-self: center;
-}
-
-.player-card button {
-    margin-top: auto;
-}
-
-
-/* =========================================
-   PLAYER PROFILE
-========================================= */
-
-.player-profile-header {
-    width: 100%;
-
-    display: flex;
-
-    flex-direction: column;
-
-    align-items: center;
-
-    justify-content: center;
-
-    gap: 15px;
-
-    text-align: center;
-}
-
-.player-profile-header img,
 .player-photo {
-    width: clamp(110px, 20vw, 150px);
-    height: clamp(110px, 20vw, 150px);
+    width: clamp(90px, 15vw, 130px);
+    height: clamp(90px, 15vw, 130px);
 
-    max-width: 100%;
-
-    object-fit: cover;
+    margin: 0 auto;
 
     border-radius: 50%;
 
-    border: 3px solid #4da6ff;
+    overflow: hidden;
+
+    background: #111b2e;
+
+    flex-shrink: 0;
+}
+
+.player-photo img,
+.player-photo-image {
+    width: 100%;
+    height: 100%;
+
+    object-fit: cover;
 }
 
 .player-placeholder {
-    width: clamp(110px, 20vw, 150px);
-    height: clamp(110px, 20vw, 150px);
+    width: clamp(90px, 15vw, 130px);
+    height: clamp(90px, 15vw, 130px);
 
-    max-width: 100%;
+    margin: 0 auto;
 
     border-radius: 50%;
 
-    background: #162033;
+    background: #111b2e;
 
-    border: 3px solid #4da6ff;
+    border:
+        3px solid
+        #4da6ff;
 
     display: flex;
 
     align-items: center;
-
     justify-content: center;
 
-    font-size: clamp(30px, 6vw, 40px);
+    color: #4da6ff;
+
+    font-size:
+        clamp(28px, 5vw, 40px);
 
     font-weight: bold;
 
-    color: #4da6ff;
+    flex-shrink: 0;
 }
 
 
-/* =========================================
-   PLAYER STAT GRID
-========================================= */
+/* =========================================================
+   PLAYER ACTIONS
+========================================================= */
 
-.player-stat-grid {
+.player-actions {
     width: 100%;
 
     display: grid;
@@ -546,7 +546,36 @@ button:disabled {
         repeat(
             auto-fit,
             minmax(
-                min(180px, 100%),
+                min(150px, 100%),
+                1fr
+            )
+        );
+
+    gap: 10px;
+
+    margin-top: auto;
+}
+
+.player-actions > * {
+    min-width: 0;
+}
+
+
+/* =========================================================
+   PLAYER STAT GRID
+========================================================= */
+
+.player-stat-grid {
+    width: 100%;
+    min-width: 0;
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(
+            auto-fit,
+            minmax(
+                min(150px, 100%),
                 1fr
             )
         );
@@ -559,110 +588,147 @@ button:disabled {
 .player-stat-grid > div {
     min-width: 0;
 
-    padding: 20px;
+    padding: 18px 12px;
 
     border-radius: 10px;
 
-    background: rgba(10, 15, 30, 0.75);
+    background:
+        rgba(8, 14, 28, 0.78);
 
     text-align: center;
 
     display: flex;
-
     flex-direction: column;
 
     align-items: center;
-
     justify-content: center;
 
-    gap: 8px;
+    gap: 6px;
 
     overflow-wrap: anywhere;
 }
 
 .player-stat-grid strong {
-    font-size: clamp(24px, 3vw, 28px);
-
     color: #4da6ff;
+
+    font-size:
+        clamp(22px, 4vw, 30px);
+
+    line-height: 1;
+}
+
+.player-stat-grid span {
+    color: #aab6c6;
+
+    font-size: 11px;
+
+    font-weight: bold;
+
+    letter-spacing: 1px;
+
+    overflow-wrap: anywhere;
 }
 
 
-/* =========================================
+/* =========================================================
    MATCH CARDS
-========================================= */
+========================================================= */
 
 .match-card {
     width: 100%;
-
     min-width: 0;
 
-    padding: 20px;
+    padding: clamp(16px, 2.5vw, 22px);
+
+    border:
+        1px solid
+        rgba(77, 166, 255, 0.20);
 
     border-radius: 12px;
 
-    background: rgba(15, 22, 40, 0.85);
-
-    border: 1px solid rgba(77, 166, 255, 0.2);
-
-    display: flex;
-
-    flex-direction: column;
-
-    gap: 10px;
+    background:
+        rgba(15, 22, 40, 0.86);
 
     overflow-wrap: anywhere;
 }
 
+.match-card h2,
 .match-card h3,
 .match-card p {
-    margin: 0;
+    margin: 0 0 8px;
 }
 
 
-/* =========================================
-   FIXTURE CARDS
-========================================= */
+/* =========================================================
+   FIXTURE LIST
+========================================================= */
+
+#fixtureList {
+    width: 100%;
+    min-width: 0;
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(
+            auto-fit,
+            minmax(
+                min(280px, 100%),
+                1fr
+            )
+        );
+
+    gap: 20px;
+}
+
+#fixtureList > * {
+    min-width: 0;
+}
+
+
+/* =========================================================
+   FIXTURE CARD
+========================================================= */
 
 .fixture-card {
     width: 100%;
-
     min-width: 0;
 
-    padding: clamp(18px, 3vw, 25px);
+    padding:
+        clamp(18px, 3vw, 28px);
+
+    border:
+        1px solid
+        rgba(77, 166, 255, 0.20);
 
     border-radius: 12px;
 
-    background: rgba(15, 22, 40, 0.85);
-
-    border: 1px solid rgba(77, 166, 255, 0.2);
-
-    display: flex;
-
-    flex-direction: column;
-
-    gap: 10px;
+    background:
+        rgba(15, 22, 40, 0.86);
 
     cursor: pointer;
 
+    overflow-wrap: anywhere;
+
     transition:
         background 0.15s ease,
-        transform 0.15s ease,
-        border-color 0.15s ease;
-
-    overflow-wrap: anywhere;
+        border-color 0.15s ease,
+        transform 0.15s ease;
 }
 
 .fixture-card:hover {
-    background: rgba(20, 30, 55, 0.95);
+    background:
+        rgba(20, 30, 52, 0.95);
 
-    border-color: rgba(77, 166, 255, 0.5);
+    border-color:
+        rgba(77, 166, 255, 0.55);
 
     transform: translateY(-3px);
 }
 
 .fixture-card h2,
 .fixture-card p {
-    margin: 0;
+    margin: 0 0 10px;
 }
 
 .fixture-card strong {
@@ -672,33 +738,56 @@ button:disabled {
 }
 
 
-/* =========================================
+/* =========================================================
+   GRAPH CONTAINERS
+========================================================= */
+
+.graph-container {
+    width: 100%;
+    max-width: 100%;
+
+    min-width: 0;
+
+    position: relative;
+
+    height: clamp(260px, 45vw, 400px);
+
+    overflow: hidden;
+}
+
+.player-graph-container {
+    height: clamp(280px, 50vw, 450px);
+}
+
+
+/* =========================================================
    TABLES
-========================================= */
+========================================================= */
 
 .table-container {
     width: 100%;
+    max-width: 100%;
 
     overflow-x: auto;
+
+    -webkit-overflow-scrolling: touch;
 }
 
 table {
     width: 100%;
-
-    min-width: 500px;
 
     border-collapse: collapse;
 }
 
 th,
 td {
-    padding: 14px;
+    padding: 12px;
 
-    border-bottom: 1px solid #334155;
+    border-bottom:
+        1px solid
+        #334155;
 
     text-align: left;
-
-    white-space: nowrap;
 }
 
 th {
@@ -706,31 +795,23 @@ th {
 }
 
 
-/* =========================================
-   LINKS
-========================================= */
-
-a {
-    color: #4da6ff;
-
-    text-decoration: none;
-}
-
-a:hover {
-    text-decoration: underline;
-}
-
-
-/* =========================================
-   LOGIN
-========================================= */
+/* =========================================================
+   LOGIN PAGE
+========================================================= */
 
 .login-container {
-    width: min(90%, 450px);
+    width: min(
+        calc(100% - 30px),
+        450px
+    );
 
     min-height: 100vh;
 
     margin: 0 auto;
+
+    padding:
+        30px
+        0;
 
     display: flex;
 
@@ -745,6 +826,11 @@ a:hover {
     text-align: center;
 }
 
+.login-container .team-logo {
+    width: clamp(100px, 25vw, 160px);
+    height: clamp(100px, 25vw, 160px);
+}
+
 .login-container h1,
 .login-container h2,
 .login-container p {
@@ -752,19 +838,19 @@ a:hover {
 }
 
 .login-container h1 {
-    font-size: clamp(30px, 6vw, 42px);
-
-    letter-spacing: 3px;
+    font-size:
+        clamp(28px, 7vw, 42px);
 }
 
 .login-container h2 {
     color: #4da6ff;
 
-    letter-spacing: 2px;
+    font-size:
+        clamp(19px, 5vw, 26px);
 }
 
-.login-container p {
-    color: #aab4c3;
+.login-container form {
+    width: 100%;
 }
 
 .login-container input,
@@ -773,46 +859,61 @@ a:hover {
 }
 
 #errorMessage {
-    color: #ff4444;
+    min-height: 20px;
+
+    color: #ff5555;
 }
 
 
-/* =========================================
+/* =========================================================
+   LINKS
+========================================================= */
+
+a {
+    color: #4da6ff;
+
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+
+/* =========================================================
    FIXED DASHBOARD BUTTON
-========================================= */
+========================================================= */
 
 .dashboard-button {
     position: fixed;
 
-    right: 25px;
-    bottom: 25px;
+    right: clamp(10px, 2vw, 25px);
+    bottom: clamp(10px, 2vw, 25px);
 
-    width: 130px;
+    width: clamp(105px, 12vw, 130px);
 
-    min-height: 48px;
+    min-height: 45px;
 
-    padding: 12px 18px;
+    padding: 10px 15px;
+
+    border: none;
+    border-radius: 8px;
 
     background: #1677ff;
 
     color: #ffffff;
 
-    border: none;
-
-    border-radius: 8px;
-
-    font-size: 14px;
+    font-size: 13px;
 
     font-weight: bold;
 
     letter-spacing: 1px;
 
-    cursor: pointer;
-
     z-index: 9999;
 
     box-shadow:
-        0 4px 15px rgba(0, 0, 0, 0.35);
+        0 4px 15px
+        rgba(0, 0, 0, 0.35);
 }
 
 .dashboard-button:hover {
@@ -826,81 +927,31 @@ a:hover {
 }
 
 
-/* =========================================
-   ADMIN ELEMENTS
-========================================= */
+/* =========================================================
+   VIEWER / ADMIN
+========================================================= */
 
 .admin-only {
     display: block;
 }
 
 
-/* =========================================
-   GRAPH CONTAINERS
-========================================= */
-
-.graph-container {
-    position: relative;
-
-    width: 100%;
-
-    max-width: 100%;
-
-    height: 350px;
-}
-
-.player-graph-container {
-    height: 400px;
-}
-
-
-/* =========================================
-   SCROLLBAR
-========================================= */
-
-::-webkit-scrollbar {
-    width: 10px;
-}
-
-::-webkit-scrollbar-track {
-    background: #080d18;
-}
-
-::-webkit-scrollbar-thumb {
-    background: #24527d;
-
-    border-radius: 10px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-    background: #347ab5;
-}
-
-
-/* =========================================
-   TABLET
-========================================= */
+/* =========================================================
+   MEDIUM SCREENS
+========================================================= */
 
 @media (max-width: 900px) {
 
     .dashboard {
-        padding-left: 25px;
-        padding-right: 25px;
+        padding-left: 20px;
+        padding-right: 20px;
     }
 
     .team-header {
         grid-template-columns:
-            minmax(80px, 1fr)
-            minmax(180px, 2fr)
-            minmax(80px, 1fr);
-    }
-
-    .stats-grid {
-        grid-template-columns:
-            repeat(
-                2,
-                minmax(0, 1fr)
-            );
+            minmax(60px, 1fr)
+            minmax(0, 2.5fr)
+            minmax(60px, 1fr);
     }
 
     #playerList {
@@ -911,7 +962,15 @@ a:hover {
             );
     }
 
-    .menu {
+    #fixtureList {
+        grid-template-columns:
+            repeat(
+                2,
+                minmax(0, 1fr)
+            );
+    }
+
+    .stats-grid {
         grid-template-columns:
             repeat(
                 2,
@@ -929,66 +988,15 @@ a:hover {
 }
 
 
-/* =========================================
+/* =========================================================
    MOBILE
-========================================= */
+========================================================= */
 
-@media (max-width: 700px) {
+@media (max-width: 650px) {
 
-    .dashboard {
-        padding:
-            25px
-            15px
-            100px;
-
-        gap: 25px;
+    body {
+        background-attachment: scroll;
     }
-
-    .team-header {
-        grid-template-columns: 1fr;
-
-        gap: 15px;
-    }
-
-    .team-header .team-logo {
-        display: none;
-    }
-
-    .team-title h1 {
-        font-size: 30px;
-    }
-
-    .team-title h2 {
-        font-size: 21px;
-    }
-
-    .stats-grid,
-    #playerList,
-    .player-stat-grid {
-        grid-template-columns: 1fr;
-    }
-
-    .menu {
-        grid-template-columns: 1fr;
-
-        gap: 15px;
-    }
-
-    .graph-container {
-        height: 300px;
-    }
-
-    .player-graph-container {
-        height: 350px;
-    }
-}
-
-
-/* =========================================
-   SMALL MOBILE
-========================================= */
-
-@media (max-width: 500px) {
 
     .dashboard {
         padding:
@@ -999,46 +1007,54 @@ a:hover {
         gap: 20px;
     }
 
+    .team-header {
+        grid-template-columns: 1fr;
+
+        gap: 10px;
+    }
+
+    .team-header .team-logo {
+        display: none;
+    }
+
     .team-title h1 {
-        font-size: 25px;
+        font-size: 28px;
     }
 
     .team-title h2 {
-        font-size: 18px;
+        font-size: 19px;
     }
 
     .team-title p {
-        font-size: 11px;
+        font-size: 10px;
+    }
+
+    .stats-grid,
+    #playerList,
+    #fixtureList,
+    .player-stat-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .menu {
+        grid-template-columns: 1fr;
+    }
+
+    .player-actions {
+        grid-template-columns: 1fr;
     }
 
     .stat-card {
-        padding: 18px;
-    }
-
-    .dashboard-button {
-        right: 15px;
-        bottom: 15px;
-
-        width: 110px;
-
-        min-height: 45px;
-    }
-
-    .graph-container {
-        height: 260px;
-    }
-
-    .player-graph-container {
-        height: 300px;
+        padding: 17px;
     }
 }
 
 
-/* =========================================
-   VERY SMALL SCREENS
-========================================= */
+/* =========================================================
+   SMALL PHONES
+========================================================= */
 
-@media (max-width: 350px) {
+@media (max-width: 400px) {
 
     .dashboard {
         padding-left: 10px;
@@ -1049,17 +1065,53 @@ a:hover {
         padding: 15px;
     }
 
+    .team-title h1 {
+        font-size: 24px;
+    }
+
+    .team-title h2 {
+        font-size: 17px;
+    }
+
+    .player-stat-grid > div {
+        padding: 15px 10px;
+    }
+
     .dashboard-button {
         right: 10px;
         bottom: 10px;
 
         width: 105px;
+
+        min-height: 44px;
+    }
+}
+
+
+/* =========================================================
+   VERY SMALL PHONES
+========================================================= */
+
+@media (max-width: 320px) {
+
+    .dashboard {
+        padding-left: 8px;
+        padding-right: 8px;
+    }
+
+    .stat-card {
+        padding: 13px;
     }
 
     input,
     select,
-    textarea {
+    textarea,
+    button {
         font-size: 16px;
     }
+
+    .dashboard-button {
+        width: 100px;
+    }
 }
-```
+

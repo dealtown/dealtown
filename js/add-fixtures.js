@@ -1,7 +1,6 @@
 import { db } from "./firebase.js";
 
 import {
-    collection,
     setDoc,
     doc
 } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-firestore.js";
@@ -45,6 +44,9 @@ const generalNotesInput =
 const message =
     document.getElementById("message");
 
+const saveButton =
+    document.getElementById("saveFixtureButton");
+
 
 /* =========================================================
    CURRENT SEASON
@@ -61,10 +63,43 @@ function getCurrentSeason() {
 
 
 /* =========================================================
+   SHOW MESSAGE
+   ========================================================= */
+
+function showMessage(text, success) {
+
+    if (!message) {
+        return;
+    }
+
+    message.textContent =
+        text;
+
+    message.style.color =
+        success
+            ? "#8ee28e"
+            : "#ff7070";
+
+}
+
+
+/* =========================================================
    SAVE FIXTURE
    ========================================================= */
 
 async function saveFixture() {
+
+    if (!isAdmin()) {
+
+        showMessage(
+            "Admin access is required.",
+            false
+        );
+
+        return;
+
+    }
+
 
     const opponent =
         opponentInput.value.trim();
@@ -97,9 +132,12 @@ async function saveFixture() {
 
     if (!opponent) {
 
-        showError(
-            "Please enter the opponent."
+        showMessage(
+            "Please enter the opponent.",
+            false
         );
+
+        opponentInput.focus();
 
         return;
 
@@ -108,9 +146,12 @@ async function saveFixture() {
 
     if (!date) {
 
-        showError(
-            "Please select a date."
+        showMessage(
+            "Please select a date.",
+            false
         );
+
+        dateInput.focus();
 
         return;
 
@@ -119,9 +160,12 @@ async function saveFixture() {
 
     if (!time) {
 
-        showError(
-            "Please select a time."
+        showMessage(
+            "Please select a time.",
+            false
         );
+
+        timeInput.focus();
 
         return;
 
@@ -130,9 +174,12 @@ async function saveFixture() {
 
     if (!homeAway) {
 
-        showError(
-            "Please select Home or Away."
+        showMessage(
+            "Please select Home or Away.",
+            false
         );
+
+        homeAwayInput.focus();
 
         return;
 
@@ -141,9 +188,12 @@ async function saveFixture() {
 
     if (!competition) {
 
-        showError(
-            "Please select the competition."
+        showMessage(
+            "Please select a competition.",
+            false
         );
+
+        competitionInput.focus();
 
         return;
 
@@ -152,9 +202,12 @@ async function saveFixture() {
 
     if (!status) {
 
-        showError(
-            "Please select a status."
+        showMessage(
+            "Please select a status.",
+            false
         );
+
+        statusInput.focus();
 
         return;
 
@@ -162,7 +215,22 @@ async function saveFixture() {
 
 
     /* =====================================================
-       FIXTURE ID
+       DISABLE BUTTON
+       ===================================================== */
+
+    if (saveButton) {
+
+        saveButton.disabled =
+            true;
+
+        saveButton.textContent =
+            "SAVING...";
+
+    }
+
+
+    /* =====================================================
+       CREATE ID
        ===================================================== */
 
     const fixtureId =
@@ -178,7 +246,7 @@ async function saveFixture() {
 
 
     /* =====================================================
-       FIXTURE OBJECT
+       CREATE FIXTURE
        ===================================================== */
 
     const fixture = {
@@ -241,15 +309,18 @@ async function saveFixture() {
         );
 
 
-        /* =================================================
-           SUCCESS
-           ================================================= */
+        showMessage(
+            "Fixture saved successfully!",
+            true
+        );
 
-        message.style.color =
-            "#8ee28e";
 
-        message.textContent =
-            "Fixture saved successfully!";
+        if (saveButton) {
+
+            saveButton.textContent =
+                "SAVED";
+
+        }
 
 
         setTimeout(
@@ -266,14 +337,26 @@ async function saveFixture() {
     } catch (error) {
 
         console.error(
-            "Could not save fixture:",
+            "Firebase fixture error:",
             error
         );
 
 
-        showError(
-            "The fixture could not be saved to Firebase."
+        showMessage(
+            "Could not save fixture. Check your Firebase connection and Firestore rules.",
+            false
         );
+
+
+        if (saveButton) {
+
+            saveButton.disabled =
+                false;
+
+            saveButton.textContent =
+                "SAVE FIXTURE";
+
+        }
 
     }
 
@@ -281,23 +364,14 @@ async function saveFixture() {
 
 
 /* =========================================================
-   ERROR MESSAGE
+   SAVE BUTTON
    ========================================================= */
 
-function showError(text) {
+if (saveButton) {
 
-    message.style.color =
-        "#ff7070";
-
-    message.textContent =
-        text;
+    saveButton.addEventListener(
+        "click",
+        saveFixture
+    );
 
 }
-
-
-/* =========================================================
-   MAKE FUNCTION AVAILABLE TO HTML
-   ========================================================= */
-
-window.saveFixture =
-    saveFixture;

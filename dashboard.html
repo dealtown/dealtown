@@ -1,9 +1,9 @@
-
+```html
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
-    
+
     <meta charset="UTF-8">
 
     <meta
@@ -20,66 +20,79 @@
         href="style.css"
     >
 
-
 </head>
 
 <body>
 
     <main class="dashboard">
 
-        <h1>
-            
-        </h1>
+        <!-- TEAM HEADER -->
+
+        <div class="team-header">
+
+            <img
+                src="team-logo.png"
+                alt="Deal Town U10 Hoops"
+                class="team-logo team-logo-left"
+            >
+
+            <div class="team-title">
+
+                <h1>DEAL TOWN</h1>
+
+                <h2>U10 HOOPS</h2>
+
+                <p>TEAM TRACKER</p>
+
+            </div>
+
+            <img
+                src="team-logo.png"
+                alt="Deal Town U10 Hoops"
+                class="team-logo team-logo-right"
+            >
+
+        </div>
 
 
         <!-- SEASON SELECTOR -->
 
-        <main class="dashboard">
+        <div class="season-selector">
 
-    <div class="team-header">
+            <label for="seasonSelect">
+                SEASON
+            </label>
 
-        <img
-            src="team-logo.png"
-            alt="Deal Town U10 Hoops"
-            class="team-logo team-logo-left">
+            <select id="seasonSelect">
 
-        <div class="team-title">
+                <option value="2024/25">
+                    2024 / 25
+                </option>
 
-            <h1>DEAL TOWN</h1>
+                <option value="2025/26">
+                    2025 / 26
+                </option>
 
-            <h2>U10 HOOPS</h2>
+                <option value="2026/27">
+                    2026 / 27
+                </option>
 
-            <p>TEAM TRACKER</p>
+                <option value="2027/28">
+                    2027 / 28
+                </option>
+
+                <option value="2028/29">
+                    2028 / 29
+                </option>
+
+                <option value="2029/30">
+                    2029 / 30
+                </option>
+
+            </select>
 
         </div>
 
-        <img
-            src="team-logo.png"
-            alt="Deal Town U10 Hoops"
-            class="team-logo team-logo-right">
-
-    </div>
-
-    <div class="season-selector">
-
-        <label for="seasonSelect">
-            SEASON
-        </label>
-
-        <select id="seasonSelect">
-
-            <option value="2024/25">2024 / 25</option>
-            <option value="2025/26">2025 / 26</option>
-            <option value="2026/27">2026 / 27</option>
-            <option value="2027/28">2027 / 28</option>
-            <option value="2028/29">2028 / 29</option>
-            <option value="2029/30">2029 / 30</option>
-
-        </select>
-
-    </div>
-
-    
 
         <p id="seasonTitle">
             2026 / 27 SEASON
@@ -92,9 +105,7 @@
 
             <div class="stat-card">
 
-                <h3>
-                    MATCHES
-                </h3>
+                <h3>MATCHES</h3>
 
                 <strong id="matches">
                     0
@@ -105,9 +116,7 @@
 
             <div class="stat-card">
 
-                <h3>
-                    WINS
-                </h3>
+                <h3>WINS</h3>
 
                 <strong id="wins">
                     0
@@ -118,9 +127,7 @@
 
             <div class="stat-card">
 
-                <h3>
-                    DRAWS
-                </h3>
+                <h3>DRAWS</h3>
 
                 <strong id="draws">
                     0
@@ -131,9 +138,7 @@
 
             <div class="stat-card">
 
-                <h3>
-                    LOSSES
-                </h3>
+                <h3>LOSSES</h3>
 
                 <strong id="losses">
                     0
@@ -144,9 +149,7 @@
 
             <div class="stat-card">
 
-                <h3>
-                    WIN RATE
-                </h3>
+                <h3>WIN RATE</h3>
 
                 <strong id="winRate">
                     0%
@@ -157,9 +160,7 @@
 
             <div class="stat-card">
 
-                <h3>
-                    GOALS
-                </h3>
+                <h3>GOALS</h3>
 
                 <strong id="goals">
                     0 - 0
@@ -170,9 +171,7 @@
 
             <div class="stat-card">
 
-                <h3>
-                    GOAL DIFFERENCE
-                </h3>
+                <h3>GOAL DIFFERENCE</h3>
 
                 <strong id="goalDifference">
                     0
@@ -183,9 +182,7 @@
 
             <div class="stat-card">
 
-                <h3>
-                    CURRENT WINNING RUN
-                </h3>
+                <h3>CURRENT WINNING RUN</h3>
 
                 <strong id="winningRun">
                     0
@@ -196,9 +193,7 @@
 
             <div class="stat-card">
 
-                <h3>
-                    CURRENT UNBEATEN RUN
-                </h3>
+                <h3>CURRENT UNBEATEN RUN</h3>
 
                 <strong id="unbeatenRun">
                     0
@@ -214,13 +209,13 @@
         <div class="menu">
 
             <button
-    type="button"
-    onclick="window.location.href='playerstats.html'"
->
-    PLAYERS
-</button>
-            
-            
+                type="button"
+                onclick="window.location.href='playerstats.html'"
+            >
+                PLAYERS
+            </button>
+
+
             <button
                 type="button"
                 class="admin-only"
@@ -246,8 +241,6 @@
             </button>
 
 
-
-
             <button
                 type="button"
                 onclick="window.location.href='preview.html'"
@@ -255,29 +248,42 @@
                 SEASON PREVIEW
             </button>
 
-             <button
+
+            <button
                 type="button"
                 onclick="window.location.href='fixtures.html'"
             >
-                 UPCOMING
+                UPCOMING
             </button>
 
-
-</button>
-</button>
+        </div>
 
 
-        
+        <!-- FIXED DASHBOARD BUTTON -->
 
-    
-<script src="js/auth.js"></script>
-<script src="js/dashboard.js" type="module"></script>
+        <button
+            type="button"
+            class="dashboard-button"
+            onclick="window.location.href='dashboard.html'"
+        >
+            DASHBOARD
+        </button>
+
+    </main>
 
 
+    <!-- LOGIN SYSTEM -->
 
+    <script src="js/auth.js"></script>
+
+    <!-- DASHBOARD SYSTEM -->
+
+    <script
+        src="js/dashboard.js"
+        type="module"
+    ></script>
 
 </body>
 
 </html>
-
-
+```

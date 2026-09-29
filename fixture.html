@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        Fixture - Deal Town U10 Hoops
+    </title>
+
+    <link
+        rel="stylesheet"
+        href="style.css"
+    >
+
+</head>
+
+<body>
+
+    <main class="dashboard">
+
+        <!-- HEADER -->
+
+        <div class="team-header">
+
+            <img
+                src="team-logo.png"
+                alt="Deal Town U10 Hoops"
+                class="team-logo"
+            >
+
+            <div class="team-title">
+
+                <h1>FIXTURE</h1>
+
+                <h2>DEAL TOWN U10 HOOPS</h2>
+
+                <p>TEAM TRACKER</p>
+
+            </div>
+
+            <img
+                src="team-logo.png"
+                alt="Deal Town U10 Hoops"
+                class="team-logo"
+            >
+
+        </div>
+
+
+        <!-- FIXTURE DETAILS -->
+
+        <section
+            class="stat-card"
+            id="fixtureDetails"
+        >
+
+            <h2>
+                LOADING FIXTURE...
+            </h2>
+
+            <p>
+                Please wait.
+            </p>
+
+        </section>
+
+
+        <!-- ADMIN ACTIONS -->
+
+        <div
+            class="menu admin-only"
+            id="adminActions"
+            style="display: none;"
+        >
+
+            <button
+                type="button"
+                id="editFixtureButton"
+            >
+                EDIT FIXTURE
+            </button>
+
+            <button
+                type="button"
+                id="deleteFixtureButton"
+            >
+                DELETE FIXTURE
+            </button>
+
+        </div>
+
+
+        <!-- NAVIGATION -->
+
+        <div class="menu">
+
+            <button
+                type="button"
+                onclick="window.location.href='fixtures.html'"
+            >
+                BACK TO FIXTURES
+            </button>
+
+            <button
+                type="button"
+                onclick="window.location.href='dashboard.html'"
+            >
+                BACK TO DASHBOARD
+            </button>
+
+        </div>
+
+
+        <!-- LOG OUT -->
+
+        <button
+            type="button"
+            class="logout-button"
+            onclick="logout()"
+        >
+            LOG OUT
+        </button>
+
+    </main>
+
+
+    <!-- LOGIN -->
+
+    <script src="js/auth.js"></script>
+
+
+    <!-- FIXTURE SYSTEM -->
+
+    <script
+        type="module"
+        src="js/fixture.js"
+    ></script>
+
+</body>
+
+</html>

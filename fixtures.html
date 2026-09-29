@@ -1,3 +1,4 @@
+```html
 <!DOCTYPE html>
 <html lang="en">
 
@@ -18,14 +19,7 @@
         rel="stylesheet"
         href="style.css"
     >
-<button
-    type="button"
-    class="dashboard-button"
-    onclick="window.location.href='dashboard.html'"
->
-    DASHBOARD
-</button>
-    
+
 </head>
 
 <body>
@@ -212,13 +206,6 @@
 
             <button
                 type="button"
-                onclick="window.location.href='dashboard.html'"
-            >
-                BACK TO DASHBOARD
-            </button>
-
-            <button
-                type="button"
                 onclick="window.location.href='matches.html'"
             >
                 MATCH HISTORY
@@ -227,14 +214,14 @@
         </div>
 
 
-        <!-- LOG OUT -->
+        <!-- FIXED DASHBOARD BUTTON -->
 
         <button
             type="button"
-            class="logout-button"
-            onclick="logout()"
+            class="dashboard-button"
+            onclick="window.location.href='dashboard.html'"
         >
-            LOG OUT
+            DASHBOARD
         </button>
 
     </main>
@@ -255,3 +242,4 @@
 </body>
 
 </html>
+```

@@ -11,6 +11,10 @@ import {
 } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-firestore.js";
 
 
+/* =========================================================
+   LOGIN
+========================================================= */
+
 requireLogin();
 
 
@@ -63,9 +67,51 @@ if (addFixtureButton) {
 
     } else {
 
-        addFixtureButton.style.display = "none";
+        addFixtureButton.style.display =
+            "none";
 
     }
+
+}
+
+
+/* =========================================================
+   CREATE MESSAGE CARD
+========================================================= */
+
+function createMessageCard(title, message) {
+
+    const card =
+        document.createElement("div");
+
+    card.className =
+        "stat-card";
+
+
+    const heading =
+        document.createElement("h2");
+
+    heading.textContent =
+        title;
+
+
+    const paragraph =
+        document.createElement("p");
+
+    paragraph.textContent =
+        message;
+
+
+    card.appendChild(
+        heading
+    );
+
+    card.appendChild(
+        paragraph
+    );
+
+
+    return card;
 
 }
 
@@ -79,7 +125,7 @@ function loadFixtures() {
     if (!fixtureList) {
 
         console.error(
-            "fixtureList was not found."
+            "fixtureList element was not found."
         );
 
         return;
@@ -88,31 +134,13 @@ function loadFixtures() {
 
     fixtureList.innerHTML = "";
 
+
     const loadingCard =
-        document.createElement("div");
+        createMessageCard(
+            "LOADING FIXTURES...",
+            "Please wait while the fixtures load."
+        );
 
-    loadingCard.className =
-        "stat-card";
-
-    const loadingTitle =
-        document.createElement("h2");
-
-    loadingTitle.textContent =
-        "LOADING FIXTURES...";
-
-    const loadingText =
-        document.createElement("p");
-
-    loadingText.textContent =
-        "Please wait while the fixtures load.";
-
-    loadingCard.appendChild(
-        loadingTitle
-    );
-
-    loadingCard.appendChild(
-        loadingText
-    );
 
     fixtureList.appendChild(
         loadingCard
@@ -152,6 +180,7 @@ function loadFixtures() {
                         ...documentSnapshot.data()
                     };
 
+
                     allFixtures.push(
                         fixture
                     );
@@ -178,57 +207,28 @@ function loadFixtures() {
             );
 
 
-            fixtureList.innerHTML = "";
-
-
-            const errorCard =
-                document.createElement("div");
-
-            errorCard.className =
-                "stat-card";
-
-
-            const errorTitle =
-                document.createElement("h2");
-
-            errorTitle.textContent =
-                "COULD NOT LOAD FIXTURES";
-
-
-            const errorText =
-                document.createElement("p");
-
-            errorText.textContent =
-                "Firebase error: " +
-                (
-                    error.code ||
-                    "UNKNOWN"
-                );
+            fixtureList.innerHTML =
+                "";
 
 
             const errorMessage =
-                document.createElement("p");
-
-            errorMessage.textContent =
-                error.message ||
-                "Unknown Firebase error.";
-
-
-            errorCard.appendChild(
-                errorTitle
-            );
-
-            errorCard.appendChild(
-                errorText
-            );
-
-            errorCard.appendChild(
-                errorMessage
-            );
+                createMessageCard(
+                    "COULD NOT LOAD FIXTURES",
+                    "Firebase error: " +
+                    (
+                        error.code ||
+                        "UNKNOWN"
+                    ) +
+                    " - " +
+                    (
+                        error.message ||
+                        "Unknown Firebase error."
+                    )
+                );
 
 
             fixtureList.appendChild(
-                errorCard
+                errorMessage
             );
 
 
@@ -252,7 +252,9 @@ function loadFixtures() {
 function formatDate(fixture) {
 
     if (!fixture.date) {
+
         return "DATE TBC";
+
     }
 
 
@@ -297,7 +299,9 @@ function formatDate(fixture) {
 function formatTime(fixture) {
 
     if (!fixture.time) {
+
         return "TIME TBC";
+
     }
 
 
@@ -360,7 +364,7 @@ function formatTime(fixture) {
 
 
 /* =========================================================
-   GET FIXTURE STATUS
+   GET STATUS
 ========================================================= */
 
 function getFixtureStatus(fixture) {
@@ -386,7 +390,9 @@ function getFixtureStatus(fixture) {
 
 
     if (!fixture.date) {
+
         return "SCHEDULED";
+
     }
 
 
@@ -428,7 +434,7 @@ function getFixtureStatus(fixture) {
 
 
 /* =========================================================
-   GET FIXTURE SEASON
+   GET SEASON
 ========================================================= */
 
 function getFixtureSeason(fixture) {
@@ -443,7 +449,9 @@ function getFixtureSeason(fixture) {
 
 
     if (!fixture.date) {
+
         return "";
+
     }
 
 
@@ -473,7 +481,9 @@ function getFixtureSeason(fixture) {
         date.getMonth() + 1;
 
 
-    if (month >= 8) {
+    if (
+        month >= 8
+    ) {
 
         return (
             year +
@@ -504,7 +514,9 @@ function getFixtureSeason(fixture) {
 function getFixtureMonth(fixture) {
 
     if (!fixture.date) {
+
         return null;
+
     }
 
 
@@ -749,7 +761,7 @@ function createFixtureCard(fixture) {
 
 
     /* -----------------------------------------------------
-       ADD CONTENT
+       ADD TO CARD
     ----------------------------------------------------- */
 
     card.appendChild(
@@ -797,9 +809,9 @@ function createFixtureCard(fixture) {
     );
 
 
-    /* -----------------------------------------------------
+    /* =====================================================
        ADMIN CONTROLS
-    ----------------------------------------------------- */
+    ===================================================== */
 
     if (isAdmin()) {
 
@@ -826,7 +838,7 @@ function createFixtureCard(fixture) {
 
 
         /* -------------------------------------------------
-           EDIT
+           EDIT BUTTON
         ------------------------------------------------- */
 
         const editButton =
@@ -861,7 +873,7 @@ function createFixtureCard(fixture) {
 
 
         /* -------------------------------------------------
-           DELETE
+           DELETE BUTTON
         ------------------------------------------------- */
 
         const deleteButton =
@@ -892,7 +904,9 @@ function createFixtureCard(fixture) {
 
 
                 if (!confirmed) {
+
                     return;
+
                 }
 
 
@@ -924,7 +938,7 @@ function createFixtureCard(fixture) {
 
 
                     alert(
-                        "Could not delete this fixture.\n\n" +
+                        "Could not delete this fixture. " +
                         (
                             error.message ||
                             "Unknown Firebase error."
@@ -974,7 +988,9 @@ function createFixtureCard(fixture) {
 function displayFixtures() {
 
     if (!fixtureList) {
+
         return;
+
     }
 
 
@@ -987,7 +1003,7 @@ function displayFixtures() {
 
 
     /* -----------------------------------------------------
-       SORT
+       SORT BY DATE
     ----------------------------------------------------- */
 
     filteredFixtures.sort(
@@ -1048,7 +1064,7 @@ function displayFixtures() {
 
 
     /* -----------------------------------------------------
-       EMPTY
+       NO FIXTURES
     ----------------------------------------------------- */
 
     if (
@@ -1056,43 +1072,10 @@ function displayFixtures() {
     ) {
 
         const emptyCard =
-            document.createElement(
-                "div"
+            createMessageCard(
+                "NO FIXTURES",
+                "There are no fixtures matching the selected season and month."
             );
-
-
-        emptyCard.className =
-            "stat-card";
-
-
-        const emptyTitle =
-            document.createElement(
-                "h2"
-            );
-
-
-        emptyTitle.textContent =
-            "NO FIXTURES";
-
-
-        const emptyText =
-            document.createElement(
-                "p"
-            );
-
-
-        emptyText.textContent =
-            "There are no fixtures matching the selected season and month.";
-
-
-        emptyCard.appendChild(
-            emptyTitle
-        );
-
-
-        emptyCard.appendChild(
-            emptyText
-        );
 
 
         fixtureList.appendChild(
@@ -1106,7 +1089,7 @@ function displayFixtures() {
 
 
     /* -----------------------------------------------------
-       SHOW FIXTURES
+       DISPLAY FIXTURES
     ----------------------------------------------------- */
 
     filteredFixtures.forEach(
@@ -1129,7 +1112,7 @@ function displayFixtures() {
 
 
 /* =========================================================
-   SEASON FILTER
+   SEASON CHANGE
 ========================================================= */
 
 if (seasonSelect) {
@@ -1147,7 +1130,7 @@ if (seasonSelect) {
 
 
 /* =========================================================
-   MONTH FILTER
+   MONTH CHANGE
 ========================================================= */
 
 if (monthSelect) {

@@ -20,24 +20,16 @@ requireLogin();
 ========================================================= */
 
 const fixtureDetails =
-    document.getElementById(
-        "fixtureDetails"
-    );
+    document.getElementById("fixtureDetails");
 
 const adminActions =
-    document.getElementById(
-        "adminActions"
-    );
+    document.getElementById("adminActions");
 
 const editFixtureButton =
-    document.getElementById(
-        "editFixtureButton"
-    );
+    document.getElementById("editFixtureButton");
 
 const deleteFixtureButton =
-    document.getElementById(
-        "deleteFixtureButton"
-    );
+    document.getElementById("deleteFixtureButton");
 
 
 /* =========================================================
@@ -84,17 +76,52 @@ function showError(
         return;
     }
 
-    fixtureDetails.innerHTML = `
 
-        <h2>
-            ${title}
-        </h2>
+    fixtureDetails.innerHTML = "";
 
-        <p>
-            ${message}
-        </p>
 
-    `;
+    const heading =
+        document.createElement("h2");
+
+    heading.textContent =
+        title;
+
+
+    const paragraph =
+        document.createElement("p");
+
+    paragraph.textContent =
+        message;
+
+
+    fixtureDetails.appendChild(
+        heading
+    );
+
+    fixtureDetails.appendChild(
+        paragraph
+    );
+
+}
+
+
+/* =========================================================
+   REMOVE OLD NOTE CARDS
+========================================================= */
+
+function removeNoteCards() {
+
+    document
+        .querySelectorAll(
+            ".fixture-note-card"
+        )
+        .forEach(
+            function(card) {
+
+                card.remove();
+
+            }
+        );
 
 }
 
@@ -108,7 +135,9 @@ function formatDate(
 ) {
 
     if (!fixture.date) {
+
         return "DATE TBC";
+
     }
 
 
@@ -155,7 +184,9 @@ function formatTime(
 ) {
 
     if (!fixture.time) {
+
         return "TIME TBC";
+
     }
 
 
@@ -172,7 +203,9 @@ function formatTime(
 
 
     if (
-        !Number.isFinite(hours)
+        !Number.isFinite(hours) ||
+        hours < 0 ||
+        hours > 23
     ) {
 
         return "TIME TBC";
@@ -211,7 +244,7 @@ function formatTime(
 
 
 /* =========================================================
-   STATUS
+   GET FIXTURE STATUS
 ========================================================= */
 
 function getFixtureStatus(
@@ -238,11 +271,8 @@ function getFixtureStatus(
     */
 
     if (
-        fixture.status ===
-        "POSTPONED" ||
-
-        fixture.status ===
-        "CANCELLED"
+        fixture.status === "POSTPONED" ||
+        fixture.status === "CANCELLED"
     ) {
 
         return fixture.status;
@@ -251,11 +281,14 @@ function getFixtureStatus(
 
 
     /*
-       Automatic completion.
+       No date means the fixture
+       cannot automatically complete.
     */
 
     if (!fixture.date) {
+
         return "SCHEDULED";
+
     }
 
 
@@ -281,6 +314,12 @@ function getFixtureStatus(
     }
 
 
+    /*
+       Automatically mark the fixture
+       as completed once its scheduled
+       date/time has passed.
+    */
+
     if (
         fixtureDate.getTime() <=
         Date.now()
@@ -297,6 +336,66 @@ function getFixtureStatus(
 
 
 /* =========================================================
+   CREATE NOTE CARD
+========================================================= */
+
+function createNoteCard(
+    title,
+    text
+) {
+
+    if (!text) {
+
+        return null;
+
+    }
+
+
+    const card =
+        document.createElement("div");
+
+
+    card.className =
+        "stat-card fixture-note-card";
+
+
+    const heading =
+        document.createElement("h2");
+
+
+    heading.textContent =
+        title;
+
+
+    const paragraph =
+        document.createElement("p");
+
+
+    /*
+       Use textContent so notes are
+       displayed as text rather than
+       being interpreted as HTML.
+    */
+
+    paragraph.textContent =
+        text;
+
+
+    card.appendChild(
+        heading
+    );
+
+    card.appendChild(
+        paragraph
+    );
+
+
+    return card;
+
+}
+
+
+/* =========================================================
    DISPLAY FIXTURE
 ========================================================= */
 
@@ -305,8 +404,21 @@ function displayFixture(
 ) {
 
     if (!fixtureDetails) {
+
         return;
+
     }
+
+
+    /*
+       Firebase can update the fixture
+       multiple times.
+
+       Remove old note cards first so
+       they do not duplicate.
+    */
+
+    removeNoteCards();
 
 
     const status =
@@ -319,162 +431,254 @@ function displayFixture(
 
 
     if (
-        fixture.homeAway ===
-        "Away"
+        fixture.homeAway === "Away"
     ) {
 
         title =
-            fixture.opponent +
+            (
+                fixture.opponent ||
+                "OPPONENT"
+            ) +
             " vs DEAL TOWN";
 
     } else {
 
         title =
             "DEAL TOWN vs " +
-            fixture.opponent;
+            (
+                fixture.opponent ||
+                "OPPONENT"
+            );
 
     }
 
 
+    /* =====================================================
+       MAIN FIXTURE INFORMATION
+    ===================================================== */
+
+    fixtureDetails.innerHTML = "";
+
+
+    const heading =
+        document.createElement("h1");
+
+
+    heading.textContent =
+        title;
+
+
+    const dateTime =
+        document.createElement("p");
+
+
+    dateTime.textContent =
+        formatDate(fixture) +
+        " • " +
+        formatTime(fixture);
+
+
+    const statGrid =
+        document.createElement("div");
+
+
+    statGrid.className =
+        "player-stat-grid";
+
+
     /*
-       Main fixture information.
+       HOME / AWAY
     */
 
-    fixtureDetails.innerHTML = `
-
-        <h1>
-            ${title}
-        </h1>
-
-        <p>
-            ${formatDate(fixture)}
-            •
-            ${formatTime(fixture)}
-        </p>
+    const homeAwayBox =
+        document.createElement("div");
 
 
-        <div class="player-stat-grid">
-
-            <div>
-
-                <strong>
-                    ${fixture.homeAway || "—"}
-                </strong>
-
-                <span>
-                    HOME / AWAY
-                </span>
-
-            </div>
+    const homeAwayStrong =
+        document.createElement("strong");
 
 
-            <div>
-
-                <strong>
-                    ${fixture.competition || "—"}
-                </strong>
-
-                <span>
-                    COMPETITION
-                </span>
-
-            </div>
+    homeAwayStrong.textContent =
+        fixture.homeAway || "—";
 
 
-            <div>
+    const homeAwaySpan =
+        document.createElement("span");
 
-                <strong>
-                    ${status}
-                </strong>
 
-                <span>
-                    STATUS
-                </span>
+    homeAwaySpan.textContent =
+        "HOME / AWAY";
 
-            </div>
 
-        </div>
+    homeAwayBox.appendChild(
+        homeAwayStrong
+    );
 
-    `;
+    homeAwayBox.appendChild(
+        homeAwaySpan
+    );
 
 
     /*
+       COMPETITION
+    */
+
+    const competitionBox =
+        document.createElement("div");
+
+
+    const competitionStrong =
+        document.createElement("strong");
+
+
+    competitionStrong.textContent =
+        fixture.competition || "—";
+
+
+    const competitionSpan =
+        document.createElement("span");
+
+
+    competitionSpan.textContent =
+        "COMPETITION";
+
+
+    competitionBox.appendChild(
+        competitionStrong
+    );
+
+    competitionBox.appendChild(
+        competitionSpan
+    );
+
+
+    /*
+       STATUS
+    */
+
+    const statusBox =
+        document.createElement("div");
+
+
+    const statusStrong =
+        document.createElement("strong");
+
+
+    statusStrong.textContent =
+        status;
+
+
+    const statusSpan =
+        document.createElement("span");
+
+
+    statusSpan.textContent =
+        "STATUS";
+
+
+    statusBox.appendChild(
+        statusStrong
+    );
+
+    statusBox.appendChild(
+        statusSpan
+    );
+
+
+    statGrid.appendChild(
+        homeAwayBox
+    );
+
+    statGrid.appendChild(
+        competitionBox
+    );
+
+    statGrid.appendChild(
+        statusBox
+    );
+
+
+    fixtureDetails.appendChild(
+        heading
+    );
+
+    fixtureDetails.appendChild(
+        dateTime
+    );
+
+    fixtureDetails.appendChild(
+        statGrid
+    );
+
+
+    /* =====================================================
        PRE-MATCH NOTES
-    */
+    ===================================================== */
 
-    if (
-        fixture.preMatchNotes
-    ) {
-
-        const card =
-            document.createElement(
-                "div"
-            );
+    const preMatchCard =
+        createNoteCard(
+            "PRE-MATCH NOTES",
+            fixture.preMatchNotes
+        );
 
 
-        card.className =
-            "stat-card";
-
-
-        card.innerHTML = `
-
-            <h2>
-                PRE-MATCH NOTES
-            </h2>
-
-            <p>
-                ${fixture.preMatchNotes}
-            </p>
-
-        `;
-
+    if (preMatchCard) {
 
         fixtureDetails
             .parentNode
             .insertBefore(
-                card,
+                preMatchCard,
                 fixtureDetails.nextSibling
             );
 
     }
 
 
-    /*
+    /* =====================================================
        GENERAL NOTES
-    */
+    ===================================================== */
 
-    if (
-        fixture.generalNotes
-    ) {
-
-        const card =
-            document.createElement(
-                "div"
-            );
+    const generalCard =
+        createNoteCard(
+            "GENERAL NOTES",
+            fixture.generalNotes
+        );
 
 
-        card.className =
-            "stat-card";
+    if (generalCard) {
+
+        const allNoteCards =
+            fixtureDetails
+                .parentNode
+                .querySelectorAll(
+                    ".fixture-note-card"
+                );
 
 
-        card.innerHTML = `
-
-            <h2>
-                GENERAL NOTES
-            </h2>
-
-            <p>
-                ${fixture.generalNotes}
-            </p>
-
-        `;
+        const lastNoteCard =
+            allNoteCards[
+                allNoteCards.length - 1
+            ];
 
 
-        fixtureDetails
-            .parentNode
-            .appendChild(
-                card
-            );
+        if (lastNoteCard) {
+
+            lastNoteCard.parentNode
+                .insertBefore(
+                    generalCard,
+                    lastNoteCard.nextSibling
+                );
+
+        } else {
+
+            fixtureDetails
+                .parentNode
+                .insertBefore(
+                    generalCard,
+                    fixtureDetails.nextSibling
+                );
+
+        }
 
     }
 
@@ -487,14 +691,7 @@ function displayFixture(
         isAdmin()
     ) {
 
-        /*
-           Only use adminActions if
-           it actually exists.
-        */
-
-        if (
-            adminActions
-        ) {
+        if (adminActions) {
 
             adminActions.style.display =
                 "grid";
@@ -502,13 +699,11 @@ function displayFixture(
         }
 
 
-        /*
+        /* =================================================
            EDIT BUTTON
-        */
+        ================================================= */
 
-        if (
-            editFixtureButton
-        ) {
+        if (editFixtureButton) {
 
             editFixtureButton.onclick =
                 function() {
@@ -524,13 +719,11 @@ function displayFixture(
         }
 
 
-        /*
+        /* =================================================
            DELETE BUTTON
-        */
+        ================================================= */
 
-        if (
-            deleteFixtureButton
-        ) {
+        if (deleteFixtureButton) {
 
             deleteFixtureButton.onclick =
                 async function() {
@@ -542,7 +735,9 @@ function displayFixture(
 
 
                     if (!confirmed) {
+
                         return;
+
                     }
 
 
@@ -567,6 +762,7 @@ function displayFixture(
 
                         window.location.href =
                             "fixtures.html";
+
 
                     } catch (error) {
 
@@ -600,13 +796,15 @@ function displayFixture(
 
 
 /* =========================================================
-   LOAD FIXTURE
+   LOAD FIXTURE FROM FIRESTORE
 ========================================================= */
 
 function loadFixture() {
 
     if (!fixtureId) {
+
         return;
+
     }
 
 
@@ -645,6 +843,8 @@ function loadFixture() {
                     "This fixture could not be found in Firestore."
                 );
 
+                removeNoteCards();
+
                 return;
 
             }
@@ -666,6 +866,7 @@ function loadFixture() {
 
         },
 
+
         function(error) {
 
             console.error(
@@ -682,9 +883,14 @@ function loadFixture() {
                 error.message
             );
 
+
+            removeNoteCards();
+
         }
 
     );
 
 }
 ```
+
+This version specifically fixes the **duplicate notes after Firestore `onSnapshot()` updates**, safely handles the notes as text, and keeps your admin edit/delete functionality intact.

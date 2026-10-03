@@ -3,50 +3,27 @@ import { db } from "./firebase.js";
 
 import {
     collection,
-    query,
-    orderBy,
     onSnapshot,
     deleteDoc,
     doc
 } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-firestore.js";
 
 
-/* =========================================================
-   LOGIN
-========================================================= */
-
 requireLogin();
 
 
-/* =========================================================
-   ELEMENTS
-========================================================= */
+const fixtureList = document.getElementById("fixtureList");
+const seasonSelect = document.getElementById("seasonSelect");
+const monthSelect = document.getElementById("monthSelect");
+const fixtureCount = document.getElementById("fixtureCount");
+const addFixtureButton = document.getElementById("addFixtureButton");
 
-const fixtureList =
-    document.getElementById("fixtureList");
-
-const seasonSelect =
-    document.getElementById("seasonSelect");
-
-const monthSelect =
-    document.getElementById("monthSelect");
-
-const fixtureCount =
-    document.getElementById("fixtureCount");
-
-const addFixtureButton =
-    document.getElementById("addFixtureButton");
-
-
-/* =========================================================
-   DATA
-========================================================= */
 
 let allFixtures = [];
 
 
 /* =========================================================
-   ADMIN ADD FIXTURE BUTTON
+   ADMIN ADD FIXTURE
 ========================================================= */
 
 if (addFixtureButton) {
@@ -55,63 +32,15 @@ if (addFixtureButton) {
 
         addFixtureButton.style.display = "block";
 
-        addFixtureButton.addEventListener(
-            "click",
-            function () {
-
-                window.location.href =
-                    "add-fixture.html";
-
-            }
-        );
+        addFixtureButton.addEventListener("click", function () {
+            window.location.href = "add-fixture.html";
+        });
 
     } else {
 
-        addFixtureButton.style.display =
-            "none";
+        addFixtureButton.style.display = "none";
 
     }
-
-}
-
-
-/* =========================================================
-   CREATE MESSAGE CARD
-========================================================= */
-
-function createMessageCard(title, message) {
-
-    const card =
-        document.createElement("div");
-
-    card.className =
-        "stat-card";
-
-
-    const heading =
-        document.createElement("h2");
-
-    heading.textContent =
-        title;
-
-
-    const paragraph =
-        document.createElement("p");
-
-    paragraph.textContent =
-        message;
-
-
-    card.appendChild(
-        heading
-    );
-
-    card.appendChild(
-        paragraph
-    );
-
-
-    return card;
 
 }
 
@@ -123,77 +52,47 @@ function createMessageCard(title, message) {
 function loadFixtures() {
 
     if (!fixtureList) {
-
-        console.error(
-            "fixtureList element was not found."
-        );
-
+        console.error("fixtureList was not found.");
         return;
     }
 
-
     fixtureList.innerHTML = "";
 
+    const loadingCard = document.createElement("div");
+    loadingCard.className = "stat-card";
 
-    const loadingCard =
-        createMessageCard(
-            "LOADING FIXTURES...",
-            "Please wait while the fixtures load."
-        );
+    const loadingTitle = document.createElement("h2");
+    loadingTitle.textContent = "LOADING FIXTURES...";
 
+    const loadingText = document.createElement("p");
+    loadingText.textContent = "Please wait while the fixtures load.";
 
-    fixtureList.appendChild(
-        loadingCard
-    );
+    loadingCard.appendChild(loadingTitle);
+    loadingCard.appendChild(loadingText);
 
-
-    const fixturesReference =
-        collection(
-            db,
-            "fixtures"
-        );
+    fixtureList.appendChild(loadingCard);
 
 
-    const fixturesQuery =
-        query(
-            fixturesReference,
-            orderBy(
-                "date",
-                "asc"
-            )
-        );
+    const fixturesRef = collection(db, "fixtures");
 
 
     onSnapshot(
-        fixturesQuery,
+        fixturesRef,
 
         function (snapshot) {
 
             allFixtures = [];
 
+            snapshot.forEach(function (item) {
 
-            snapshot.forEach(
-                function (documentSnapshot) {
+                const fixture = {
+                    id: item.id,
+                    ...item.data()
+                };
 
-                    const fixture = {
-                        id: documentSnapshot.id,
-                        ...documentSnapshot.data()
-                    };
+                allFixtures.push(fixture);
 
-
-                    allFixtures.push(
-                        fixture
-                    );
-
-                }
-            );
-
-
-            console.log(
-                "Fixtures loaded:",
-                allFixtures.length
-            );
-
+            });
 
             displayFixtures();
 
@@ -201,43 +100,25 @@ function loadFixtures() {
 
         function (error) {
 
-            console.error(
-                "FIREBASE FIXTURES ERROR:",
-                error
-            );
+            console.error("FIREBASE FIXTURES ERROR:", error);
 
+            fixtureList.innerHTML = "";
 
-            fixtureList.innerHTML =
-                "";
+            const errorCard = document.createElement("div");
+            errorCard.className = "stat-card";
 
+            const errorTitle = document.createElement("h2");
+            errorTitle.textContent = "COULD NOT LOAD FIXTURES";
 
-            const errorMessage =
-                createMessageCard(
-                    "COULD NOT LOAD FIXTURES",
-                    "Firebase error: " +
-                    (
-                        error.code ||
-                        "UNKNOWN"
-                    ) +
-                    " - " +
-                    (
-                        error.message ||
-                        "Unknown Firebase error."
-                    )
-                );
+            const errorText = document.createElement("p");
+            errorText.textContent =
+                "Firebase error: " +
+                (error.message || "Unknown error.");
 
+            errorCard.appendChild(errorTitle);
+            errorCard.appendChild(errorText);
 
-            fixtureList.appendChild(
-                errorMessage
-            );
-
-
-            if (fixtureCount) {
-
-                fixtureCount.textContent =
-                    "0 fixtures";
-
-            }
+            fixtureList.appendChild(errorCard);
 
         }
     );
@@ -252,33 +133,16 @@ function loadFixtures() {
 function formatDate(fixture) {
 
     if (!fixture.date) {
-
         return "DATE TBC";
-
     }
 
+    const date = new Date(
+        fixture.date + "T" + (fixture.time || "00:00")
+    );
 
-    const date =
-        new Date(
-            fixture.date +
-            "T" +
-            (
-                fixture.time ||
-                "00:00"
-            )
-        );
-
-
-    if (
-        isNaN(
-            date.getTime()
-        )
-    ) {
-
+    if (isNaN(date.getTime())) {
         return "DATE TBC";
-
     }
-
 
     return date.toLocaleDateString(
         "en-GB",
@@ -299,134 +163,64 @@ function formatDate(fixture) {
 function formatTime(fixture) {
 
     if (!fixture.time) {
-
         return "TIME TBC";
-
     }
 
+    const parts = String(fixture.time).split(":");
 
-    const parts =
-        String(
-            fixture.time
-        ).split(":");
+    const hours = Number(parts[0]);
+    const minutes = parts[1] || "00";
 
-
-    const hours =
-        Number(
-            parts[0]
-        );
-
-
-    const minutes =
-        parts[1] ||
-        "00";
-
-
-    if (
-        !Number.isFinite(hours) ||
-        hours < 0 ||
-        hours > 23
-    ) {
-
+    if (!Number.isFinite(hours)) {
         return "TIME TBC";
-
     }
 
+    const suffix = hours >= 12 ? "PM" : "AM";
 
-    const suffix =
-        hours >= 12
-            ? "PM"
-            : "AM";
+    let displayHour = hours % 12;
 
-
-    let displayHour =
-        hours % 12;
-
-
-    if (
-        displayHour === 0
-    ) {
-
+    if (displayHour === 0) {
         displayHour = 12;
-
     }
 
-
-    return (
-        displayHour +
-        ":" +
-        minutes +
-        " " +
-        suffix
-    );
+    return displayHour + ":" + minutes + " " + suffix;
 
 }
 
 
 /* =========================================================
-   GET STATUS
+   STATUS
 ========================================================= */
 
-function getFixtureStatus(fixture) {
+function getStatus(fixture) {
 
-    if (
-        fixture.statusOverride === true &&
-        fixture.status
-    ) {
-
+    if (fixture.statusOverride === true && fixture.status) {
         return fixture.status;
-
     }
 
-
-    if (
-        fixture.status === "POSTPONED" ||
-        fixture.status === "CANCELLED"
-    ) {
-
-        return fixture.status;
-
+    if (fixture.status === "POSTPONED") {
+        return "POSTPONED";
     }
 
+    if (fixture.status === "CANCELLED") {
+        return "CANCELLED";
+    }
 
     if (!fixture.date) {
-
         return "SCHEDULED";
-
     }
 
+    const date = new Date(
+        fixture.date + "T" + (fixture.time || "00:00")
+    );
 
-    const fixtureDate =
-        new Date(
-            fixture.date +
-            "T" +
-            (
-                fixture.time ||
-                "00:00"
-            )
-        );
-
-
-    if (
-        isNaN(
-            fixtureDate.getTime()
-        )
-    ) {
-
+    if (isNaN(date.getTime())) {
         return "SCHEDULED";
-
     }
 
-
-    if (
-        fixtureDate.getTime() <=
-        Date.now()
-    ) {
-
+    if (date.getTime() <= Date.now()) {
         return "COMPLETED";
-
     }
-
 
     return "SCHEDULED";
 
@@ -434,123 +228,66 @@ function getFixtureStatus(fixture) {
 
 
 /* =========================================================
-   GET SEASON
+   SEASON
 ========================================================= */
 
-function getFixtureSeason(fixture) {
+function getSeason(fixture) {
 
     if (fixture.season) {
-
-        return String(
-            fixture.season
-        );
-
+        return String(fixture.season);
     }
-
 
     if (!fixture.date) {
-
         return "";
-
     }
 
+    const date = new Date(fixture.date + "T00:00");
 
-    const date =
-        new Date(
-            fixture.date +
-            "T00:00"
-        );
-
-
-    if (
-        isNaN(
-            date.getTime()
-        )
-    ) {
-
+    if (isNaN(date.getTime())) {
         return "";
-
     }
 
+    const year = date.getFullYear();
+    const month = date.getMonth() + 1;
 
-    const year =
-        date.getFullYear();
-
-
-    const month =
-        date.getMonth() + 1;
-
-
-    if (
-        month >= 8
-    ) {
-
+    if (month >= 8) {
         return (
             year +
             "/" +
-            String(
-                year + 1
-            ).slice(-2)
+            String(year + 1).slice(-2)
         );
-
     }
-
 
     return (
         (year - 1) +
         "/" +
-        String(
-            year
-        ).slice(-2)
+        String(year).slice(-2)
     );
 
 }
 
 
 /* =========================================================
-   GET MONTH
+   MONTH
 ========================================================= */
 
-function getFixtureMonth(fixture) {
+function getMonth(fixture) {
 
     if (!fixture.date) {
-
         return null;
-
     }
 
+    const parts = String(fixture.date).split("-");
 
-    const parts =
-        String(
-            fixture.date
-        ).split("-");
-
-
-    if (
-        parts.length < 2
-    ) {
-
+    if (parts.length < 2) {
         return null;
-
     }
 
+    const month = Number(parts[1]);
 
-    const month =
-        Number(
-            parts[1]
-        );
-
-
-    if (
-        !Number.isInteger(month) ||
-        month < 1 ||
-        month > 12
-    ) {
-
+    if (!Number.isInteger(month)) {
         return null;
-
     }
-
 
     return month;
 
@@ -558,301 +295,155 @@ function getFixtureMonth(fixture) {
 
 
 /* =========================================================
-   FILTER FIXTURES
+   FILTER
 ========================================================= */
 
-function getFilteredFixtures() {
+function filterFixtures() {
 
     const selectedSeason =
-        seasonSelect
-            ? seasonSelect.value
-            : "2026/27";
-
+        seasonSelect ? seasonSelect.value : "2026/27";
 
     const selectedMonth =
-        monthSelect
-            ? monthSelect.value
-            : "all";
+        monthSelect ? monthSelect.value : "all";
 
 
-    return allFixtures.filter(
-        function (fixture) {
+    return allFixtures.filter(function (fixture) {
 
-            const fixtureSeason =
-                getFixtureSeason(
-                    fixture
-                );
+        const fixtureSeason = getSeason(fixture);
 
+        if (
+            selectedSeason &&
+            fixtureSeason &&
+            fixtureSeason !== selectedSeason
+        ) {
+            return false;
+        }
+
+
+        if (
+            selectedMonth &&
+            selectedMonth !== "all"
+        ) {
+
+            const fixtureMonth = getMonth(fixture);
 
             if (
-                selectedSeason &&
-                fixtureSeason &&
-                fixtureSeason !==
-                selectedSeason
+                fixtureMonth !== Number(selectedMonth)
             ) {
-
                 return false;
-
             }
-
-
-            if (
-                selectedMonth &&
-                selectedMonth !== "all"
-            ) {
-
-                const fixtureMonth =
-                    getFixtureMonth(
-                        fixture
-                    );
-
-
-                if (
-                    fixtureMonth !==
-                    Number(
-                        selectedMonth
-                    )
-                ) {
-
-                    return false;
-
-                }
-
-            }
-
-
-            return true;
 
         }
-    );
+
+
+        return true;
+
+    });
 
 }
 
 
 /* =========================================================
-   CREATE FIXTURE CARD
+   CREATE FIXTURE
 ========================================================= */
 
-function createFixtureCard(fixture) {
+function createFixture(fixture) {
 
-    const card =
-        document.createElement(
-            "div"
-        );
+    const card = document.createElement("div");
 
+    card.className = "stat-card fixture-card";
 
-    card.className =
-        "stat-card fixture-card";
+    card.style.cursor = "pointer";
 
 
-    card.style.cursor =
-        "pointer";
+    let title = "";
 
-
-    const status =
-        getFixtureStatus(
-            fixture
-        );
-
-
-    let title;
-
-
-    if (
-        fixture.homeAway ===
-        "Away"
-    ) {
+    if (fixture.homeAway === "Away") {
 
         title =
-            (
-                fixture.opponent ||
-                "OPPONENT"
-            ) +
+            (fixture.opponent || "OPPONENT") +
             " vs DEAL TOWN";
 
     } else {
 
         title =
             "DEAL TOWN vs " +
-            (
-                fixture.opponent ||
-                "OPPONENT"
-            );
+            (fixture.opponent || "OPPONENT");
 
     }
 
 
-    /* -----------------------------------------------------
-       TITLE
-    ----------------------------------------------------- */
+    const titleElement =
+        document.createElement("h2");
 
-    const heading =
-        document.createElement(
-            "h2"
-        );
+    titleElement.textContent = title;
 
 
-    heading.textContent =
-        title;
+    const dateElement =
+        document.createElement("p");
 
-
-    /* -----------------------------------------------------
-       DATE
-    ----------------------------------------------------- */
-
-    const dateText =
-        document.createElement(
-            "p"
-        );
-
-
-    dateText.textContent =
-        formatDate(
-            fixture
-        ) +
+    dateElement.textContent =
+        formatDate(fixture) +
         " • " +
-        formatTime(
-            fixture
-        );
+        formatTime(fixture);
 
 
-    /* -----------------------------------------------------
-       COMPETITION
-    ----------------------------------------------------- */
+    const competitionElement =
+        document.createElement("p");
 
-    const competition =
-        document.createElement(
-            "p"
-        );
+    competitionElement.textContent =
+        fixture.competition || "Competition TBC";
 
 
-    competition.textContent =
-        fixture.competition ||
-        "Competition TBC";
+    const statusElement =
+        document.createElement("strong");
+
+    statusElement.textContent =
+        getStatus(fixture);
 
 
-    /* -----------------------------------------------------
-       STATUS
-    ----------------------------------------------------- */
+    const homeAwayElement =
+        document.createElement("span");
 
-    const statusText =
-        document.createElement(
-            "strong"
-        );
+    homeAwayElement.textContent =
+        fixture.homeAway || "HOME";
 
 
-    statusText.textContent =
-        status;
+    card.appendChild(titleElement);
+    card.appendChild(dateElement);
+    card.appendChild(competitionElement);
+    card.appendChild(statusElement);
+    card.appendChild(document.createElement("br"));
+    card.appendChild(homeAwayElement);
 
 
-    /* -----------------------------------------------------
-       HOME / AWAY
-    ----------------------------------------------------- */
+    card.addEventListener("click", function () {
 
-    const homeAway =
-        document.createElement(
-            "span"
-        );
+        window.location.href =
+            "fixture.html?id=" +
+            encodeURIComponent(fixture.id);
 
-
-    homeAway.textContent =
-        fixture.homeAway ||
-        "HOME";
-
-
-    /* -----------------------------------------------------
-       ADD TO CARD
-    ----------------------------------------------------- */
-
-    card.appendChild(
-        heading
-    );
-
-    card.appendChild(
-        dateText
-    );
-
-    card.appendChild(
-        competition
-    );
-
-    card.appendChild(
-        statusText
-    );
-
-    card.appendChild(
-        document.createElement(
-            "br"
-        )
-    );
-
-    card.appendChild(
-        homeAway
-    );
-
-
-    /* -----------------------------------------------------
-       OPEN FIXTURE
-    ----------------------------------------------------- */
-
-    card.addEventListener(
-        "click",
-        function () {
-
-            window.location.href =
-                "fixture.html?id=" +
-                encodeURIComponent(
-                    fixture.id
-                );
-
-        }
-    );
+    });
 
 
     /* =====================================================
-       ADMIN CONTROLS
+       ADMIN BUTTONS
     ===================================================== */
 
     if (isAdmin()) {
 
-        const adminArea =
-            document.createElement(
-                "div"
-            );
+        const buttons = document.createElement("div");
 
+        buttons.style.marginTop = "15px";
+        buttons.style.display = "flex";
+        buttons.style.gap = "10px";
 
-        adminArea.className =
-            "fixture-admin-actions";
-
-
-        adminArea.style.marginTop =
-            "15px";
-
-
-        adminArea.style.display =
-            "flex";
-
-
-        adminArea.style.gap =
-            "10px";
-
-
-        /* -------------------------------------------------
-           EDIT BUTTON
-        ------------------------------------------------- */
 
         const editButton =
-            document.createElement(
-                "button"
-            );
+            document.createElement("button");
 
-
-        editButton.type =
-            "button";
-
-
-        editButton.textContent =
-            "EDIT";
+        editButton.type = "button";
+        editButton.textContent = "EDIT";
 
 
         editButton.addEventListener(
@@ -861,33 +452,19 @@ function createFixtureCard(fixture) {
 
                 event.stopPropagation();
 
-
                 window.location.href =
                     "edit-fixture.html?id=" +
-                    encodeURIComponent(
-                        fixture.id
-                    );
+                    encodeURIComponent(fixture.id);
 
             }
         );
 
 
-        /* -------------------------------------------------
-           DELETE BUTTON
-        ------------------------------------------------- */
-
         const deleteButton =
-            document.createElement(
-                "button"
-            );
+            document.createElement("button");
 
-
-        deleteButton.type =
-            "button";
-
-
-        deleteButton.textContent =
-            "DELETE";
+        deleteButton.type = "button";
+        deleteButton.textContent = "DELETE";
 
 
         deleteButton.addEventListener(
@@ -904,18 +481,12 @@ function createFixtureCard(fixture) {
 
 
                 if (!confirmed) {
-
                     return;
-
                 }
 
 
-                deleteButton.disabled =
-                    true;
-
-
-                deleteButton.textContent =
-                    "DELETING...";
+                deleteButton.disabled = true;
+                deleteButton.textContent = "DELETING...";
 
 
                 try {
@@ -928,7 +499,6 @@ function createFixtureCard(fixture) {
                         )
                     );
 
-
                 } catch (error) {
 
                     console.error(
@@ -936,22 +506,13 @@ function createFixtureCard(fixture) {
                         error
                     );
 
-
                     alert(
-                        "Could not delete this fixture. " +
-                        (
-                            error.message ||
-                            "Unknown Firebase error."
-                        )
+                        "Could not delete the fixture. " +
+                        (error.message || "")
                     );
 
-
-                    deleteButton.disabled =
-                        false;
-
-
-                    deleteButton.textContent =
-                        "DELETE";
+                    deleteButton.disabled = false;
+                    deleteButton.textContent = "DELETE";
 
                 }
 
@@ -959,19 +520,10 @@ function createFixtureCard(fixture) {
         );
 
 
-        adminArea.appendChild(
-            editButton
-        );
+        buttons.appendChild(editButton);
+        buttons.appendChild(deleteButton);
 
-
-        adminArea.appendChild(
-            deleteButton
-        );
-
-
-        card.appendChild(
-            adminArea
-        );
+        card.appendChild(buttons);
 
     }
 
@@ -982,80 +534,48 @@ function createFixtureCard(fixture) {
 
 
 /* =========================================================
-   DISPLAY FIXTURES
+   DISPLAY
 ========================================================= */
 
 function displayFixtures() {
 
     if (!fixtureList) {
-
         return;
-
     }
 
 
-    fixtureList.innerHTML =
-        "";
+    fixtureList.innerHTML = "";
 
 
-    const filteredFixtures =
-        getFilteredFixtures();
+    const fixtures =
+        filterFixtures();
 
 
-    /* -----------------------------------------------------
-       SORT BY DATE
-    ----------------------------------------------------- */
+    fixtures.sort(function (a, b) {
 
-    filteredFixtures.sort(
-        function (a, b) {
+        const dateA = new Date(
+            (a.date || "9999-12-31") +
+            "T" +
+            (a.time || "23:59")
+        );
 
-            const dateA =
-                new Date(
-                    (
-                        a.date ||
-                        "9999-12-31"
-                    ) +
-                    "T" +
-                    (
-                        a.time ||
-                        "23:59"
-                    )
-                );
+        const dateB = new Date(
+            (b.date || "9999-12-31") +
+            "T" +
+            (b.time || "23:59")
+        );
 
+        return dateA.getTime() - dateB.getTime();
 
-            const dateB =
-                new Date(
-                    (
-                        b.date ||
-                        "9999-12-31"
-                    ) +
-                    "T" +
-                    (
-                        b.time ||
-                        "23:59"
-                    )
-                );
+    });
 
-
-            return (
-                dateA.getTime() -
-                dateB.getTime()
-            );
-
-        }
-    );
-
-
-    /* -----------------------------------------------------
-       COUNT
-    ----------------------------------------------------- */
 
     if (fixtureCount) {
 
         fixtureCount.textContent =
-            filteredFixtures.length +
+            fixtures.length +
             (
-                filteredFixtures.length === 1
+                fixtures.length === 1
                     ? " fixture"
                     : " fixtures"
             );
@@ -1063,56 +583,53 @@ function displayFixtures() {
     }
 
 
-    /* -----------------------------------------------------
-       NO FIXTURES
-    ----------------------------------------------------- */
-
-    if (
-        filteredFixtures.length === 0
-    ) {
+    if (fixtures.length === 0) {
 
         const emptyCard =
-            createMessageCard(
-                "NO FIXTURES",
-                "There are no fixtures matching the selected season and month."
-            );
+            document.createElement("div");
+
+        emptyCard.className =
+            "stat-card";
 
 
-        fixtureList.appendChild(
-            emptyCard
-        );
+        const emptyTitle =
+            document.createElement("h2");
 
+        emptyTitle.textContent =
+            "NO FIXTURES";
+
+
+        const emptyText =
+            document.createElement("p");
+
+        emptyText.textContent =
+            "There are no fixtures matching the selected filters.";
+
+
+        emptyCard.appendChild(emptyTitle);
+        emptyCard.appendChild(emptyText);
+
+        fixtureList.appendChild(emptyCard);
 
         return;
 
     }
 
 
-    /* -----------------------------------------------------
-       DISPLAY FIXTURES
-    ----------------------------------------------------- */
+    fixtures.forEach(function (fixture) {
 
-    filteredFixtures.forEach(
-        function (fixture) {
+        const card =
+            createFixture(fixture);
 
-            const card =
-                createFixtureCard(
-                    fixture
-                );
+        fixtureList.appendChild(card);
 
-
-            fixtureList.appendChild(
-                card
-            );
-
-        }
-    );
+    });
 
 }
 
 
 /* =========================================================
-   SEASON CHANGE
+   FILTER EVENTS
 ========================================================= */
 
 if (seasonSelect) {
@@ -1120,27 +637,19 @@ if (seasonSelect) {
     seasonSelect.addEventListener(
         "change",
         function () {
-
             displayFixtures();
-
         }
     );
 
 }
 
 
-/* =========================================================
-   MONTH CHANGE
-========================================================= */
-
 if (monthSelect) {
 
     monthSelect.addEventListener(
         "change",
         function () {
-
             displayFixtures();
-
         }
     );
 

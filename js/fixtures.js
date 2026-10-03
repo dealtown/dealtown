@@ -11,10 +11,6 @@ import {
 } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-firestore.js";
 
 
-/* =========================================================
-   LOGIN
-========================================================= */
-
 requireLogin();
 
 
@@ -46,7 +42,7 @@ let allFixtures = [];
 
 
 /* =========================================================
-   ADMIN BUTTON
+   ADMIN ADD FIXTURE BUTTON
 ========================================================= */
 
 if (addFixtureButton) {
@@ -57,7 +53,7 @@ if (addFixtureButton) {
 
         addFixtureButton.addEventListener(
             "click",
-            function() {
+            function () {
 
                 window.location.href =
                     "add-fixture.html";
@@ -81,19 +77,46 @@ if (addFixtureButton) {
 function loadFixtures() {
 
     if (!fixtureList) {
+
         console.error(
-            "fixtureList element was not found."
+            "fixtureList was not found."
         );
+
         return;
     }
 
 
-    fixtureList.innerHTML = `
-        <div class="stat-card">
-            <h2>LOADING FIXTURES...</h2>
-            <p>Please wait while the fixtures load.</p>
-        </div>
-    `;
+    fixtureList.innerHTML = "";
+
+    const loadingCard =
+        document.createElement("div");
+
+    loadingCard.className =
+        "stat-card";
+
+    const loadingTitle =
+        document.createElement("h2");
+
+    loadingTitle.textContent =
+        "LOADING FIXTURES...";
+
+    const loadingText =
+        document.createElement("p");
+
+    loadingText.textContent =
+        "Please wait while the fixtures load.";
+
+    loadingCard.appendChild(
+        loadingTitle
+    );
+
+    loadingCard.appendChild(
+        loadingText
+    );
+
+    fixtureList.appendChild(
+        loadingCard
+    );
 
 
     const fixturesReference =
@@ -116,22 +139,22 @@ function loadFixtures() {
     onSnapshot(
         fixturesQuery,
 
-        function(snapshot) {
+        function (snapshot) {
 
             allFixtures = [];
 
 
             snapshot.forEach(
-                function(documentSnapshot) {
+                function (documentSnapshot) {
 
-                    allFixtures.push({
-
-                        id:
-                            documentSnapshot.id,
-
+                    const fixture = {
+                        id: documentSnapshot.id,
                         ...documentSnapshot.data()
+                    };
 
-                    });
+                    allFixtures.push(
+                        fixture
+                    );
 
                 }
             );
@@ -147,7 +170,7 @@ function loadFixtures() {
 
         },
 
-        function(error) {
+        function (error) {
 
             console.error(
                 "FIREBASE FIXTURES ERROR:",
@@ -155,23 +178,65 @@ function loadFixtures() {
             );
 
 
-            fixtureList.innerHTML = `
-                <div class="stat-card">
-                    <h2>COULD NOT LOAD FIXTURES</h2>
-                    <p>
-                        Firebase error:
-                        ${error.code || "UNKNOWN"}
-                    </p>
-                    <p>
-                        ${error.message || ""}
-                    </p>
-                </div>
-            `;
+            fixtureList.innerHTML = "";
+
+
+            const errorCard =
+                document.createElement("div");
+
+            errorCard.className =
+                "stat-card";
+
+
+            const errorTitle =
+                document.createElement("h2");
+
+            errorTitle.textContent =
+                "COULD NOT LOAD FIXTURES";
+
+
+            const errorText =
+                document.createElement("p");
+
+            errorText.textContent =
+                "Firebase error: " +
+                (
+                    error.code ||
+                    "UNKNOWN"
+                );
+
+
+            const errorMessage =
+                document.createElement("p");
+
+            errorMessage.textContent =
+                error.message ||
+                "Unknown Firebase error.";
+
+
+            errorCard.appendChild(
+                errorTitle
+            );
+
+            errorCard.appendChild(
+                errorText
+            );
+
+            errorCard.appendChild(
+                errorMessage
+            );
+
+
+            fixtureList.appendChild(
+                errorCard
+            );
 
 
             if (fixtureCount) {
+
                 fixtureCount.textContent =
                     "0 fixtures";
+
             }
 
         }
@@ -195,7 +260,10 @@ function formatDate(fixture) {
         new Date(
             fixture.date +
             "T" +
-            (fixture.time || "00:00")
+            (
+                fixture.time ||
+                "00:00"
+            )
         );
 
 
@@ -234,15 +302,20 @@ function formatTime(fixture) {
 
 
     const parts =
-        String(fixture.time).split(":");
+        String(
+            fixture.time
+        ).split(":");
 
 
     const hours =
-        Number(parts[0]);
+        Number(
+            parts[0]
+        );
 
 
     const minutes =
-        parts[1] || "00";
+        parts[1] ||
+        "00";
 
 
     if (
@@ -266,8 +339,12 @@ function formatTime(fixture) {
         hours % 12;
 
 
-    if (displayHour === 0) {
+    if (
+        displayHour === 0
+    ) {
+
         displayHour = 12;
+
     }
 
 
@@ -283,14 +360,10 @@ function formatTime(fixture) {
 
 
 /* =========================================================
-   GET STATUS
+   GET FIXTURE STATUS
 ========================================================= */
 
 function getFixtureStatus(fixture) {
-
-    /*
-       Manual status override.
-    */
 
     if (
         fixture.statusOverride === true &&
@@ -302,11 +375,6 @@ function getFixtureStatus(fixture) {
     }
 
 
-    /*
-       Postponed and cancelled fixtures
-       remain manually controlled.
-    */
-
     if (
         fixture.status === "POSTPONED" ||
         fixture.status === "CANCELLED"
@@ -317,10 +385,6 @@ function getFixtureStatus(fixture) {
     }
 
 
-    /*
-       No date means scheduled.
-    */
-
     if (!fixture.date) {
         return "SCHEDULED";
     }
@@ -330,7 +394,10 @@ function getFixtureStatus(fixture) {
         new Date(
             fixture.date +
             "T" +
-            (fixture.time || "00:00")
+            (
+                fixture.time ||
+                "00:00"
+            )
         );
 
 
@@ -344,11 +411,6 @@ function getFixtureStatus(fixture) {
 
     }
 
-
-    /*
-       Automatically mark fixtures
-       as completed after their date/time.
-    */
 
     if (
         fixtureDate.getTime() <=
@@ -366,60 +428,19 @@ function getFixtureStatus(fixture) {
 
 
 /* =========================================================
-   GET MONTH
-========================================================= */
-
-function getFixtureMonth(fixture) {
-
-    if (!fixture.date) {
-        return null;
-    }
-
-
-    const parts =
-        String(fixture.date).split("-");
-
-
-    if (parts.length < 2) {
-        return null;
-    }
-
-
-    const month =
-        Number(parts[1]);
-
-
-    if (
-        !Number.isInteger(month) ||
-        month < 1 ||
-        month > 12
-    ) {
-
-        return null;
-
-    }
-
-
-    return month;
-
-}
-
-
-/* =========================================================
-   GET SEASON
+   GET FIXTURE SEASON
 ========================================================= */
 
 function getFixtureSeason(fixture) {
 
     if (fixture.season) {
-        return String(fixture.season);
+
+        return String(
+            fixture.season
+        );
+
     }
 
-
-    /*
-       If older fixtures do not have a season
-       field, calculate it from the date.
-    */
 
     if (!fixture.date) {
         return "";
@@ -428,7 +449,8 @@ function getFixtureSeason(fixture) {
 
     const date =
         new Date(
-            fixture.date + "T00:00"
+            fixture.date +
+            "T00:00"
         );
 
 
@@ -465,10 +487,60 @@ function getFixtureSeason(fixture) {
 
 
     return (
-        year - 1 +
+        (year - 1) +
         "/" +
-        String(year).slice(-2)
+        String(
+            year
+        ).slice(-2)
     );
+
+}
+
+
+/* =========================================================
+   GET MONTH
+========================================================= */
+
+function getFixtureMonth(fixture) {
+
+    if (!fixture.date) {
+        return null;
+    }
+
+
+    const parts =
+        String(
+            fixture.date
+        ).split("-");
+
+
+    if (
+        parts.length < 2
+    ) {
+
+        return null;
+
+    }
+
+
+    const month =
+        Number(
+            parts[1]
+        );
+
+
+    if (
+        !Number.isInteger(month) ||
+        month < 1 ||
+        month > 12
+    ) {
+
+        return null;
+
+    }
+
+
+    return month;
 
 }
 
@@ -492,7 +564,7 @@ function getFilteredFixtures() {
 
 
     return allFixtures.filter(
-        function(fixture) {
+        function (fixture) {
 
             const fixtureSeason =
                 getFixtureSeason(
@@ -503,24 +575,8 @@ function getFilteredFixtures() {
             if (
                 selectedSeason &&
                 fixtureSeason &&
-                fixtureSeason !== selectedSeason
-            ) {
-
-                return false;
-
-            }
-
-
-            /*
-               If the fixture has no season,
-               allow it through so older
-               Firebase fixtures are not hidden.
-            */
-
-            if (
-                selectedSeason &&
-                !fixtureSeason &&
-                fixture.season
+                fixtureSeason !==
+                selectedSeason
             ) {
 
                 return false;
@@ -533,15 +589,17 @@ function getFilteredFixtures() {
                 selectedMonth !== "all"
             ) {
 
-                const month =
+                const fixtureMonth =
                     getFixtureMonth(
                         fixture
                     );
 
 
                 if (
-                    month !==
-                    Number(selectedMonth)
+                    fixtureMonth !==
+                    Number(
+                        selectedMonth
+                    )
                 ) {
 
                     return false;
@@ -566,7 +624,9 @@ function getFilteredFixtures() {
 function createFixtureCard(fixture) {
 
     const card =
-        document.createElement("div");
+        document.createElement(
+            "div"
+        );
 
 
     card.className =
@@ -592,38 +652,66 @@ function createFixtureCard(fixture) {
     ) {
 
         title =
-            (fixture.opponent || "OPPONENT") +
+            (
+                fixture.opponent ||
+                "OPPONENT"
+            ) +
             " vs DEAL TOWN";
 
     } else {
 
         title =
             "DEAL TOWN vs " +
-            (fixture.opponent || "OPPONENT");
+            (
+                fixture.opponent ||
+                "OPPONENT"
+            );
 
     }
 
 
+    /* -----------------------------------------------------
+       TITLE
+    ----------------------------------------------------- */
+
     const heading =
-        document.createElement("h2");
+        document.createElement(
+            "h2"
+        );
 
 
     heading.textContent =
         title;
 
 
-    const date =
-        document.createElement("p");
+    /* -----------------------------------------------------
+       DATE
+    ----------------------------------------------------- */
+
+    const dateText =
+        document.createElement(
+            "p"
+        );
 
 
-    date.textContent =
-        formatDate(fixture) +
+    dateText.textContent =
+        formatDate(
+            fixture
+        ) +
         " • " +
-        formatTime(fixture);
+        formatTime(
+            fixture
+        );
 
+
+    /* -----------------------------------------------------
+       COMPETITION
+    ----------------------------------------------------- */
 
     const competition =
-        document.createElement("p");
+        document.createElement(
+            "p"
+        );
 
 
     competition.textContent =
@@ -631,16 +719,28 @@ function createFixtureCard(fixture) {
         "Competition TBC";
 
 
+    /* -----------------------------------------------------
+       STATUS
+    ----------------------------------------------------- */
+
     const statusText =
-        document.createElement("strong");
+        document.createElement(
+            "strong"
+        );
 
 
     statusText.textContent =
         status;
 
 
+    /* -----------------------------------------------------
+       HOME / AWAY
+    ----------------------------------------------------- */
+
     const homeAway =
-        document.createElement("span");
+        document.createElement(
+            "span"
+        );
 
 
     homeAway.textContent =
@@ -648,43 +748,44 @@ function createFixtureCard(fixture) {
         "HOME";
 
 
+    /* -----------------------------------------------------
+       ADD CONTENT
+    ----------------------------------------------------- */
+
     card.appendChild(
         heading
     );
 
-
     card.appendChild(
-        date
+        dateText
     );
-
 
     card.appendChild(
         competition
     );
 
-
     card.appendChild(
         statusText
     );
 
-
     card.appendChild(
-        document.createElement("br")
+        document.createElement(
+            "br"
+        )
     );
-
 
     card.appendChild(
         homeAway
     );
 
 
-    /*
-       Open fixture detail page.
-    */
+    /* -----------------------------------------------------
+       OPEN FIXTURE
+    ----------------------------------------------------- */
 
     card.addEventListener(
         "click",
-        function() {
+        function () {
 
             window.location.href =
                 "fixture.html?id=" +
@@ -696,9 +797,9 @@ function createFixtureCard(fixture) {
     );
 
 
-    /*
-       Admin controls.
-    */
+    /* -----------------------------------------------------
+       ADMIN CONTROLS
+    ----------------------------------------------------- */
 
     if (isAdmin()) {
 
@@ -724,23 +825,27 @@ function createFixtureCard(fixture) {
             "10px";
 
 
+        /* -------------------------------------------------
+           EDIT
+        ------------------------------------------------- */
+
         const editButton =
             document.createElement(
                 "button"
             );
 
 
-        editButton.textContent =
-            "EDIT";
-
-
         editButton.type =
             "button";
 
 
+        editButton.textContent =
+            "EDIT";
+
+
         editButton.addEventListener(
             "click",
-            function(event) {
+            function (event) {
 
                 event.stopPropagation();
 
@@ -755,23 +860,27 @@ function createFixtureCard(fixture) {
         );
 
 
+        /* -------------------------------------------------
+           DELETE
+        ------------------------------------------------- */
+
         const deleteButton =
             document.createElement(
                 "button"
             );
 
 
-        deleteButton.textContent =
-            "DELETE";
-
-
         deleteButton.type =
             "button";
 
 
+        deleteButton.textContent =
+            "DELETE";
+
+
         deleteButton.addEventListener(
             "click",
-            async function(event) {
+            async function (event) {
 
                 event.stopPropagation();
 
@@ -869,33 +978,46 @@ function displayFixtures() {
     }
 
 
-    fixtureList.innerHTML = "";
+    fixtureList.innerHTML =
+        "";
 
 
     const filteredFixtures =
         getFilteredFixtures();
 
 
-    /*
-       Sort by date and time.
-    */
+    /* -----------------------------------------------------
+       SORT
+    ----------------------------------------------------- */
 
     filteredFixtures.sort(
-        function(a, b) {
+        function (a, b) {
 
             const dateA =
                 new Date(
-                    (a.date || "9999-12-31") +
+                    (
+                        a.date ||
+                        "9999-12-31"
+                    ) +
                     "T" +
-                    (a.time || "23:59")
+                    (
+                        a.time ||
+                        "23:59"
+                    )
                 );
 
 
             const dateB =
                 new Date(
-                    (b.date || "9999-12-31") +
+                    (
+                        b.date ||
+                        "9999-12-31"
+                    ) +
                     "T" +
-                    (b.time || "23:59")
+                    (
+                        b.time ||
+                        "23:59"
+                    )
                 );
 
 
@@ -908,9 +1030,9 @@ function displayFixtures() {
     );
 
 
-    /*
-       Update fixture count.
-    */
+    /* -----------------------------------------------------
+       COUNT
+    ----------------------------------------------------- */
 
     if (fixtureCount) {
 
@@ -925,9 +1047,9 @@ function displayFixtures() {
     }
 
 
-    /*
-       No fixtures.
-    */
+    /* -----------------------------------------------------
+       EMPTY
+    ----------------------------------------------------- */
 
     if (
         filteredFixtures.length === 0
@@ -943,33 +1065,33 @@ function displayFixtures() {
             "stat-card";
 
 
-        const heading =
+        const emptyTitle =
             document.createElement(
                 "h2"
             );
 
 
-        heading.textContent =
+        emptyTitle.textContent =
             "NO FIXTURES";
 
 
-        const paragraph =
+        const emptyText =
             document.createElement(
                 "p"
             );
 
 
-        paragraph.textContent =
+        emptyText.textContent =
             "There are no fixtures matching the selected season and month.";
 
 
         emptyCard.appendChild(
-            heading
+            emptyTitle
         );
 
 
         emptyCard.appendChild(
-            paragraph
+            emptyText
         );
 
 
@@ -983,12 +1105,12 @@ function displayFixtures() {
     }
 
 
-    /*
-       Add every fixture.
-    */
+    /* -----------------------------------------------------
+       SHOW FIXTURES
+    ----------------------------------------------------- */
 
     filteredFixtures.forEach(
-        function(fixture) {
+        function (fixture) {
 
             const card =
                 createFixtureCard(
@@ -1007,14 +1129,14 @@ function displayFixtures() {
 
 
 /* =========================================================
-   FILTER EVENTS
+   SEASON FILTER
 ========================================================= */
 
 if (seasonSelect) {
 
     seasonSelect.addEventListener(
         "change",
-        function() {
+        function () {
 
             displayFixtures();
 
@@ -1024,11 +1146,15 @@ if (seasonSelect) {
 }
 
 
+/* =========================================================
+   MONTH FILTER
+========================================================= */
+
 if (monthSelect) {
 
     monthSelect.addEventListener(
         "change",
-        function() {
+        function () {
 
             displayFixtures();
 

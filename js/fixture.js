@@ -1,3 +1,4 @@
+```javascript
 import { db } from "./firebase.js";
 
 import {
@@ -6,23 +7,41 @@ import {
     deleteDoc
 } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-firestore.js";
 
+
+/* =========================================================
+   LOGIN
+========================================================= */
+
 requireLogin();
-
-const fixtureDetails =
-    document.getElementById("fixtureDetails");
-
-const adminActions =
-    document.getElementById("adminActions");
-
-const editFixtureButton =
-    document.getElementById("editFixtureButton");
-
-const deleteFixtureButton =
-    document.getElementById("deleteFixtureButton");
 
 
 /* =========================================================
-   GET ID FROM URL
+   ELEMENTS
+========================================================= */
+
+const fixtureDetails =
+    document.getElementById(
+        "fixtureDetails"
+    );
+
+const adminActions =
+    document.getElementById(
+        "adminActions"
+    );
+
+const editFixtureButton =
+    document.getElementById(
+        "editFixtureButton"
+    );
+
+const deleteFixtureButton =
+    document.getElementById(
+        "deleteFixtureButton"
+    );
+
+
+/* =========================================================
+   GET FIXTURE ID
 ========================================================= */
 
 const params =
@@ -34,27 +53,16 @@ const fixtureId =
     params.get("id");
 
 
-console.log(
-    "Fixture ID:",
-    fixtureId
-);
-
-
 /* =========================================================
-   CHECK ID
+   CHECK FIXTURE ID
 ========================================================= */
 
 if (!fixtureId) {
 
-    fixtureDetails.innerHTML = `
-        <h2>
-            FIXTURE NOT FOUND
-        </h2>
-
-        <p>
-            No fixture ID was found in the page URL.
-        </p>
-    `;
+    showError(
+        "FIXTURE NOT FOUND",
+        "No fixture ID was provided."
+    );
 
 } else {
 
@@ -64,115 +72,40 @@ if (!fixtureId) {
 
 
 /* =========================================================
-   LOAD FIXTURE
+   ERROR
 ========================================================= */
 
-function loadFixture() {
+function showError(
+    title,
+    message
+) {
 
-    console.log(
-        "Loading Firestore fixture:",
-        fixtureId
-    );
+    if (!fixtureDetails) {
+        return;
+    }
 
+    fixtureDetails.innerHTML = `
 
-    const fixtureRef =
-        doc(
-            db,
-            "fixtures",
-            fixtureId
-        );
+        <h2>
+            ${title}
+        </h2>
 
+        <p>
+            ${message}
+        </p>
 
-    onSnapshot(
-        fixtureRef,
-
-        function(snapshot) {
-
-            console.log(
-                "Firestore response:",
-                snapshot
-            );
-
-
-            if (!snapshot.exists()) {
-
-                fixtureDetails.innerHTML = `
-                    <h2>
-                        FIXTURE NOT FOUND
-                    </h2>
-
-                    <p>
-                        Firebase connected, but this fixture does not exist.
-                    </p>
-
-                    <p>
-                        ID:
-                        ${fixtureId}
-                    </p>
-                `;
-
-                return;
-
-            }
-
-
-            const fixture = {
-
-                id:
-                    snapshot.id,
-
-                ...snapshot.data()
-
-            };
-
-
-            console.log(
-                "Fixture data:",
-                fixture
-            );
-
-
-            displayFixture(
-                fixture
-            );
-
-        },
-
-        function(error) {
-
-            console.error(
-                "FIREBASE ERROR:",
-                error
-            );
-
-
-            fixtureDetails.innerHTML = `
-
-                <h2>
-                    FIREBASE ERROR
-                </h2>
-
-                <p>
-                    ${error.code || "Unknown error"}
-                </p>
-
-                <p>
-                    ${error.message || "Unknown Firebase error"}
-                </p>
-
-            `;
-
-        }
-    );
+    `;
 
 }
 
 
 /* =========================================================
-   DATE
+   FORMAT DATE
 ========================================================= */
 
-function formatDate(fixture) {
+function formatDate(
+    fixture
+) {
 
     if (!fixture.date) {
         return "DATE TBC";
@@ -214,10 +147,12 @@ function formatDate(fixture) {
 
 
 /* =========================================================
-   TIME
+   FORMAT TIME
 ========================================================= */
 
-function formatTime(fixture) {
+function formatTime(
+    fixture
+) {
 
     if (!fixture.time) {
         return "TIME TBC";
@@ -279,7 +214,13 @@ function formatTime(fixture) {
    STATUS
 ========================================================= */
 
-function getFixtureStatus(fixture) {
+function getFixtureStatus(
+    fixture
+) {
+
+    /*
+       Manual status override.
+    */
 
     if (
         fixture.statusOverride === true &&
@@ -291,15 +232,27 @@ function getFixtureStatus(fixture) {
     }
 
 
+    /*
+       Postponed and cancelled
+       always remain manual.
+    */
+
     if (
-        fixture.status === "POSTPONED" ||
-        fixture.status === "CANCELLED"
+        fixture.status ===
+        "POSTPONED" ||
+
+        fixture.status ===
+        "CANCELLED"
     ) {
 
         return fixture.status;
 
     }
 
+
+    /*
+       Automatic completion.
+    */
 
     if (!fixture.date) {
         return "SCHEDULED";
@@ -344,10 +297,23 @@ function getFixtureStatus(fixture) {
 
 
 /* =========================================================
-   DISPLAY
+   DISPLAY FIXTURE
 ========================================================= */
 
-function displayFixture(fixture) {
+function displayFixture(
+    fixture
+) {
+
+    if (!fixtureDetails) {
+        return;
+    }
+
+
+    const status =
+        getFixtureStatus(
+            fixture
+        );
+
 
     let title;
 
@@ -370,11 +336,9 @@ function displayFixture(fixture) {
     }
 
 
-    const status =
-        getFixtureStatus(
-            fixture
-        );
-
+    /*
+       Main fixture information.
+    */
 
     fixtureDetails.innerHTML = `
 
@@ -434,6 +398,10 @@ function displayFixture(fixture) {
     `;
 
 
+    /*
+       PRE-MATCH NOTES
+    */
+
     if (
         fixture.preMatchNotes
     ) {
@@ -442,6 +410,7 @@ function displayFixture(fixture) {
             document.createElement(
                 "div"
             );
+
 
         card.className =
             "stat-card";
@@ -470,6 +439,10 @@ function displayFixture(fixture) {
     }
 
 
+    /*
+       GENERAL NOTES
+    */
+
     if (
         fixture.generalNotes
     ) {
@@ -478,6 +451,7 @@ function displayFixture(fixture) {
             document.createElement(
                 "div"
             );
+
 
         card.className =
             "stat-card";
@@ -506,14 +480,21 @@ function displayFixture(fixture) {
 
 
     /* =====================================================
-       ADMIN
+       ADMIN CONTROLS
     ===================================================== */
 
     if (
         isAdmin()
     ) {
 
-        if (adminActions) {
+        /*
+           Only use adminActions if
+           it actually exists.
+        */
+
+        if (
+            adminActions
+        ) {
 
             adminActions.style.display =
                 "grid";
@@ -521,7 +502,13 @@ function displayFixture(fixture) {
         }
 
 
-        if (editFixtureButton) {
+        /*
+           EDIT BUTTON
+        */
+
+        if (
+            editFixtureButton
+        ) {
 
             editFixtureButton.onclick =
                 function() {
@@ -537,7 +524,13 @@ function displayFixture(fixture) {
         }
 
 
-        if (deleteFixtureButton) {
+        /*
+           DELETE BUTTON
+        */
+
+        if (
+            deleteFixtureButton
+        ) {
 
             deleteFixtureButton.onclick =
                 async function() {
@@ -557,6 +550,10 @@ function displayFixture(fixture) {
                         true;
 
 
+                    deleteFixtureButton.textContent =
+                        "DELETING...";
+
+
                     try {
 
                         await deleteDoc(
@@ -574,7 +571,7 @@ function displayFixture(fixture) {
                     } catch (error) {
 
                         console.error(
-                            "Delete error:",
+                            "Delete fixture error:",
                             error
                         );
 
@@ -587,6 +584,10 @@ function displayFixture(fixture) {
                         deleteFixtureButton.disabled =
                             false;
 
+
+                        deleteFixtureButton.textContent =
+                            "DELETE FIXTURE";
+
                     }
 
                 };
@@ -596,3 +597,94 @@ function displayFixture(fixture) {
     }
 
 }
+
+
+/* =========================================================
+   LOAD FIXTURE
+========================================================= */
+
+function loadFixture() {
+
+    if (!fixtureId) {
+        return;
+    }
+
+
+    console.log(
+        "Loading fixture:",
+        fixtureId
+    );
+
+
+    const fixtureReference =
+        doc(
+            db,
+            "fixtures",
+            fixtureId
+        );
+
+
+    onSnapshot(
+
+        fixtureReference,
+
+        function(snapshot) {
+
+            console.log(
+                "Fixture received:",
+                snapshot.id
+            );
+
+
+            if (
+                !snapshot.exists()
+            ) {
+
+                showError(
+                    "FIXTURE NOT FOUND",
+                    "This fixture could not be found in Firestore."
+                );
+
+                return;
+
+            }
+
+
+            const fixture = {
+
+                id:
+                    snapshot.id,
+
+                ...snapshot.data()
+
+            };
+
+
+            displayFixture(
+                fixture
+            );
+
+        },
+
+        function(error) {
+
+            console.error(
+                "Firebase fixture error:",
+                error
+            );
+
+
+            showError(
+                "COULD NOT LOAD FIXTURE",
+                "Firebase error: " +
+                error.code +
+                " — " +
+                error.message
+            );
+
+        }
+
+    );
+
+}
+```

@@ -1,197 +1,120 @@
+```javascript
 import { db } from "./firebase.js";
 
 import {
-    collection,
-    onSnapshot
+    doc,
+    onSnapshot,
+    deleteDoc
 } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-firestore.js";
 
 
 /* =========================================================
    LOGIN
-   ========================================================= */
+========================================================= */
 
 requireLogin();
 
 
 /* =========================================================
    ELEMENTS
-   ========================================================= */
+========================================================= */
 
-const seasonSelect =
-    document.getElementById("seasonSelect");
+const fixtureDetails =
+    document.getElementById("fixtureDetails");
 
-const monthSelect =
-    document.getElementById("monthSelect");
+const adminActions =
+    document.getElementById("adminActions");
 
-const fixtureList =
-    document.getElementById("fixtureList");
+const editFixtureButton =
+    document.getElementById("editFixtureButton");
 
-const fixtureCount =
-    document.getElementById("fixtureCount");
-
-
-/* =========================================================
-   DATA
-   ========================================================= */
-
-let fixtures = [];
+const deleteFixtureButton =
+    document.getElementById("deleteFixtureButton");
 
 
 /* =========================================================
-   SEASONS
-   ========================================================= */
+   GET FIXTURE ID
+========================================================= */
 
-const seasons = [
-    "2024/25",
-    "2025/26",
-    "2026/27",
-    "2027/28",
-    "2028/29",
-    "2029/30"
-];
-
-
-/* =========================================================
-   CURRENT SEASON
-   ========================================================= */
-
-function getCurrentSeason() {
-
-    return (
-        localStorage.getItem("selectedSeason") ||
-        "2026/27"
+const urlParams =
+    new URLSearchParams(
+        window.location.search
     );
 
-}
+const fixtureId =
+    urlParams.get("id");
 
 
 /* =========================================================
-   SAVE SEASON
-   ========================================================= */
+   CHECK FIXTURE ID
+========================================================= */
 
-function saveSeason() {
+if (!fixtureId) {
 
-    localStorage.setItem(
-        "selectedSeason",
-        seasonSelect.value
+    showError(
+        "NO FIXTURE ID",
+        "No fixture ID was provided in the page address."
     );
 
-}
+} else {
 
-
-/* =========================================================
-   GET MONTH
-   ========================================================= */
-
-function getMonthName(month) {
-
-    const months = [
-        "JANUARY",
-        "FEBRUARY",
-        "MARCH",
-        "APRIL",
-        "MAY",
-        "JUNE",
-        "JULY",
-        "AUGUST",
-        "SEPTEMBER",
-        "OCTOBER",
-        "NOVEMBER",
-        "DECEMBER"
-    ];
-
-    return months[month];
+    loadFixture();
 
 }
 
 
 /* =========================================================
-   DATE HELPERS
-   ========================================================= */
+   ERROR DISPLAY
+========================================================= */
 
-function getFixtureDate(fixture) {
+function showError(title, message) {
 
-    if (!fixture.date) {
-        return null;
+    if (!fixtureDetails) {
+        return;
     }
 
-    const dateString =
-        fixture.date + "T" +
-        (fixture.time || "00:00");
+    fixtureDetails.innerHTML = `
 
-    const date =
-        new Date(dateString);
+        <h2>
+            ${title}
+        </h2>
 
-    if (isNaN(date.getTime())) {
-        return null;
-    }
+        <p>
+            ${message}
+        </p>
 
-    return date;
-
-}
-
-
-/* =========================================================
-   AUTOMATIC STATUS
-   ========================================================= */
-
-function getFixtureStatus(fixture) {
-
-    if (
-        fixture.statusOverride === true &&
-        fixture.status
-    ) {
-
-        return fixture.status;
-
-    }
-
-
-    if (
-        fixture.status === "POSTPONED" ||
-        fixture.status === "CANCELLED"
-    ) {
-
-        return fixture.status;
-
-    }
-
-
-    const fixtureDate =
-        getFixtureDate(fixture);
-
-
-    if (!fixtureDate) {
-        return "SCHEDULED";
-    }
-
-
-    if (
-        fixtureDate.getTime() <=
-        Date.now()
-    ) {
-
-        return "COMPLETED";
-
-    }
-
-
-    return "SCHEDULED";
+    `;
 
 }
 
 
 /* =========================================================
    FORMAT DATE
-   ========================================================= */
+========================================================= */
 
 function formatDate(fixture) {
 
-    const date =
-        getFixtureDate(fixture);
-
-    if (!date) {
+    if (!fixture.date) {
         return "DATE TBC";
+    }
+
+
+    const date =
+        new Date(
+            fixture.date +
+            "T" +
+            (fixture.time || "00:00")
+        );
+
+
+    if (
+        isNaN(
+            date.getTime()
+        )
+    ) {
+
+        return "DATE TBC";
+
     }
 
 
@@ -209,7 +132,7 @@ function formatDate(fixture) {
 
 /* =========================================================
    FORMAT TIME
-   ========================================================= */
+========================================================= */
 
 function formatTime(fixture) {
 
@@ -221,8 +144,10 @@ function formatTime(fixture) {
     const parts =
         fixture.time.split(":");
 
+
     const hours =
         Number(parts[0]);
+
 
     const minutes =
         parts[1] || "00";
@@ -246,8 +171,13 @@ function formatTime(fixture) {
     let displayHour =
         hours % 12;
 
-    if (displayHour === 0) {
+
+    if (
+        displayHour === 0
+    ) {
+
         displayHour = 12;
+
     }
 
 
@@ -263,341 +193,486 @@ function formatTime(fixture) {
 
 
 /* =========================================================
-   TEAM NAME
-   ========================================================= */
+   GET STATUS
+========================================================= */
 
-function getFixtureTitle(fixture) {
+function getFixtureStatus(fixture) {
+
+    /*
+       Admin status override.
+    */
 
     if (
-        fixture.homeAway === "Away"
+        fixture.statusOverride === true &&
+        fixture.status
     ) {
 
-        return (
-            fixture.opponent +
-            " vs DEAL TOWN"
-        );
+        return fixture.status;
 
     }
 
 
-    return (
-        "DEAL TOWN vs " +
-        fixture.opponent
-    );
+    /*
+       These statuses always remain
+       manually controlled.
+    */
+
+    if (
+        fixture.status === "POSTPONED" ||
+        fixture.status === "CANCELLED"
+    ) {
+
+        return fixture.status;
+
+    }
+
+
+    /*
+       Automatic completion.
+    */
+
+    if (!fixture.date) {
+        return "SCHEDULED";
+    }
+
+
+    const fixtureDate =
+        new Date(
+            fixture.date +
+            "T" +
+            (fixture.time || "00:00")
+        );
+
+
+    if (
+        isNaN(
+            fixtureDate.getTime()
+        )
+    ) {
+
+        return "SCHEDULED";
+
+    }
+
+
+    if (
+        fixtureDate.getTime() <=
+        Date.now()
+    ) {
+
+        return "COMPLETED";
+
+    }
+
+
+    return "SCHEDULED";
 
 }
 
 
 /* =========================================================
-   DISPLAY FIXTURES
-   ========================================================= */
+   DISPLAY FIXTURE
+========================================================= */
 
-function displayFixtures() {
+function displayFixture(fixture) {
 
-    if (!fixtureList) {
+    if (!fixtureDetails) {
         return;
     }
 
 
-    const season =
-        seasonSelect.value;
-
-    const month =
-        Number(monthSelect.value);
-
-
-    const filteredFixtures =
-        fixtures
-            .filter(function(fixture) {
-
-                if (
-                    String(fixture.season) !==
-                    String(season)
-                ) {
-
-                    return false;
-
-                }
-
-
-                const date =
-                    getFixtureDate(fixture);
-
-
-                if (!date) {
-                    return false;
-                }
-
-
-                return (
-                    date.getMonth() ===
-                    month
-                );
-
-            })
-            .sort(function(a, b) {
-
-                const dateA =
-                    getFixtureDate(a);
-
-                const dateB =
-                    getFixtureDate(b);
-
-                return (
-                    dateA.getTime() -
-                    dateB.getTime()
-                );
-
-            });
-
-
-    fixtureCount.textContent =
-        filteredFixtures.length +
-        (
-            filteredFixtures.length === 1
-                ? " FIXTURE THIS MONTH"
-                : " FIXTURES THIS MONTH"
+    const status =
+        getFixtureStatus(
+            fixture
         );
 
 
-    fixtureList.innerHTML = "";
+    let title;
 
 
     if (
-        filteredFixtures.length === 0
+        fixture.homeAway ===
+        "Away"
     ) {
 
-        fixtureList.innerHTML = `
+        title =
+            fixture.opponent +
+            " vs DEAL TOWN";
 
-            <div class="stat-card">
+    } else {
 
-                <h2>
-                    NO FIXTURES
-                </h2>
-
-                <p>
-                    No fixtures are scheduled for
-                    ${getMonthName(month)}
-                    ${season}.
-                </p>
-
-            </div>
-
-        `;
-
-        return;
+        title =
+            "DEAL TOWN vs " +
+            fixture.opponent;
 
     }
 
 
-    filteredFixtures.forEach(
-        function(fixture) {
-
-            const card =
-                document.createElement("div");
+    const preMatchNotes =
+        fixture.preMatchNotes ||
+        "";
 
 
-            card.className =
-                "stat-card fixture-card";
+    const generalNotes =
+        fixture.generalNotes ||
+        "";
 
 
-            const status =
-                getFixtureStatus(fixture);
+    fixtureDetails.innerHTML = `
+
+        <h1>
+            ${title}
+        </h1>
 
 
-            const statusText =
-                status;
+        <p>
+            ${formatDate(fixture)}
+            •
+            ${formatTime(fixture)}
+        </p>
 
 
-            const competition =
-                fixture.competition ||
-                "FIXTURE";
+        <div class="player-stat-grid">
 
-
-            const homeAway =
-                fixture.homeAway ||
-                "HOME";
-
-
-            card.innerHTML = `
-
-                <h2>
-                    ${getFixtureTitle(fixture)}
-                </h2>
-
-                <p>
-                    ${formatDate(fixture)}
-                    •
-                    ${formatTime(fixture)}
-                </p>
-
-                <p>
-                    ${homeAway.toUpperCase()}
-                    •
-                    ${competition.toUpperCase()}
-                </p>
+            <div>
 
                 <strong>
-                    ${statusText}
+                    ${fixture.homeAway || "—"}
                 </strong>
 
-            `;
+                <span>
+                    HOME / AWAY
+                </span>
+
+            </div>
 
 
-            card.addEventListener(
-                "click",
+            <div>
+
+                <strong>
+                    ${fixture.competition || "—"}
+                </strong>
+
+                <span>
+                    COMPETITION
+                </span>
+
+            </div>
+
+
+            <div>
+
+                <strong>
+                    ${status}
+                </strong>
+
+                <span>
+                    STATUS
+                </span>
+
+            </div>
+
+        </div>
+
+    `;
+
+
+    /*
+       PRE-MATCH NOTES
+    */
+
+    if (preMatchNotes) {
+
+        const notesCard =
+            document.createElement(
+                "div"
+            );
+
+        notesCard.className =
+            "stat-card";
+
+
+        notesCard.innerHTML = `
+
+            <h2>
+                PRE-MATCH NOTES
+            </h2>
+
+            <p>
+                ${preMatchNotes}
+            </p>
+
+        `;
+
+
+        fixtureDetails
+            .parentNode
+            .insertBefore(
+                notesCard,
+                fixtureDetails.nextSibling
+            );
+
+    }
+
+
+    /*
+       GENERAL NOTES
+    */
+
+    if (generalNotes) {
+
+        const generalCard =
+            document.createElement(
+                "div"
+            );
+
+        generalCard.className =
+            "stat-card";
+
+
+        generalCard.innerHTML = `
+
+            <h2>
+                GENERAL NOTES
+            </h2>
+
+            <p>
+                ${generalNotes}
+            </p>
+
+        `;
+
+
+        /*
+           Put it after the pre-match
+           notes if they exist.
+        */
+
+        const cards =
+            fixtureDetails
+                .parentNode
+                .querySelectorAll(
+                    ".stat-card"
+                );
+
+
+        const lastCard =
+            cards[cards.length - 1];
+
+
+        if (lastCard) {
+
+            lastCard.parentNode
+                .insertBefore(
+                    generalCard,
+                    lastCard.nextSibling
+                );
+
+        } else {
+
+            fixtureDetails
+                .parentNode
+                .appendChild(
+                    generalCard
+                );
+
+        }
+
+    }
+
+
+    /* =====================================================
+       ADMIN CONTROLS
+    ===================================================== */
+
+    if (isAdmin()) {
+
+        if (adminActions) {
+
+            adminActions.style.display =
+                "grid";
+
+        }
+
+
+        if (editFixtureButton) {
+
+            editFixtureButton.onclick =
                 function() {
 
                     window.location.href =
-                        "fixture.html?id=" +
+                        "edit-fixture.html?id=" +
                         encodeURIComponent(
                             fixture.id
                         );
 
-                }
-            );
-
-
-            fixtureList.appendChild(card);
+                };
 
         }
-    );
+
+
+        if (deleteFixtureButton) {
+
+            deleteFixtureButton.onclick =
+                async function() {
+
+                    const confirmed =
+                        confirm(
+                            "Are you sure you want to delete this fixture?"
+                        );
+
+
+                    if (!confirmed) {
+                        return;
+                    }
+
+
+                    deleteFixtureButton.disabled =
+                        true;
+
+
+                    deleteFixtureButton.textContent =
+                        "DELETING...";
+
+
+                    try {
+
+                        await deleteDoc(
+                            doc(
+                                db,
+                                "fixtures",
+                                fixture.id
+                            )
+                        );
+
+
+                        window.location.href =
+                            "fixtures.html";
+
+
+                    } catch (error) {
+
+                        console.error(
+                            "DELETE FIXTURE ERROR:",
+                            error
+                        );
+
+
+                        alert(
+                            "Could not delete the fixture. Check your Firebase connection and Firestore rules."
+                        );
+
+
+                        deleteFixtureButton.disabled =
+                            false;
+
+
+                        deleteFixtureButton.textContent =
+                            "DELETE FIXTURE";
+
+                    }
+
+                };
+
+        }
+
+    }
 
 }
 
 
 /* =========================================================
-   SEASON CHANGE
-   ========================================================= */
+   LOAD FIXTURE FROM FIRESTORE
+========================================================= */
 
-seasonSelect.addEventListener(
-    "change",
-    function() {
+function loadFixture() {
 
-        saveSeason();
-
-        displayFixtures();
-
-    }
-);
-
-
-/* =========================================================
-   MONTH CHANGE
-   ========================================================= */
-
-monthSelect.addEventListener(
-    "change",
-    function() {
-
-        displayFixtures();
-
-    }
-);
-
-
-/* =========================================================
-   SET INITIAL SEASON
-   ========================================================= */
-
-function setupSeason() {
-
-    const savedSeason =
-        getCurrentSeason();
-
-
-    if (
-        seasons.includes(
-            savedSeason
-        )
-    ) {
-
-        seasonSelect.value =
-            savedSeason;
-
+    if (!fixtureId) {
+        return;
     }
 
 
-    localStorage.setItem(
-        "selectedSeason",
-        seasonSelect.value
-    );
+    /*
+       Use the exact same Firestore
+       collection as fixtures.js.
+    */
 
-}
+    const fixtureReference =
+        doc(
+            db,
+            "fixtures",
+            fixtureId
+        );
 
-
-/* =========================================================
-   FIREBASE REAL-TIME LISTENER
-   ========================================================= */
-
-function startFixtureListener() {
 
     onSnapshot(
 
-        collection(
-            db,
-            "fixtures"
-        ),
+        fixtureReference,
 
         function(snapshot) {
 
-            fixtures =
-                snapshot.docs.map(
-                    function(item) {
+            console.log(
+                "Fixture loaded:",
+                fixtureId
+            );
 
-                        return {
 
-                            id: item.id,
+            if (
+                !snapshot.exists()
+            ) {
 
-                            ...item.data()
-
-                        };
-
-                    }
+                showError(
+                    "FIXTURE NOT FOUND",
+                    "This fixture does not exist in Firestore."
                 );
 
+                return;
 
-            displayFixtures();
+            }
+
+
+            const fixture = {
+
+                id:
+                    snapshot.id,
+
+                ...snapshot.data()
+
+            };
+
+
+            displayFixture(
+                fixture
+            );
 
         },
+
 
         function(error) {
 
             console.error(
-                "Firebase fixtures error:",
+                "FIREBASE FIXTURE ERROR:",
                 error
             );
 
 
-            fixtureList.innerHTML = `
+            /*
+               Show the actual Firebase
+               error instead of just saying
+               that it cannot connect.
+            */
 
-                <div class="stat-card">
-
-                    <h2>
-                        COULD NOT LOAD FIXTURES
-                    </h2>
-
-                    <p>
-                        Please check the Firebase connection.
-                    </p>
-
-                </div>
-
-            `;
+            showError(
+                "COULD NOT LOAD FIXTURE",
+                "Firebase error: " +
+                error.code +
+                " — " +
+                error.message
+            );
 
         }
 
     );
 
 }
-
-
-/* =========================================================
-   START
-   ========================================================= */
-
-setupSeason();
-
-startFixtureListener();
-
-applyViewerRestrictions();
+```

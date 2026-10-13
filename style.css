@@ -1092,54 +1092,40 @@ a:hover {
    VERY SMALL PHONES
 ========================================================= */
 
-@media (max-width: 320px) {
 
-    .dashboard {
-        padding-left: 8px;
-        padding-right: 8px;
-    }
-
-    .stat-card {
-        padding: 13px;
-    }
-
-    input,
-    select,
-    textarea,
-    button {
-        font-size: 16px;
-    }
-
-    .dashboard-button {
-        width: 100px;
-    }
-}
-
-
+/* Deal Town U10 Hoops Music Volume Control */
 .music-volume-control {
+    position: fixed;
+    bottom: 20px;
+    left: 20px;
+    z-index: 9999;
+
     display: flex;
     align-items: center;
     gap: 12px;
-    padding: 12px;
-    border-radius: 10px;
-    background: #17251f;
-    color: white;
-    font-family: Arial, sans-serif;
-}
 
-.music-volume-control label {
+    padding: 12px 16px;
+
+    background: #17251f;
+    color: #ffffff;
+
+    border: 1px solid #39d98a;
+    border-radius: 12px;
+
+    font-family: Arial, sans-serif;
     font-size: 14px;
-    font-weight: bold;
+
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
 }
 
 #music-volume {
-    width: 130px;
+    width: 120px;
     cursor: pointer;
     accent-color: #39d98a;
 }
 
 #volume-value {
-    min-width: 40px;
-    font-size: 13px;
+    min-width: 38px;
     text-align: right;
 }
+

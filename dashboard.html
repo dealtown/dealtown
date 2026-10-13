@@ -267,22 +267,6 @@
 
 
         
-<div class="music-volume-control">
-    <label for="music-volume">Music Volume</label>
-    <input
-        type="range"
-        id="music-volume"
-        min="0"
-        max="100"
-        value="30"
-        aria-label="Music volume"
-    >
-    <span id="volume-value">30%</span>
-</div>
-
-<audio id="background-music" loop preload="auto">
-    <source src="Halloween.mp3" type="audio/mpeg">
-</audio>
 
         
     </main>
@@ -298,7 +282,58 @@
         src="js/dashboard.js"
         type="module"
     ></script>
+    
+<!-- Deal Town U10 Hoops Background Music -->
+<div class="music-volume-control">
+    <label for="music-volume">Music Volume</label>
 
+    <input
+        type="range"
+        id="music-volume"
+        min="0"
+        max="100"
+        value="30"
+    >
+
+    <span id="volume-value">30%</span>
+</div>
+
+<audio id="background-music" loop preload="auto">
+    <source src="music/matchday.mp3" type="audio/mpeg">
+</audio>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    const music = document.getElementById("background-music");
+    const slider = document.getElementById("music-volume");
+    const volumeValue = document.getElementById("volume-value");
+
+    if (!music || !slider) return;
+
+    // Set initial volume to 30%
+    music.volume = Number(slider.value) / 100;
+
+    // Update volume when the slider moves
+    slider.addEventListener("input", function () {
+        const volume = Number(this.value);
+
+        music.volume = volume / 100;
+
+        if (volumeValue) {
+            volumeValue.textContent = volume + "%";
+        }
+    });
+
+    // Attempt to start the background music
+    music.play().catch(function (error) {
+        console.log("Music autoplay blocked by browser. User interaction may be required.");
+    });
+});
+</script>
+
+
+
+    
 </body>
 
 </html>

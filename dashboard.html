@@ -22,24 +22,7 @@
 </head>
 
 
-<script>
-    const music = document.getElementById("background-music");
-    const volumeSlider = document.getElementById("music-volume");
-    const volumeValue = document.getElementById("volume-value");
 
-    if (music && volumeSlider) {
-        music.volume = Number(volumeSlider.value) / 100;
-
-        volumeSlider.addEventListener("input", function () {
-            const volume = Number(this.value);
-            music.volume = volume / 100;
-
-            if (volumeValue) {
-                volumeValue.textContent = volume + "%";
-            }
-        });
-    }
-</script>
 
     
 <body>

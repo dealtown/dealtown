@@ -84,3 +84,23 @@ document.addEventListener(
         applyViewerRestrictions();
     }
 );
+
+
+const music = document.getElementById("background-music");
+const volumeSlider = document.getElementById("music-volume");
+const volumeValue = document.getElementById("volume-value");
+
+if (music && volumeSlider) {
+    // Set the starting volume to 30%.
+    music.volume = Number(volumeSlider.value) / 100;
+
+    volumeSlider.addEventListener("input", () => {
+        const volume = Number(volumeSlider.value);
+
+        music.volume = volume / 100;
+
+        if (volumeValue) {
+            volumeValue.textContent = `${volume}%`;
+        }
+    });
+}

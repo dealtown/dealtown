@@ -261,6 +261,25 @@
             DASHBOARD
         </button>
 
+
+        
+<div class="music-volume-control">
+    <label for="music-volume">Music Volume</label>
+    <input
+        type="range"
+        id="music-volume"
+        min="0"
+        max="100"
+        value="30"
+        aria-label="Music volume"
+    >
+    <span id="volume-value">30%</span>
+</div>
+
+<audio id="background-music" loop preload="auto">
+    <source src="music/matchday.mp3" type="audio/mpeg">
+</audio>
+
         
     </main>
 

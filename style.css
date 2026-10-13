@@ -1093,7 +1093,7 @@ a:hover {
 ========================================================= */
 
 
-/* Deal Town U10 Hoops Music Volume Control */
+
 .music-volume-control {
     position: fixed;
     bottom: 20px;
@@ -1105,17 +1105,13 @@ a:hover {
     gap: 12px;
 
     padding: 12px 16px;
-
     background: #17251f;
-    color: #ffffff;
+    color: white;
 
     border: 1px solid #39d98a;
     border-radius: 12px;
 
     font-family: Arial, sans-serif;
-    font-size: 14px;
-
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
 }
 
 #music-volume {

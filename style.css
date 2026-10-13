@@ -1115,3 +1115,31 @@ a:hover {
     }
 }
 
+
+.music-volume-control {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px;
+    border-radius: 10px;
+    background: #17251f;
+    color: white;
+    font-family: Arial, sans-serif;
+}
+
+.music-volume-control label {
+    font-size: 14px;
+    font-weight: bold;
+}
+
+#music-volume {
+    width: 130px;
+    cursor: pointer;
+    accent-color: #39d98a;
+}
+
+#volume-value {
+    min-width: 40px;
+    font-size: 13px;
+    text-align: right;
+}

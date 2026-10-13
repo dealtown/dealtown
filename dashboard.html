@@ -296,7 +296,7 @@
         value="30"
     >
 
-    <span id="volume-value">30%</span>
+    <span id="volume-value">2%</span>
 </div>
 
 <audio id="background-music" loop preload="auto">
@@ -309,7 +309,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const slider = document.getElementById("music-volume");
     const display = document.getElementById("volume-value");
 
-    music.volume = 0.05;
+    music.volume = 0.02;
 
     slider.addEventListener("input", function () {
         music.volume = Number(this.value) / 100;
